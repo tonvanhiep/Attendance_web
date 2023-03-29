@@ -18,8 +18,11 @@ class ExistedLoginMiddleWare
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check()) {
-            if (Auth::user()->fl_admin == 1) {
-                return redirect()->route('admin.auth.login');
+            if (Auth::user()->fl_admin == 1 ) {
+                return redirect()->route('admin.dashboard');
+            }
+            if (Auth::user()->fl_admin == 0 ) {
+                return redirect()->route('user.home');
             }
         }
         return $next($request);

@@ -149,7 +149,7 @@ async function start() {
             // faceapi.draw.drawDetections(canvas, resizedDetections)
             // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
             // faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-        }, 1000)
+        }, 5000)
     })
 
     video.currentTime = 1

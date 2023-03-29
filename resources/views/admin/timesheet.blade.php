@@ -39,11 +39,11 @@
         <div class="filter-date">
             <label for="start-date">From date</label>
             <div class="filter-input">
-                <input type="date" name="from" value="2022-12-01" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
+                <input type="date" name="from" value="{{ $condition['from'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
             </div>
             <label for="end-date" style="margin-left: 50px">To date</label>
             <div class="filter-input">
-                <input type="date" name="to" value="2022-12-08" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
+                <input type="date" name="to" value="{{ $condition['to'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
             </div>
             <div class="get-btn">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -73,7 +73,7 @@
         </ul>
     </div>
 
-    <div class="board">
+    {{-- <div class="board">
         <table width="100%">
             <thead>
                 <tr>
@@ -120,5 +120,9 @@
                 </tr>
             </tbody>
         </table>
+    </div> --}}
+    <p id="url-pagination" hidden>{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}</p>
+    <div id="content">
+        @include('admin.pagination.timesheet')
     </div>
 @endsection

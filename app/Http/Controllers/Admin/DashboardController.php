@@ -40,6 +40,8 @@ class DashboardController extends Controller
             ]),
             'active' => $employees->getCountEmployees(['status' => 1]),
         ];
+
+        // dd($info);
         $page = 'dashboard';
         return view('admin.dashboard', compact('list', 'notification', 'info', 'page', 'pagination'));
     }

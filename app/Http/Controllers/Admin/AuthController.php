@@ -10,25 +10,34 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     //WEB
-    public function login() {
+    public function login()
+    {
         return view('admin.login.login');
     }
 
-    public function checkLogin(Request $request) {
+    public function checkLogin(Request $request)
+    {
         // dd($request->name);
         if (Auth::attempt(['email' => $request->name, 'password' => $request->password])) {
-            return redirect()->route('admin.dashboard')->with('success', 'Login successfully');
+            if (Auth::user()->fl_admin == 1) {
+                return redirect()->route('admin.dashboard')->with('success', 'Login successfully');
+            }
+            if (Auth::user()->fl_admin == 0) {
+                return redirect()->route('user.home')->with('success', 'Login successfully');
+            }
         }
-        return redirect()->route('admin.auth.login')->with('error','Login failed');
+        return redirect()->route('admin.auth.login')->with('error', 'Login failed');
     }
 
-    public function logout() {
+    public function logout()
+    {
         Auth::logout();
         return redirect()->route('admin.auth.login');
     }
 
     //API
-    public function ApiCheckLogin(Request $request) {
+    public function ApiCheckLogin(Request $request)
+    {
         if (Auth::attempt(['email' => $request->name, 'password' => $request->password])) {
             $user = Auth::user();
             $info = new EmployeesModel();

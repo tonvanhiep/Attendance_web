@@ -47,7 +47,7 @@ class EmployeesFactory extends Factory
             'position' => $this->randomPosition($department),
             'start_time' => "$startTime:$halfHour:00",
             'end_time' => "$endTime:$halfHour:00",
-            'working_day' => '2|3|4|5|6|7',
+            'working_day' => '2|3|4|5|6|7|1',
             'salary' => rand(5, 50) * 1000000,
             'office_id' => ($office == null) ? null : $office[rand(0, count($office) - 1)]->id,
             'created_at' => now(7),
