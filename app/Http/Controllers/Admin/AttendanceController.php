@@ -39,6 +39,7 @@ class AttendanceController extends Controller
         $notification = $notification->getNotifications([]);
         $office = $office->getOffices([]);
         return view('admin.attendance', compact('notification', 'list', 'office', 'page', 'pagination', 'condition'));
+
     }
 
     public function exportCsv(Request $request)

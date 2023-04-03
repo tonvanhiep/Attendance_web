@@ -8,9 +8,12 @@ use App\Http\Controllers\user\InfoController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\user\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TimesheetController;
+use App\Http\Controllers\user\UserReportController;
 use App\Http\Controllers\Admin\AttendanceController;
+use App\Http\Controllers\user\UserAttendanceController;
 use App\Http\Controllers\AttendanceController as ControllersAttendanceController;
 
 /*
@@ -128,13 +131,23 @@ Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' =>
         Route::post('/', [HomeController::class, 'pagination'])->name('pagination');
     });
 
-    // Route::group(['prefix' => 'info', 'as' => 'info.'], function () {
-    //     Route::get('/', [InfoController::class, 'index'])->name('list');
-    //     Route::post('/', [InfoController::class, 'pagination'])->name('pagination');
+    Route::group(['prefix' => 'attendance', 'as' => 'attendance.'], function () {
+        Route::get('/', [UserAttendanceController::class, 'index'])->name('list');
+        Route::post('/', [UserAttendanceController::class, 'pagination'])->name('pagination');
+
+        Route::get('/exportcsv', [UserAttendanceController::class, 'exportCsv'])->name('exportcsv');
+        Route::get('/exportpdf', [UserAttendanceController::class, 'exportPdf'])->name('exportpdf');
+    });
+
+    Route::get('profile', [ProfileController::class, 'index'])->name('profile');
+
+    // Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
+    //     Route::get('/', [ProfileController::class, 'index'])->name('');
+    //     Route::post('/', [ProfileController::class, 'pagination'])->name('pagination');
     // });
 
-    // Route::group(['prefix' =>'report', 'as' => 'report.'], function () {
-    //     Route::get('/', [ReportController::class, 'index'])->name('list');
-    //     Route::post('/', [ReportController::class, 'pagination'])->name('pagination');
-    // });
+    Route::group(['prefix' =>'report', 'as' => 'report.'], function () {
+        Route::get('/', [UserReportController::class, 'index'])->name('list');
+        Route::post('/', [UserReportController::class, 'pagination'])->name('pagination');
+    });
 });

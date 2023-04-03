@@ -7,11 +7,12 @@ use App\Models\EmployeesModel;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
-class HomeController extends Controller
+class UserReportController extends Controller
 {
+    //
     public function index() {
-        $titlePage = 'Home';
+        $titlePage = 'Report';
         $user = EmployeesModel::find(Auth::user()->employee_id);
-        return view('user.home', compact('titlePage', 'user'));
+        return view('user.report', compact('titlePage','user'));
     }
 }
