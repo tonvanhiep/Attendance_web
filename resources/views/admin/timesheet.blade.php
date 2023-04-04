@@ -73,54 +73,6 @@
         </ul>
     </div>
 
-    {{-- <div class="board">
-        <table width="100%">
-            <thead>
-                <tr>
-                    <td>Name</td>
-                    <td>ID</td>
-                    <td>Office</td>
-                    <td>Department</td>
-                    <td>Late</td>
-                    <td>Early</td>
-                    <td>Off</td>
-                    <td>Full</td>
-                    <td>Total</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr onclick="window.location='http://127.0.0.1:9000/admin/timesheet/detail/2'">
-                    <td class="name">
-                        <h5>Ho Viet Cuong</h5>
-                    </td>
-                    <td class="id">
-                        <p>1912820</p>
-                    </td>
-                    <td class="office">
-                        <p>SSC VietNam</p>
-                    </td>
-                    <td class="department">
-                        <p>Marketing</p>
-                    </td>
-                    <td class="late">
-                        <p>5</p>
-                    </td>
-                    <td class="early">
-                        <p>0</p>
-                    </td>
-                    <td class="off">
-                        <p>2/2</p>
-                    </td>
-                    <td class="full">
-                        <p>24</p>
-                    </td>
-                    <td class="total">
-                        <p>26</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div> --}}
     <p id="url-pagination" hidden>{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}</p>
     <div id="content">
         @include('admin.pagination.timesheet')

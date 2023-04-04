@@ -13,11 +13,11 @@
         <div class="d-flex">
             <div class="mr-auto p-2 col-md-4 mb-3">
                 <label for="validationServer01">From date</label>
-                <input type="date" class="form-control">
+                <input type="date" class="form-control" value="{{ $condition['from'] }}" max="{{ $condition['today'] }}">
             </div>
             <div class="p-2 col-md-4 mb-3">
                 <label for="validationServer02">To date</label>
-                <input type="date" class="form-control">
+                <input type="date" class="form-control" value="{{ $condition['to'] }}" max="{{ $condition['today'] }}">
             </div>
             <div>
                 <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> </button>

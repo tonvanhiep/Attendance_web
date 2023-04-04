@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 use Database\Factories\TimesheetsFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class TimesheetsModel extends Model
 {
@@ -129,11 +130,74 @@ class TimesheetsModel extends Model
         return $timesheet == [] ? [] : $timesheet->get();
     }
 
-
     public function pagination($condition = [], $page = 1, $perPage = 50)
     {
         return $this->selectTimesheetsByEmployeeId($condition)->paginate($perPage, '*', 'page', $page);
     }
+
+    //user
+
+    public function selectTimesheetsforUser()
+    {
+        // if ($condition == null) return [];
+        $result = DB::table($this->table)
+            ->join('timekeepers', 'timekeepers.id', '=', $this->table . '.timekeeper_id')
+            ->join('offices', 'offices.id', '=', 'timekeepers.office_id')
+            ->join('employees', 'employees.id', '=', $this->table . '.employee_id')
+            ->select(
+                'employees.id',
+                'employees.first_name',
+                'employees.last_name',
+                'employees.department',
+                'employees.start_time',
+                'employees.end_time',
+                'employees.working_day',
+                'office_name',
+                'timekeeper_id',
+                'timekeeping_at',
+                'face_image',
+                DB::raw('date(timekeeping_at) as date'),
+                DB::raw('MIN(time(timekeeping_at)) as check_in'),
+                DB::raw('MAX(time(timekeeping_at)) as check_out'),
+            )
+            ->where('employee_id', '=', Auth::user()->employee_id)
+            ->orderByDesc('date')
+            ->orderByDesc($this->table . '.employee_id');
+        $result = $result->groupByRaw('date(timekeeping_at)');
+        return $result;
+    }
+
+    public function getTimesheetsforUser($condition = null)
+    {
+        $timesheet = $this->selectTimesheetsforUser($condition);
+        if (isset($condition['id'])) {
+            if (is_array($condition['id'])) {
+                $timesheet = $timesheet->where(function ($query) use ($condition) {
+                    foreach ($condition['id'] as $value) {
+                        $query->orWhere($this->table . '.employee_id', $value);
+                    }
+                });
+            } else $timesheet = $timesheet->where($this->table . '.employee_id', $condition['id']);
+        }
+
+        if (isset($condition['from'])) {
+            $timesheet = $timesheet->where('timekeeping_at', '>=', $condition['from']);
+        }
+        if (isset($condition['to'])) {
+            $timesheet = $timesheet->where('timekeeping_at', '<=', $condition['to'] . ' 23:59:59');
+        }
+        if (isset($condition['status'])) {
+            $timesheet = $timesheet->where($this->table . '.status', $condition['status']);
+        }
+        return $timesheet == [] ? [] : $timesheet->get();
+    }
+
+
+    // public function userAttendPagination($condition = [], $page = 1, $perPage = 50)
+    // {
+    //     return $this->selectTimesheetsforUser($condition)->paginate($perPage, '*', 'page', $page);
+    // }
+
 
     public function saveAttendance($data = null)
     {
@@ -154,7 +218,7 @@ class TimesheetsModel extends Model
     {
     }
 
-    public function getLatelyDate() {
-
+    public function getLatelyDate()
+    {
     }
 }

@@ -35,6 +35,7 @@ class TimesheetController extends Controller
             'depart' => $request->input('depart'),
         ];
         $employeesList = $employees->pagination($condition, $request->page, $perPage);
+        // dd($employeesList);
         $arr = [];
         $totalWeekDay = [0, 0, 0, 0, 0, 0, 0];
         $from = Carbon::createFromFormat('Y-m-d', $condition['from']);
