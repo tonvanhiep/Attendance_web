@@ -22,6 +22,12 @@ class UserAttendanceController extends Controller
         $titlePage = 'Attendance';
         $user = EmployeesModel::find(Auth::user()->employee_id);
         // $list_timesheets = TimesheetsModel::where('employee_id', Auth::user()->employee_id)->get();
+        // dd(Carbon::now()->format('Y-m-d'));
+
+        $fromDate = $request->input('fromDate');
+        $toDate = $request->input('toDate');
+        $now = Carbon::now()->format('Y-m-d');
+        // dd($now);
 
         $count = 1;
         $perPage = $request->show == null ? 50 : $request->show;
@@ -35,9 +41,16 @@ class UserAttendanceController extends Controller
             'depart' => $request->input('depart'),
         ];
 
-        $list_timesheets = $timesheet->getTimesheetsforUser();
+        // $list_timesheets = $timesheet->getTimesheetsforUser();
+
+
+        if (!($fromDate) || !($toDate)) {
+            $list_timesheets = $timesheet->getTimesheetsforUser();
+        } else {
+            $list_timesheets = $timesheet->getTimesheetsforUser()->where('date', '>=', $fromDate)->where('date', '<=', $toDate);
+        }
+
         $dayOfWeekArr = [];
-        // dd($list_timesheets);
 
         $weekMap = [
             0 => 'Sunday',
@@ -63,9 +76,50 @@ class UserAttendanceController extends Controller
             ];
             array_push($dayOfWeekArr, $subArr);
         }
-        // dd($list_timesheets, $dayOfWeekArr);
+        // dd($list_timesheets->where('date','>=', '2023-01-01')->where('date','<=', '2023-12-31'),);
 
         return view('user.attendance', compact('titlePage', 'user', 'list_timesheets', 'condition', 'count', 'dayOfWeekArr'));
+    }
+
+    public function search(Request $request)
+    {
+        $timesheet = new TimesheetsModel();
+
+        $titlePage = 'Attendance';
+        $user = EmployeesModel::find(Auth::user()->employee_id);
+
+        $fromDate = $request->input('fromDate');
+        $toDate = $request->input('toDate');
+        $dayOfWeekArr = [];
+
+        $list_timesheets = $timesheet->getTimesheetsforUser()->where('date', '>=', $fromDate)->where('date', '<=', $toDate);
+
+        $weekMap = [
+            0 => 'Sunday',
+            1 => 'Monday',
+            2 => 'Tuesday',
+            3 => 'Wednesday',
+            4 => 'Thursday',
+            5 => 'Friday',
+            6 => 'Saturday',
+        ];
+
+        foreach ($list_timesheets as $item) {
+            $dayOfTheWeek = Carbon::parse($item->date)->dayOfWeek;
+            $weekday = $weekMap[$dayOfTheWeek];
+            $subArr = [
+                'dayOfWeek' => $weekday,
+                "timekeeper_name" => $item->timekeeper_name,
+                "office_name" => $item->office_name,
+                "face_image" => $item->face_image,
+                "date" => $item->date,
+                "check_in" => $item->check_in,
+                "check_out" => $item->check_out,
+            ];
+            array_push($dayOfWeekArr, $subArr);
+        }
+        // dd($dayOfWeekArr);
+        return view('user.attendance', compact('dayOfWeekArr', 'titlePage', 'user'));
     }
 
     public function pagination(Request $request)

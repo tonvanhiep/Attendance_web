@@ -10,7 +10,7 @@
 
 @section('content')
     <div class="container-fluid px-4">
-        <form action="" method="POST" class="my-5">
+        <form action="{{ route('user.attendance.list') }}" method="GET" class="my-5">
             @csrf
             <br>
             <div class="row p-2">
@@ -18,11 +18,11 @@
                     <div class="form-group row">
                         <label for="date" class="col-form-label col-sm-1">From</label>
                         <div class="col-sm-3">
-                            <input type="date" name="from" id="from" class="form-control input-sm">
+                            <input type="date" name="fromDate" id="fromDate" class="form-control input-sm">
                         </div>
                         <label for="date" class="col-form-label col-sm-1">To</label>
                         <div class="col-sm-3">
-                            <input type="date" name="to" id="to" class="form-control input-sm">
+                            <input type="date" name="toDate" id="toDate" class="form-control input-sm">
                         </div>
                         <div class="col-sm-2">
                             <button type="submit" class="btn btn-primary" name="seach" title="search">

@@ -135,6 +135,8 @@ Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' =>
         Route::get('/', [UserAttendanceController::class, 'index'])->name('list');
         Route::post('/', [UserAttendanceController::class, 'pagination'])->name('pagination');
 
+        Route::post('search', [UserAttendanceController::class, 'search'])->name('search');
+
         Route::get('/exportcsv', [UserAttendanceController::class, 'exportCsv'])->name('exportcsv');
         Route::get('/exportpdf', [UserAttendanceController::class, 'exportPdf'])->name('exportpdf');
     });

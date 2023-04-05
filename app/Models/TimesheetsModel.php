@@ -193,13 +193,6 @@ class TimesheetsModel extends Model
         return $timesheet == [] ? [] : $timesheet->get();
     }
 
-
-    // public function userAttendPagination($condition = [], $page = 1, $perPage = 50)
-    // {
-    //     return $this->selectTimesheetsforUser($condition)->paginate($perPage, '*', 'page', $page);
-    // }
-
-
     public function saveAttendance($data = null)
     {
         if ($data == null) return;
@@ -215,8 +208,34 @@ class TimesheetsModel extends Model
             'updated_at' => Carbon::now()
         ]);
     }
-    public function getCountDate($condition = null)
+    public function searchbyFromTo()
     {
+        $result = DB::table($this->table)
+            ->join('timekeepers', 'timekeepers.id', '=', $this->table . '.timekeeper_id')
+            ->join('offices', 'offices.id', '=', 'timekeepers.office_id')
+            ->join('employees', 'employees.id', '=', $this->table . '.employee_id')
+            ->select(
+                'employees.id',
+                'employees.first_name',
+                'employees.last_name',
+                'employees.department',
+                'employees.start_time',
+                'employees.end_time',
+                'employees.working_day',
+                'timekeepers.timekeeper_name',
+                'office_name',
+                'timekeeper_id',
+                'timekeeping_at',
+                'face_image',
+                DB::raw('date(timekeeping_at) as date'),
+                DB::raw('MIN(time(timekeeping_at)) as check_in'),
+                DB::raw('MAX(time(timekeeping_at)) as check_out'),
+            )
+            ->where('employee_id', '=', Auth::user()->employee_id)
+            ->orderByDesc('date')
+            ->orderByDesc($this->table . '.employee_id');
+        $result = $result->groupByRaw('date(timekeeping_at)');
+        return $result;
     }
 
     public function getLatelyDate()
