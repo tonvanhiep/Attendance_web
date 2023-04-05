@@ -9,27 +9,39 @@
 @endpush
 
 @section('content')
-<div class="container-fluid px-4">
-    <div class="commemt-area mt-4">
-        <div class="card card-body">
-            <h6 class="card-title">Comment</h6>
-            <form action="" method="POST">
-                <textarea name="comment-body" class="form-control" rows="3" required></textarea>
-                <button class="btn btn-primary mt-3">Submit</button>
-            </form>
-        </div>
-        <div class="card card-body shadow-sm mt-3">
-            <div class="detail-area">
-                <h6 class="user-name mb-1">User
-                    <small class="ms-3 text-primary">Comment on: 3-8-2023</small>
-                </h6>
-                <p class="user-comment mb-1">Hi</p>
+    <div class="container-fluid px-4">
+        <div class="commemt-area mt-4">
+            @if (session('success'))
+                <h6 class="alert alert-primary">{{ session('success') }}</h6>
+            @endif
+
+            @if (session('warning'))
+                <h6 class="alert alert-danger">{{ session('warning') }}</h6>
+            @endif
+            <div class="card card-body">
+                <h6 class="card-title">Comment</h6>
+                <form action="{{ route('user.report.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <textarea name="comment_body" class="form-control" rows="3" required></textarea>
+                    <button class="btn btn-primary mt-3">Submit</button>
+                </form>
             </div>
-            <div>
-                <a href="" class="btn btn-primary btn-sm me-2"></a>
-                <a href="" class="btn btn-danger btn-sm me-2"></a>
-            </div>
+            @forelse ($list as $item)
+                <div class="card card-body shadow-sm mt-3">
+                    <div class="detail-area">
+                        <h6 class="user-name mb-1">{{ $user->last_name . ' ' . $user->first_name }}
+                            <small class="ms-3 text-primary">Comment on: {{ $item->created_at }} </small>
+                        </h6>
+                        <p class="user-comment mb-1">{{ $item->comment }}</p>
+                    </div>
+                    <div>
+                        <a href="" class="btn btn-primary btn-sm me-2">Edit</a>
+                        <a href="" class="btn btn-danger btn-sm me-2">Delete</a>
+                    </div>
+                </div>
+            @empty
+                <h6>No Comment Yet</h6>
+            @endforelse
         </div>
     </div>
-</div>
 @endsection

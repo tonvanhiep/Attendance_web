@@ -152,6 +152,7 @@ class TimesheetsModel extends Model
                 'employees.start_time',
                 'employees.end_time',
                 'employees.working_day',
+                'timekeepers.timekeeper_name',
                 'office_name',
                 'timekeeper_id',
                 'timekeeping_at',

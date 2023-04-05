@@ -16,7 +16,6 @@ class ProfileController extends Controller
     {
         $account = AccountsModel::where('employee_id', Auth::user()->employee_id)->first();
         $user = EmployeesModel::find(Auth::user()->employee_id);
-        // dd($user,$account);
         $titlePage = 'Profile';
         return view('user.profile', compact('titlePage', 'user', 'account'));
     }

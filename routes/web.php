@@ -149,5 +149,13 @@ Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' =>
     Route::group(['prefix' =>'report', 'as' => 'report.'], function () {
         Route::get('/', [UserReportController::class, 'index'])->name('list');
         Route::post('/', [UserReportController::class, 'pagination'])->name('pagination');
+
+        Route::get('create', [UserReportController::class, 'create'])->name('create');
+        Route::post('store', [UserReportController::class, 'store'])->name('store');
+
+        Route::get('edit/{id}', [UserReportController::class, 'edit'])->name('edit');
+        Route::put('update/{id}', [UserReportController::class, 'update'])->name('update');
+
+        Route::get('delete/{id}', [UserReportController::class, 'delete'])->name('delete');
     });
 });

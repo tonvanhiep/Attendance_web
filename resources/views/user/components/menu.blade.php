@@ -13,8 +13,8 @@
                 class="fas fa-paperclip me-2"></i>Reports</a>
         <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                 class="fas fa-comment-dots me-2"></i>Chat</a>
-        <a href="{{ route('user.logout') }}"
+        {{-- <a href="{{ route('user.logout') }}"
             class="list-group-item list-group-item-action bg-transparent text-danger fw-bold"><i
-                class="fas fa-power-off me-2"></i>Logout</a>
+                class="fas fa-power-off me-2"></i>Logout</a> --}}
     </div>
 </div>

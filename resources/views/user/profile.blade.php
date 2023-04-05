@@ -15,7 +15,7 @@
                 <div class="col-lg-4">
                     <div class="card mb-4">
                         <div class="card-body text-center">
-                            <img src="{{ url('/storage/avatar/5a2a8_2023_02_28_17_32_IMG_5675.JPG') }}"
+                            <img src="{{ asset($user->avatar) }}"
                                 alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
                             <h5 class="my-3">{{ $user->first_name }}</h5>
                             <p class="text-muted mb-1">{{ $user->position }}</p>

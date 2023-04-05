@@ -71,6 +71,7 @@
         <table width="100%">
             <thead>
                 <tr>
+                    <th>Number</th>
                     <td>Name</td>
                     <td>ID</td>
                     <td>Content</td>
@@ -79,8 +80,9 @@
                 </tr>
             </thead>
             <tbody>
+            @foreach ($list as $item )
                 <tr>
-                    <td class="name">
+                    {{-- <td class="name">
                         <h5>Ho Viet Cuong</h5>
                     </td>
                     <td class="id">
@@ -94,8 +96,14 @@
                     </td>
                     <td class="workhour">
                         <p></p>
-                    </td>
+                    </td> --}}
+                    <th><h5>{{ $count++ }}</h5></th>
+                    <td>{{ $item->last_name . ' ' . $item->first_name }}</td>
+                    <td>{{ $item->id }}</td>
+                    <td>{{ $item->comment }}</td>
+                    <td>{{ $item->created_at }}</td>
                 </tr>
+                @endforeach
             </tbody>
         </table>
     </div>

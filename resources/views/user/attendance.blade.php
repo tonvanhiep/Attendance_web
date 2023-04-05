@@ -10,19 +10,29 @@
 
 @section('content')
     <div class="container-fluid px-4">
-        <div class="d-flex">
-            <div class="mr-auto p-2 col-md-4 mb-3">
-                <label for="validationServer01">From date</label>
-                <input type="date" class="form-control" value="{{ $condition['from'] }}" max="{{ $condition['today'] }}">
+        <form action="" method="POST" class="my-5">
+            @csrf
+            <br>
+            <div class="row p-2">
+                <div class="container">
+                    <div class="form-group row">
+                        <label for="date" class="col-form-label col-sm-1">From</label>
+                        <div class="col-sm-3">
+                            <input type="date" name="from" id="from" class="form-control input-sm">
+                        </div>
+                        <label for="date" class="col-form-label col-sm-1">To</label>
+                        <div class="col-sm-3">
+                            <input type="date" name="to" id="to" class="form-control input-sm">
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="submit" class="btn btn-primary" name="seach" title="search">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="p-2 col-md-4 mb-3">
-                <label for="validationServer02">To date</label>
-                <input type="date" class="form-control" value="{{ $condition['to'] }}" max="{{ $condition['today'] }}">
-            </div>
-            <div>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> </button>
-            </div>
-        </div>
+        </form>
         <form class="p-2" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] }}">
             <label for="show-number">Show</label>
             <select class="custom-select" id="show-number">
@@ -41,5 +51,4 @@
             </div>
         </div>
     </div>
-
 @endsection
