@@ -10,6 +10,29 @@
 
 @section('content')
     <div class="container-fluid px-4">
+        <form action="{{ route('user.report.list') }}" method="GET" class="my-5">
+            @csrf
+            <br>
+            <div class="row p-2">
+                <div class="container">
+                    <div class="form-group row">
+                        <label for="date" class="col-form-label col-sm-1">From</label>
+                        <div class="col-sm-3">
+                            <input type="date" name="fromDate" id="fromDate" class="form-control input-sm" value="{{ $request->input('fromDate') }}">
+                        </div>
+                        <label for="date" class="col-form-label col-sm-1">To</label>
+                        <div class="col-sm-3">
+                            <input type="date" name="toDate" id="toDate" class="form-control input-sm" value="{{ $request->input('toDate') }}">
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="submit" class="btn btn-primary" name="seach" title="search">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
         <div class="commemt-area mt-4">
             @if (session('success'))
                 <h6 class="alert alert-primary">{{ session('success') }}</h6>

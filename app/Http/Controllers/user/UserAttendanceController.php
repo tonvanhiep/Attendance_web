@@ -78,7 +78,7 @@ class UserAttendanceController extends Controller
         }
         // dd($list_timesheets->where('date','>=', '2023-01-01')->where('date','<=', '2023-12-31'),);
 
-        return view('user.attendance', compact('titlePage', 'user', 'list_timesheets', 'condition', 'count', 'dayOfWeekArr'));
+        return view('user.attendance', compact('titlePage', 'user', 'list_timesheets', 'condition', 'count', 'dayOfWeekArr','request'));
     }
 
     public function search(Request $request)
