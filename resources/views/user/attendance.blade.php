@@ -45,7 +45,7 @@
 
         <div class="row my-5">
             <h3 class="fs-4 mb-3 text-uppercase">Table Attendance</h3>
-            <p id="url-pagination" hidden>{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] }}</p>
+            {{-- <p id="url-pagination" hidden>{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] }}</p> --}}
             <div id="content">
                 @include('user.pagination.attendance')
             </div>

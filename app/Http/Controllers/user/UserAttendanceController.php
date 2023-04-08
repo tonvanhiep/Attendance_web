@@ -29,8 +29,8 @@ class UserAttendanceController extends Controller
 
         $now = Carbon::now()->format('Y-m-d');
 
-        $carbonFromDate = Carbon::createFromFormat('Y-m-d', $fromDate);
-        $carbonTomDate = Carbon::createFromFormat('Y-m-d', $toDate);
+        // $carbonFromDate = Carbon::createFromFormat('Y-m-d', $fromDate);
+        // $carbonTomDate = Carbon::createFromFormat('Y-m-d', $toDate);
 
         $count = 1;
         $perPage = $request->show == null ? 50 : $request->show;
@@ -57,13 +57,13 @@ class UserAttendanceController extends Controller
 
 
 
-        while (1) {
-            if (!($fromDate <= $toDate)) {
-                break;
-            }
-            $totalWeekDay[$carbonFromDate->dayOfWeek]++;
-            $from = $carbonFromDate->addDays(1);
-        }
+        // while (1) {
+        //     if (!($fromDate <= $toDate)) {
+        //         break;
+        //     }
+        //     $totalWeekDay[$carbonFromDate->dayOfWeek]++;
+        //     $from = $carbonFromDate->addDays(1);
+        // }
 
         $dayOfWeekArr = [];
 
