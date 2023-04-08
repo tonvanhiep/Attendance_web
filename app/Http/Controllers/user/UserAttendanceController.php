@@ -24,10 +24,13 @@ class UserAttendanceController extends Controller
         // $list_timesheets = TimesheetsModel::where('employee_id', Auth::user()->employee_id)->get();
         // dd(Carbon::now()->format('Y-m-d'));
 
-        $fromDate = $request->input('fromDate');
-        $toDate = $request->input('toDate');
+        $fromDate = $request->input('fromDate') == null ? date('Y-m-01') : $request->input('fromDate');
+        $toDate = $request->input('to') == null ? date('Y-m-d') : $request->input('to');
+
         $now = Carbon::now()->format('Y-m-d');
-        // dd($now);
+
+        $carbonFromDate = Carbon::createFromFormat('Y-m-d', $fromDate);
+        $carbonTomDate = Carbon::createFromFormat('Y-m-d', $toDate);
 
         $count = 1;
         $perPage = $request->show == null ? 50 : $request->show;
@@ -41,13 +44,25 @@ class UserAttendanceController extends Controller
             'depart' => $request->input('depart'),
         ];
 
-        // $list_timesheets = $timesheet->getTimesheetsforUser();
+        $list_timesheets = $timesheet->getTimesheetsforUser();
 
 
         if (!($fromDate) || !($toDate)) {
             $list_timesheets = $timesheet->getTimesheetsforUser();
         } else {
             $list_timesheets = $timesheet->getTimesheetsforUser()->where('date', '>=', $fromDate)->where('date', '<=', $toDate);
+        }
+
+        $totalWeekDay = [0, 0, 0, 0, 0, 0, 0]; // [sun,mon,tue,wed,thur,fri,sat]
+
+
+
+        while (1) {
+            if (!($fromDate <= $toDate)) {
+                break;
+            }
+            $totalWeekDay[$carbonFromDate->dayOfWeek]++;
+            $from = $carbonFromDate->addDays(1);
         }
 
         $dayOfWeekArr = [];
@@ -63,6 +78,11 @@ class UserAttendanceController extends Controller
         ];
 
         foreach ($list_timesheets as $item) {
+            $lateList = 0;
+            $earlyList = 0;
+            $offList = 0;
+            $total = 0;
+
             $dayOfTheWeek = Carbon::parse($item->date)->dayOfWeek;
             $weekday = $weekMap[$dayOfTheWeek];
             $subArr = [
@@ -78,7 +98,7 @@ class UserAttendanceController extends Controller
         }
         // dd($list_timesheets->where('date','>=', '2023-01-01')->where('date','<=', '2023-12-31'),);
 
-        return view('user.attendance', compact('titlePage', 'user', 'list_timesheets', 'condition', 'count', 'dayOfWeekArr','request'));
+        return view('user.attendance', compact('titlePage', 'user', 'list_timesheets', 'condition', 'count', 'dayOfWeekArr', 'request'));
     }
 
     public function search(Request $request)

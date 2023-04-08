@@ -9,6 +9,11 @@
 @push('css')
     <link rel="stylesheet" href="{{asset('assets/css/report.css');}}">
     <link rel="stylesheet" href="{{asset('assets/css/attendance.css');}}">
+    <style>
+        .clickable-row:hover {
+            cursor: pointer;
+        }
+    </style>
 @endpush
 
 
@@ -27,16 +32,28 @@
                     @endforeach
                 </select>
             </div>
+
+            <label style="margin-left: 30px" for="depart">Status</label>
+            <div class="status">
+                <select name="status" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
+                    <option value="1" @if ($condition['status'] == 1) selected @endif>Successful confirmation</option>
+                    <option value="2" @if ($condition['status'] == 2) selected @endif>Waiting for confirmation</option>
+                    <option value="3" @if ($condition['status'] == 3) selected @endif>Confirm failure</option>
+                    <option value="0" @if ($condition['status'] == 0) selected @endif>All</option>
+                </select>
+            </div>
+
         </div>
+
 
         <div class="filter-date">
             <label for="start-date">From date</label>
             <div class="filter-input">
-                <input type="date" name="from" value="{{ $condition['from'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
+                <input type="date" name="from" value="{{ $condition['from'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
             </div>
             <label for="end-date" style="margin-left: 50px">To date</label>
             <div class="filter-input">
-                <input type="date" name="to" value="{{ $condition['to'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
+                <input type="date" name="to" value="{{ $condition['to'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
             </div>
             <div class="get-btn">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -71,3 +88,15 @@
     </div>
 
 @endsection
+
+@push('js')
+    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+    <script src="{{asset('assets/js/attendance-realtime.js');}}"></script>
+    <script>
+        jQuery(document).ready(function($) {
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+        });
+    </script>
+@endpush

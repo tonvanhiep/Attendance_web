@@ -96,6 +96,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'loginmiddleware', 'as' => 'a
         Route::get('/', [AttendanceController::class, 'index'])->name('list');
         Route::post('/', [AttendanceController::class, 'pagination'])->name('pagination');
 
+        Route::get('/detail/{id?}/', [AttendanceController::class, 'detail'])->name('detail');
+        Route::post('/chage-status', [AttendanceController::class, 'updateStatus'])->name('updateStatus');
+
         Route::get('/exportcsv', [AttendanceController::class, 'exportCsv'])->name('exportcsv');
         Route::get('/exportpdf', [AttendanceController::class, 'exportPdf'])->name('exportpdf');
     });

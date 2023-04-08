@@ -1,5 +1,14 @@
 <div class="board">
-    <table width="100%">
+    @if (isset($waitConfirm) && $waitConfirm > 0)
+        <div class="alert alert-warning" role="alert">
+            There are many requests waiting for confirmation.
+            @if ($condition['status'] != 2)
+            <a href="{{ route('admin.attendance.list') . '?status=2' }}" class="alert-link">Go to and Confirm</a>
+            @endif
+        </div>
+    @endif
+
+    <table width="100%" class="table table-hover">
         <thead>
             <tr>
                 <td>Name</td>
@@ -8,15 +17,27 @@
                 <td>Timkeeper</td>
                 <td>Date</td>
                 <td>Time</td>
-                {{-- <td>Status</td> --}}
             </tr>
         </thead>
         <tbody>
             @foreach ($list as $item)
                 @php $dt = new DateTime($item->timekeeping_at); @endphp
-                <tr>
+                <tr
+                    @if ($condition['status'] == 0)
+                        @switch($item->status)
+                            @case(2)
+                                style="color: #ffc107"
+                                @break
+                            @case(3)
+                                style="color: #dc3545"
+                                @break
+                            @default
+
+                        @endswitch
+                    @endif
+                    class='clickable-row' data-href='{{ route('admin.attendance.detail', ['id' => $item->attendance_id]) }}'>
                     <td class="name">
-                        <h5>{{ $item->last_name }} {{ $item->first_name }}</h5>
+                        <p class="fw-bold">{{ $item->last_name }} {{ $item->first_name }}</p>
                     </td>
                     <td class="id">
                         <p>{{ $item->id }}</p>
@@ -25,7 +46,7 @@
                         <p>{{ $item->office_name }}</p>
                     </td>
                     <td class="timekeeper">
-                        <p>{{ $item->timekeeper_id }}</p>
+                        <p>{{ $item->timekeeper_name }}</p>
                     </td>
                     <td class="date">
                         <p>{{ $dt->format('d/m/Y') }}</p>
@@ -33,9 +54,6 @@
                     <td class="time">
                         <p>{{ $dt->format('H:i:s') }}</p>
                     </td>
-                    {{-- <td class="status">
-                        <p class="pass">Proc...</p>
-                    </td> --}}
                 </tr>
             @endforeach
         </tbody>

@@ -68,6 +68,14 @@
                         <label for="office_id">Office ID</label>
                         <input type="number" name="office_id">
                     </div>
+                    <div class="long form" >
+                        <label for="status">Status</label>
+                        <input type="number" name="status">
+                    </div>
+                    <div class="long form" >
+                        <label for="working_day">Working_day</label>
+                        <input type="text" name="working_day">
+                    </div>
                     {{-- <div class="long form" >
                         <label for="note">Content</label>
                         <textarea id="editor" name="note" rows="10"></textarea>

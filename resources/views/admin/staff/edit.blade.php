@@ -69,6 +69,14 @@
                         <label for="office_id">Office ID</label>
                         <input type="number" name="office_id" value="{{ $staff->office_id }}">
                     </div>
+                    <div class="long form" >
+                        <label for="status">Status</label>
+                        <input type="number" name="status" value="{{ $staff->status }}">
+                    </div>
+                    <div class="long form" >
+                        <label for="working_day">Working_day</label>
+                        <input type="text" name="working_day" value="{{ $staff->working_day}}">
+                    </div>
                 </div>
                 <div class="board-right">
                     <div class="short form">

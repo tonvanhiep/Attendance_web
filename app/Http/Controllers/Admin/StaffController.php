@@ -149,7 +149,8 @@ class StaffController extends Controller
             'department' => $request->department,
             'position' => $request->position,
             'avatar' => 'storage/avatar/' . $image,
-            'working_day' => 1,
+            'working_day' => $request->working_day,
+            'status' => $request->status,
             'salary' => $request->salary,
             'office_id' => $request->office_id,
             'join_day' => $request->join_day,
@@ -235,11 +236,12 @@ class StaffController extends Controller
             'department' => $request->department,
             'position' => $request->position,
             'avatar' => isset($image) ? 'storage/avatar/' . $image : $staff->avatar,
-            'working_day' => 1,
             'salary' => $request->salary,
             'office_id' => $request->office_id,
             'join_day' => $request->join_day,
             'left_day' => $request->left_day,
+            'working_day' => $request->working_day,
+            'status' => $request->status,
         ]);
 
         $data = [
