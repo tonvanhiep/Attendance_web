@@ -44,13 +44,13 @@ class UserAttendanceController extends Controller
             'depart' => $request->input('depart'),
         ];
 
-        $list_timesheets = $timesheet->getTimesheetsforUser();
+        $list_attendances = $timesheet->getTimesheetsforUser();
 
 
         if (!($fromDate) || !($toDate)) {
-            $list_timesheets = $timesheet->getTimesheetsforUser();
+            $list_attendances = $timesheet->getTimesheetsforUser();
         } else {
-            $list_timesheets = $timesheet->getTimesheetsforUser()->where('date', '>=', $fromDate)->where('date', '<=', $toDate);
+            $list_attendances = $timesheet->getTimesheetsforUser()->where('date', '>=', $fromDate)->where('date', '<=', $toDate);
         }
 
         $totalWeekDay = [0, 0, 0, 0, 0, 0, 0]; // [sun,mon,tue,wed,thur,fri,sat]
@@ -77,11 +77,11 @@ class UserAttendanceController extends Controller
             6 => 'Saturday',
         ];
 
-        foreach ($list_timesheets as $item) {
-            $lateList = 0;
-            $earlyList = 0;
-            $offList = 0;
-            $total = 0;
+        foreach ($list_attendances as $item) {
+            // $lateList = 0;
+            // $earlyList = 0;
+            // $offList = 0;
+            // $total = 0;
 
             $dayOfTheWeek = Carbon::parse($item->date)->dayOfWeek;
             $weekday = $weekMap[$dayOfTheWeek];
@@ -96,9 +96,10 @@ class UserAttendanceController extends Controller
             ];
             array_push($dayOfWeekArr, $subArr);
         }
-        // dd($list_timesheets->where('date','>=', '2023-01-01')->where('date','<=', '2023-12-31'),);
+        // dd($dayOfWeekArr);
+        // dd($list_attendances->where('date','>=', '2023-01-01')->where('date','<=', '2023-12-31'),);
 
-        return view('user.attendance', compact('titlePage', 'user', 'list_timesheets', 'condition', 'count', 'dayOfWeekArr', 'request'));
+        return view('user.attendance', compact('titlePage', 'user', 'condition', 'count', 'dayOfWeekArr', 'request'));
     }
 
     public function search(Request $request)

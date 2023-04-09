@@ -13,7 +13,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($arr as $item)
+            @foreach ($list as $item)
                 <tr onclick="window.location='http://127.0.0.1:9000/admin/timesheet/detail/2'">
                     <td class="name">
                         <h5>{{ $item['last_name'] . ' ' . $item['first_name'] }}</h5>

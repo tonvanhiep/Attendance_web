@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use stdClass;
+use Carbon\Carbon;
 use App\Models\NoticesModel;
 use App\Models\OfficesModel;
 use Illuminate\Http\Request;
@@ -10,7 +12,6 @@ use App\Models\EmployeesModel;
 use App\Models\TimesheetsModel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -23,6 +24,8 @@ class TimesheetController extends Controller
         $notification = new NoticesModel();
         $timesheet = new TimesheetsModel();
         $office = new OfficesModel();
+        // $list = new stdClass();
+        // dd($list);
 
         $perPage = $request->show == null ? 50 : $request->show;
         $condition = [
@@ -36,7 +39,7 @@ class TimesheetController extends Controller
         ];
         $employeesList = $employees->pagination($condition, $request->page, $perPage);
         // dd($employeesList);
-        $arr = [];
+        $list = [];
         $totalWeekDay = [0, 0, 0, 0, 0, 0, 0];
         $from = Carbon::createFromFormat('Y-m-d', $condition['from']);
         $to = Carbon::createFromFormat('Y-m-d', $condition['to']);
@@ -49,6 +52,7 @@ class TimesheetController extends Controller
         }
 
         foreach ($employeesList as $item) {
+            // dd(gettype($item));
             $timesheetList = $timesheet->getTimesheetsByEmployeeId(['id' => $item->id, 'from' => $condition['from'], 'to' => $condition['to']]);
             $lateList = 0;
             $earlyList = 0;
@@ -83,8 +87,9 @@ class TimesheetController extends Controller
                 'total' => $total,
                 'off' => $total - count($timesheetList),
             ];
-            array_push($arr, $arr_);
+            array_push($list, $arr_);
         }
+        // dd($list);
 
         $pagination = [
             'perPage' => $employeesList->perPage(),
@@ -96,7 +101,7 @@ class TimesheetController extends Controller
         $office = $office->getOffices([]);
         // $notification = [];
         $page = 'timesheet';
-        return view('admin.timesheet', compact('notification', 'page', 'office', 'employeesList', 'page', 'pagination', 'condition', 'arr'));
+        return view('admin.timesheet', compact('notification', 'page', 'office', 'employeesList', 'page', 'pagination', 'condition', 'list'));
     }
 
     public function exportCsv(Request $request)
@@ -154,8 +159,8 @@ class TimesheetController extends Controller
             'search' => $search,
             'office' => $request->input('office'),
             'depart' => $request->input('depart'),
-            'from' => $request->input('from'),
-            'to' => $request->input('to'),
+            'from' => $request->input('from') == null ? date('Y-m-d') : $request->input('from'),
+            'to' => $request->input('to') == null ? date('Y-m-d') : $request->input('to'),
         ];
         $list = $timesheet->pagination($condition, $request->page, $perPage);
 

@@ -53,22 +53,22 @@
     </form>
 
     <div class="tool-board">
-        <form class="show">
+        <form id="show-form" class="show" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}">
             <label for="show-text">Show</label>
             <div class="show-input">
-                <input type="text" list="nrows" size="10" name="show-text">
+                <input id="input-show" type="text" list="nrows" size="10" formtarget="" name="show" value="{{ $pagination['perPage'] }}">
                 <!-- <i class="fa-solid fa-chevron-down"></i> -->
+                <datalist id="nrows">
+                    <option value="25"></option>
+                    <option value="50" selected></option>
+                    <option value="100"></option>
+                    <option value="200"></option>
+                </datalist>
             </div>
-            <datalist id="nrows">
-                <option value="25"></option>
-                <option value="50"></option>
-                <option value="75"></option>
-                <option value="100"></option>
-            </datalist>
         </form>
         <ul class="print">
-            <li><a href="#">CSV</a></li>
-            <li><a href="#">PDF</a></li>
+            <li><a href="{{ route('admin.attendance.exportcsv') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">CSV</a></li>
+            <li><a href="{{ route('admin.attendance.exportpdf') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">PDF</a></li>
             <li><a href="#">PRINT</a></li>
         </ul>
     </div>

@@ -10,7 +10,7 @@
 
 @section('content')
     <div class="container-fluid px-4">
-        <form action="{{ route('user.report.list') }}" method="GET" class="my-5">
+        <form action="{{ route('user.report.list') }}" method="GET" class="my-2">
             @csrf
             <br>
             <div class="row p-2">
