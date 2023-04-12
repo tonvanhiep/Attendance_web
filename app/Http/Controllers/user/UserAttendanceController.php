@@ -24,6 +24,7 @@ class UserAttendanceController extends Controller
         // $list_timesheets = TimesheetsModel::where('employee_id', Auth::user()->employee_id)->get();
         // dd(Carbon::now()->format('Y-m-d'));
 
+
         $fromDate = $request->input('fromDate') == null ? date('Y-m-01') : $request->input('fromDate');
         $toDate = $request->input('to') == null ? date('Y-m-d') : $request->input('to');
 
@@ -33,7 +34,7 @@ class UserAttendanceController extends Controller
         // $carbonTomDate = Carbon::createFromFormat('Y-m-d', $toDate);
 
         $count = 1;
-        $perPage = $request->show == null ? 50 : $request->show;
+        $perPage = $request->show == null ? 10 : $request->show;
         $condition = [
             'status' => 1,
             'sort' => 1,
@@ -44,27 +45,12 @@ class UserAttendanceController extends Controller
             'depart' => $request->input('depart'),
         ];
 
-        $list_attendances = $timesheet->getTimesheetsforUser();
+        // $list_attendances = $timesheet->selectTimesheetsforUser()->paginate($perPage, '*', 'page', $request->page == null ?  1 : $request->page);
+        $list_attendances = $timesheet->paginationTimesheetsforUser($condition, $request->page, $perPage);
+        // dd($list_attendances);
 
-
-        if (!($fromDate) || !($toDate)) {
-            $list_attendances = $timesheet->getTimesheetsforUser();
-        } else {
-            $list_attendances = $timesheet->getTimesheetsforUser()->where('date', '>=', $fromDate)->where('date', '<=', $toDate);
-        }
 
         $totalWeekDay = [0, 0, 0, 0, 0, 0, 0]; // [sun,mon,tue,wed,thur,fri,sat]
-
-
-
-        // while (1) {
-        //     if (!($fromDate <= $toDate)) {
-        //         break;
-        //     }
-        //     $totalWeekDay[$carbonFromDate->dayOfWeek]++;
-        //     $from = $carbonFromDate->addDays(1);
-        // }
-
         $dayOfWeekArr = [];
 
         $weekMap = [
@@ -78,11 +64,6 @@ class UserAttendanceController extends Controller
         ];
 
         foreach ($list_attendances as $item) {
-            // $lateList = 0;
-            // $earlyList = 0;
-            // $offList = 0;
-            // $total = 0;
-
             $dayOfTheWeek = Carbon::parse($item->date)->dayOfWeek;
             $weekday = $weekMap[$dayOfTheWeek];
             $subArr = [
@@ -98,8 +79,13 @@ class UserAttendanceController extends Controller
         }
         // dd($dayOfWeekArr);
         // dd($list_attendances->where('date','>=', '2023-01-01')->where('date','<=', '2023-12-31'),);
+        $pagination = [
+            'perPage' => $list_attendances->perPage(),
+            'lastPage' => $list_attendances->lastPage(),
+            'currentPage' => $list_attendances->currentPage()
+        ];
 
-        return view('user.attendance', compact('titlePage', 'user', 'condition', 'count', 'dayOfWeekArr', 'request'));
+        return view('user.attendance', compact('titlePage', 'user', 'condition', 'count', 'dayOfWeekArr', 'request','pagination'));
     }
 
     public function search(Request $request)
@@ -150,24 +136,79 @@ class UserAttendanceController extends Controller
         $search = $request->input('search');
         $perPage = $request->show == null ? 50 : $request->show;
 
+        $timekeeper = new TimekeepersModel();
+        $timesheet = new TimesheetsModel();
+        $ex = new EmployeesModel();
+        $titlePage = 'Attendance';
+        $user = EmployeesModel::find(Auth::user()->employee_id);
+        // $list_timesheets = TimesheetsModel::where('employee_id', Auth::user()->employee_id)->get();
+        // dd(Carbon::now()->format('Y-m-d'));
+
+        $fromDate = $request->input('fromDate') == null ? date('Y-m-01') : $request->input('fromDate');
+        $toDate = $request->input('to') == null ? date('Y-m-d') : $request->input('to');
+        $now = Carbon::now()->format('Y-m-d');
+
+        $count = 1;
+        $perPage = $request->show == null ? 50 : $request->show;
         $condition = [
             'status' => 1,
             'sort' => 1,
-            'search' => $search,
+            'from' => $request->input('from') == null ? date('Y-m-01') : $request->input('from'),
+            'to' => $request->input('to') == null ? date('Y-m-d') : $request->input('to'),
+            'today' => date('Y-m-d'),
             'office' => $request->input('office'),
             'depart' => $request->input('depart'),
-            'from' => $request->input('from'),
-            'to' => $request->input('to'),
         ];
-        $list = $timesheet->pagination($condition, $request->page, $perPage);
+
+        // $list_attendances = $timesheet->getTimesheetsforUser();
+        $list_attendances = $timesheet->paginationTimesheetsforUser($condition, $request->page, $perPage);
+
+
+        // if (!($fromDate) || !($toDate)) {
+        //     $list_attendances = $timesheet->getTimesheetsforUser();
+        // } else {
+        //     $list_attendances = $timesheet->getTimesheetsforUser()->where('date', '>=', $fromDate)->where('date', '<=', $toDate);
+        // }
+
+        $totalWeekDay = [0, 0, 0, 0, 0, 0, 0]; // [sun,mon,tue,wed,thur,fri,sat]
+
+
+        $dayOfWeekArr = [];
+
+        $weekMap = [
+            0 => 'Sunday',
+            1 => 'Monday',
+            2 => 'Tuesday',
+            3 => 'Wednesday',
+            4 => 'Thursday',
+            5 => 'Friday',
+            6 => 'Saturday',
+        ];
+
+        foreach ($list_attendances as $item) {
+
+            $dayOfTheWeek = Carbon::parse($item->date)->dayOfWeek;
+            $weekday = $weekMap[$dayOfTheWeek];
+            $subArr = [
+                'dayOfWeek' => $weekday,
+                "timekeeper_name" => $item->timekeeper_name,
+                "office_name" => $item->office_name,
+                "face_image" => $item->face_image,
+                "date" => $item->date,
+                "check_in" => $item->check_in,
+                "check_out" => $item->check_out,
+            ];
+            array_push($dayOfWeekArr, $subArr);
+        }
+        // $list = $timesheet->pagination($condition, $request->page, $perPage);
 
         $pagination = [
-            'perPage' => $list->perPage(),
-            'lastPage' => $list->lastPage(),
-            'currentPage' => $list->currentPage()
+            'perPage' => $list_attendances->perPage(),
+            'lastPage' => $list_attendances->lastPage(),
+            'currentPage' => $list_attendances->currentPage()
         ];
 
-        $returnHTML = view('user.pagination.attendance', compact('list', 'pagination'))->render();
+        $returnHTML = view('user.pagination.attendance', compact('pagination','titlePage', 'user', 'condition', 'count', 'dayOfWeekArr', 'request'))->render();
         return response()->json($returnHTML);
     }
 }

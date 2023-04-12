@@ -143,10 +143,9 @@ class TimesheetsModel extends Model
         return $this->selectAttendances($condition)->paginate($perPage, '*', 'page', $page);
     }
     //user
-
-    public function selectTimesheetsforUser()
+    public function selectTimesheetsforUser($condition = null)
     {
-        // if ($condition == null) return [];
+        if ($condition == null) return [];
         $result = DB::table($this->table)
             ->join('timekeepers', 'timekeepers.id', '=', $this->table . '.timekeeper_id')
             ->join('offices', 'offices.id', '=', 'timekeepers.office_id')
@@ -171,6 +170,25 @@ class TimesheetsModel extends Model
             ->where('employee_id', '=', Auth::user()->employee_id)
             ->orderByDesc('date')
             ->orderByDesc($this->table . '.employee_id');
+        if (isset($condition['id'])) {
+            if (is_array($condition['id'])) {
+                $result = $result->where(function ($query) use ($condition) {
+                    foreach ($condition['id'] as $value) {
+                        $query->orWhere($this->table . '.employee_id', $value);
+                    }
+                });
+            } else $result = $result->where($this->table . '.employee_id', $condition['id']);
+        }
+
+        if (isset($condition['from'])) {
+            $result = $result->where('timekeeping_at', '>=', $condition['from']);
+        }
+        if (isset($condition['to'])) {
+            $result = $result->where('timekeeping_at', '<=', $condition['to'] . ' 23:59:59');
+        }
+        if (isset($condition['status'])) {
+            $result = $result->where($this->table . '.status', $condition['status']);
+        }
         $result = $result->groupByRaw('date(timekeeping_at)');
         return $result;
     }
@@ -178,27 +196,14 @@ class TimesheetsModel extends Model
     public function getTimesheetsforUser($condition = null)
     {
         $timesheet = $this->selectTimesheetsforUser($condition);
-        if (isset($condition['id'])) {
-            if (is_array($condition['id'])) {
-                $timesheet = $timesheet->where(function ($query) use ($condition) {
-                    foreach ($condition['id'] as $value) {
-                        $query->orWhere($this->table . '.employee_id', $value);
-                    }
-                });
-            } else $timesheet = $timesheet->where($this->table . '.employee_id', $condition['id']);
-        }
-
-        if (isset($condition['from'])) {
-            $timesheet = $timesheet->where('timekeeping_at', '>=', $condition['from']);
-        }
-        if (isset($condition['to'])) {
-            $timesheet = $timesheet->where('timekeeping_at', '<=', $condition['to'] . ' 23:59:59');
-        }
-        if (isset($condition['status'])) {
-            $timesheet = $timesheet->where($this->table . '.status', $condition['status']);
-        }
         return $timesheet == [] ? [] : $timesheet->get();
     }
+
+    public function paginationTimesheetsforUser($condition = [], $page = 1, $perPage = 50)
+    {
+        return $this->selectTimesheetsforUser($condition)->paginate($perPage, '*', 'page', $page);
+    }
+    //user
 
     public function saveAttendance($data = null)
     {
@@ -253,18 +258,30 @@ class TimesheetsModel extends Model
 
     public function selectDetailInfoAttendance($condition = null)
     {
-        if($condition == null) return [];
-        $result = DB::table($this->table)->join('timekeepers', 'timekeepers.id', '=', $this->table.'.timekeeper_id')
-        ->join('offices', 'offices.id', '=', 'timekeepers.office_id')
-        ->join('employees', 'employees.id', '=', $this->table.'.employee_id')
-        ->leftJoin('face_employee_images', 'face_employee_images.employee_id', '=', $this->table.'.employee_id')
-        ->select('employees.id', 'employees.first_name', 'employees.last_name', 'employees.avatar', 'employees.department', 'office_name',
-            'timekeepers.timekeeper_name', 'image_url', 'employees.gender', $this->table.'.status', $this->table.'.face_image', 'timekeeping_at')
-        ->orderByDesc($this->table.'.timekeeping_at')
-        ->orderByDesc($this->table.'.id');
+        if ($condition == null) return [];
+        $result = DB::table($this->table)->join('timekeepers', 'timekeepers.id', '=', $this->table . '.timekeeper_id')
+            ->join('offices', 'offices.id', '=', 'timekeepers.office_id')
+            ->join('employees', 'employees.id', '=', $this->table . '.employee_id')
+            ->leftJoin('face_employee_images', 'face_employee_images.employee_id', '=', $this->table . '.employee_id')
+            ->select(
+                'employees.id',
+                'employees.first_name',
+                'employees.last_name',
+                'employees.avatar',
+                'employees.department',
+                'office_name',
+                'timekeepers.timekeeper_name',
+                'image_url',
+                'employees.gender',
+                $this->table . '.status',
+                $this->table . '.face_image',
+                'timekeeping_at'
+            )
+            ->orderByDesc($this->table . '.timekeeping_at')
+            ->orderByDesc($this->table . '.id');
 
         if (isset($condition['id'])) {
-            $result = $result->where($this->table.'.id', $condition['id']);
+            $result = $result->where($this->table . '.id', $condition['id']);
         }
 
         return $result;
@@ -272,7 +289,7 @@ class TimesheetsModel extends Model
 
     public function getDetailInfoAttendance($condition = null)
     {
-        if($condition == null) return [];
+        if ($condition == null) return [];
 
         $result = $this->selectDetailInfoAttendance($condition);
         return $result == [] ? [] : $result->get();
@@ -280,10 +297,10 @@ class TimesheetsModel extends Model
 
     public function updateStatus($data = null)
     {
-        if($data == null) return;
+        if ($data == null) return;
 
         DB::table($this->table)
-        ->where('id', $data['id'])
-        ->update(['status' => $data['status']]);
+            ->where('id', $data['id'])
+            ->update(['status' => $data['status']]);
     }
 }

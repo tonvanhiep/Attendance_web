@@ -27,4 +27,4 @@
     </table>
 </div>
 
-{{-- @include('user.components.pagination') --}}
+@include('user.components.pagination')

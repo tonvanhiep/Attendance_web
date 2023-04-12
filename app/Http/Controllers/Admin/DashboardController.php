@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
     //
-    public function index()
+    public function index(Request $request)
     {
         $employees = new EmployeesModel();
         $notification = new NoticesModel();
@@ -19,8 +19,10 @@ class DashboardController extends Controller
             'status' => [1, 2],
             'sort' => 1,
         ]);
+        $perPage = $request->show == null ? 10 : $request->show;
         //dd($list);
         $pagination = [
+            'perPage' => $list->perPage(),
             'lastPage' => $list->lastPage(),
             'currentPage' => $list->currentPage()
         ];
@@ -43,12 +45,13 @@ class DashboardController extends Controller
 
         // dd($info);
         $page = 'dashboard';
-        return view('admin.dashboard', compact('list', 'notification', 'info', 'page', 'pagination'));
+        return view('admin.dashboard', compact('list', 'notification', 'info', 'page', 'pagination','request'));
     }
 
     public function pagination (Request $request)
     {
         $employees = new EmployeesModel();
+        $perPage = $request->show == null ? 10 : $request->show;
 
         $list = $employees->pagination([
             'status' => [1, 2],
@@ -56,6 +59,7 @@ class DashboardController extends Controller
         ], $request->page);
 
         $pagination = [
+            'perPage' => $list->perPage(),
             'lastPage' => $list->lastPage(),
             'currentPage' => $list->currentPage()
         ];
