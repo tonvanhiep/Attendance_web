@@ -6,6 +6,7 @@
                 <td>ID</td>
                 <td>Office</td>
                 <td>Department</td>
+                <td>Present</td>
                 <td>Late</td>
                 <td>Early</td>
                 <td>Off</td>
@@ -26,6 +27,9 @@
                     </td>
                     <td class="department">
                         <p>{{ $item['department'] }}</p>
+                    </td>
+                    <td class="present">
+                        <p>{{ $item['present'] }}</p>
                     </td>
                     <td class="late">
                         <p>{{ $item['late'] }}</p>

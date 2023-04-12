@@ -54,8 +54,10 @@ class TimesheetController extends Controller
         foreach ($employeesList as $item) {
             // dd(gettype($item));
             $timesheetList = $timesheet->getTimesheetsByEmployeeId(['id' => $item->id, 'from' => $condition['from'], 'to' => $condition['to']]);
+            // dd($timesheetList);
             $lateList = 0;
             $earlyList = 0;
+            $presentList = 0;
             $offList = 0;
             $total = 0;
             $daylist = explode('|', $item->working_day);
@@ -64,18 +66,30 @@ class TimesheetController extends Controller
                 if ((int)$day >= 1 && (int)$day <= 7) {
                     $total += $totalWeekDay[(int)$day - 1];
                 }
+                foreach ($timesheetList as $timesheetItem) {
+                    if (Carbon::parse($timesheetItem->timekeeping_at)->dayOfWeek == ((int)$day - 1)) {
+                        $presentList++;
+                        if ($timesheetItem->check_in > $timesheetItem->start_time) {
+                            $lateList++;
+                        }
+                        if ($timesheetItem->check_out < $timesheetItem->end_time) {
+                            $earlyList++;
+                        }
+                    }
+                }
             }
 
-            foreach ($timesheetList as $item) {
-                if ($item->check_in > $item->start_time) {
-                    $lateList++;
-                }
-                if ($item->check_out < $item->end_time) {
-                    $earlyList++;
-                }
-            }
+            // foreach ($timesheetList as $item) {
+            //     if ($item->check_in > $item->start_time) {
+            //         $lateList++;
+            //     }
+            //     if ($item->check_out < $item->end_time) {
+            //         $earlyList++;
+            //     }
+            // }
 
             $arr_ = [
+                'present' => $presentList,
                 'late' => $lateList,
                 'early' => $earlyList,
                 'first_name' => $item->first_name,
@@ -146,7 +160,10 @@ class TimesheetController extends Controller
 
     public function pagination(Request $request)
     {
+        $employees = new EmployeesModel();
+        $notification = new NoticesModel();
         $timesheet = new TimesheetsModel();
+        $office = new OfficesModel();
 
         $search = $request->input('search');
         $perPage = $request->show == null ? 50 : $request->show;
@@ -162,14 +179,76 @@ class TimesheetController extends Controller
             'from' => $request->input('from') == null ? date('Y-m-d') : $request->input('from'),
             'to' => $request->input('to') == null ? date('Y-m-d') : $request->input('to'),
         ];
-        $list = $timesheet->pagination($condition, $request->page, $perPage);
+        // dd($list,$condition);
+        $employeesList = $employees->pagination($condition, $request->page, $perPage);
+        // dd($employeesList);
+        $list = [];
+        $totalWeekDay = [0, 0, 0, 0, 0, 0, 0];
+        $from = Carbon::createFromFormat('Y-m-d', $condition['from']);
+        $to = Carbon::createFromFormat('Y-m-d', $condition['to']);
+        while (1) {
+            if (!($from <= $to)) {
+                break;
+            }
+            $totalWeekDay[$from->dayOfWeek]++;
+            $from = $from->addDays(1);
+        }
+
+        foreach ($employeesList as $item) {
+            // dd(gettype($item));
+            $timesheetList = $timesheet->getTimesheetsByEmployeeId(['id' => $item->id, 'from' => $condition['from'], 'to' => $condition['to']]);
+            $lateList = 0;
+            $earlyList = 0;
+            $presentList = 0;
+            $offList = 0;
+            $total = 0;
+            $daylist = explode('|', $item->working_day);
+
+            foreach ($daylist as $day) {
+                if ((int)$day >= 1 && (int)$day <= 7) {
+                    $total += $totalWeekDay[(int)$day - 1];
+                }
+                foreach ($timesheetList as $timesheetItem) {
+                    if (Carbon::parse($timesheetItem->timekeeping_at)->dayOfWeek == ((int)$day - 1)) {
+                        $presentList++;
+                        if ($timesheetItem->check_in > $timesheetItem->start_time) {
+                            $lateList++;
+                        }
+                        if ($timesheetItem->check_out < $timesheetItem->end_time) {
+                            $earlyList++;
+                        }
+                    }
+                }
+            }
+
+            $arr_ = [
+                'present' => $presentList,
+                'late' => $lateList,
+                'early' => $earlyList,
+                'first_name' => $item->first_name,
+                'last_name' => $item->last_name,
+                'id' => $item->id,
+                'office_name' => $item->office_name,
+                'department' => $item->department,
+                'working_day' => $item->working_day,
+                'total' => $total,
+                'off' => $total - count($timesheetList),
+            ];
+            array_push($list, $arr_);
+        }
+        // dd($list);
 
         $pagination = [
-            'perPage' => $list->perPage(),
-            'lastPage' => $list->lastPage(),
-            'currentPage' => $list->currentPage()
+            'perPage' => $employeesList->perPage(),
+            'lastPage' => $employeesList->lastPage(),
+            'currentPage' => $employeesList->currentPage()
         ];
-        $returnHTML = view('admin.pagination.timesheet', compact('list', 'pagination'))->render();
+
+        $notification = $notification->getNotifications([]);
+        $office = $office->getOffices([]);
+        // $notification = [];
+        $page = 'timesheet';
+        $returnHTML = view('admin.pagination.timesheet', compact('list', 'pagination', 'notification', 'page', 'office', 'employeesList', 'page', 'condition',))->render();
         return response()->json($returnHTML);
     }
 }

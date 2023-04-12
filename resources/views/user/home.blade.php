@@ -84,15 +84,16 @@
                     <thead>
                         <tr>
                             {{-- <th scope="col" width="50">Month</th> --}}
+                            <th scope="col">Present</th>
                             <th scope="col">Late</th>
                             <th scope="col">Early</th>
                             <th scope="col">Off</th>
-                            <th scope="col">Total</th>
+                            <th scope="col">Total {{ $list['working_day'] }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            {{-- <td>{{ $list['id'] }}</td> --}}
+                            <td>{{ $list['present'] }}</td>
                             <td>{{ $list['late'] }}</td>
                             <td>{{ $list['early'] }}</td>
                             <td>{{ $list['off'] }}</td>

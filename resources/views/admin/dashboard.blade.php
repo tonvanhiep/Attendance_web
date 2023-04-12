@@ -8,6 +8,7 @@
 
 @push('css')
     <link rel="stylesheet" href="{{asset('assets/css/dashboard.css');}}">
+    <link rel="stylesheet" href="{{asset('assets/css/report.css');}}">
 @endpush
 
 
@@ -43,6 +44,15 @@
                 <span>Active</span>
             </div>
         </div>
+    </div>
+    <div class="tool-board">
+        <form id="show-form" class="show" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}">
+            <label for="show-text">Show</label>
+            <div class="show-input">
+                <input id="input-show" type="text" list="nrows" size="10" formtarget="" name="show" value="{{ $pagination['perPage'] }}">
+                <!-- <i class="fa-solid fa-chevron-down"></i> -->
+            </div>
+        </form>
     </div>
     <p id="url-pagination" hidden>{{ route('admin.dashboard.pagination') }}</p>
     <div id="content">

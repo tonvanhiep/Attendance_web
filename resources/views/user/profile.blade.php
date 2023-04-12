@@ -30,19 +30,19 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Total </p>
+                                    <p class="mb-0">Total {{ $condition['month'] }} </p>
                                 </div>
                                 <div class="col-sm-9">
-                                    <p class="text-muted mb-0">29</p>
+                                    <p class="text-muted mb-0">{{ $list['total'] }}</p>
                                 </div>
                             </div>
                             <hr>
                             <div class="row">
                                 <div class="col-sm-3">
-                                    <p class="mb-0">Absent</p>
+                                    <p class="mb-0">Off</p>
                                 </div>
                                 <div class="col-sm-9">
-                                    <p class="text-muted mb-0">5</p>
+                                    <p class="text-muted mb-0">{{ $list['off'] }}</p>
                                 </div>
                             </div>
                             <hr>
@@ -51,7 +51,7 @@
                                     <p class="mb-0">Present</p>
                                 </div>
                                 <div class="col-sm-9">
-                                    <p class="text-muted mb-0">20</p>
+                                    <p class="text-muted mb-0">{{ $list['present'] }}</p>
                                 </div>
                             </div>
                             <hr>

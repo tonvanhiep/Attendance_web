@@ -33,19 +33,22 @@
                 </div>
             </div>
         </form>
-        <form class="p-2" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] }}">
+        <form class="p-2" id="show-form" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] }}">
+            @csrf
             <label for="show-number">Show</label>
-            <select class="custom-select" id="show-number">
-                <option selected>Choose...</option>
-                <option value="10">10</option>
-                <option value="15">15</option>
-                <option value="20">20</option>
-            </select>
+            <input id="input-show" type="text" list="nrows" size="10" formtarget="" name="show" value="{{ $pagination['perPage'] }}">
+                <!-- <i class="fa-solid fa-chevron-down"></i> -->
+                <datalist id="nrows">
+                    <option value="25"></option>
+                    <option value="50" selected></option>
+                    <option value="100"></option>
+                    <option value="200"></option>
+                </datalist>
         </form>
 
         <div class="row my-5">
             <h3 class="fs-4 mb-3 text-uppercase">Table Attendance</h3>
-            {{-- <p id="url-pagination" hidden>{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] }}</p> --}}
+            <p id="url-pagination" hidden>{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] }}</p>
             <div id="content">
                 @include('user.pagination.attendance')
             </div>
