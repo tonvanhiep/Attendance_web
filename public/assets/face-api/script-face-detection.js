@@ -144,7 +144,23 @@ async function start() {
                 console.log(result._label);
                 console.log(result._distance);
                 drawBox.draw(canvas);
-                if (result._label != 'unknown') submitForm(result._label, getSnapshot(), true)
+                if (result._label != 'unknown')
+                // submitForm(result._label, getSnapshot(), true)
+                //can sua {
+                    // var image = getSnapshot();
+                    // push modal
+                    // đợi người dùng chọn đồng ý || k đồng ý
+                    // nếu đồng ý thì gọi submitForm gởi
+                    // không đồng ý -> thoát modal nhận diện lại
+                    // nhập ID -> hiển thị ra 1 dòng nhập ID bên dưới
+                // }
+                {
+                    var image = getSnapshot();
+                }
+                else {
+                    alertError('Không xác nhận được người dùng')
+                }
+
             })
             // faceapi.draw.drawDetections(canvas, resizedDetections)
             // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
@@ -206,3 +222,5 @@ function alertDisable()
     document.getElementById('alert-message').style.background = 'none'
     document.getElementById('alert-message').textContent = ''
 }
+
+
