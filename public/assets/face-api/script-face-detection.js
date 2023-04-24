@@ -5,6 +5,8 @@ navigator.getUserMedia is now deprecated and is replaced by navigator.mediaDevic
 Low-end Devices Bug
 The video eventListener for play fires up too early on low-end machines, before the video is fully loaded, which causes errors to pop up from the Face API and terminates the script (tested on Debian [Firefox] and Windows [Chrome, Firefox]). Replaced by playing event, which fires up when the media has enough data to start playing.
 */
+import { showModal } from "./modal.js";
+
 const video = document.getElementById('video')
 const url = document.getElementById('url-face-api').textContent
 const urlImage = document.getElementById('url-image').textContent
@@ -154,9 +156,18 @@ async function start() {
                     // không đồng ý -> thoát modal nhận diện lại
                     // nhập ID -> hiển thị ra 1 dòng nhập ID bên dưới
                 // }
-                {
-                    var image = getSnapshot();
-                }
+                    {
+                        var image = getSnapshot();
+                        showModal('Face Detecttion','Please confirm your face?',"Yes", "No", () => {
+                            alert('Attendance success');
+                            submitForm(result._label, image, true);
+                            }
+                        , () => {
+                            alert('Enter your ID');
+                            // setTimeout(() => { clearInterval(attend_process); alert('Enter your ID'); }, 6000);
+                            }
+                        );
+                    }
                 else {
                     alertError('Không xác nhận được người dùng')
                 }
@@ -165,7 +176,7 @@ async function start() {
             // faceapi.draw.drawDetections(canvas, resizedDetections)
             // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
             // faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-        }, 5000)
+        }, 7000)
     })
 
     video.currentTime = 1

@@ -13,7 +13,7 @@
     </script>
 
     <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
-    <script defer src="{{ asset('assets/face-api/script-face-detection.js') }}"></script>
+    <script defer type="module" src="{{ asset('assets/face-api/script-face-detection.js') }}"></script>
 
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/bootstrap-5.3.0-alpha2-dist/css/bootstrap.min.css') }}">
@@ -88,25 +88,25 @@
                 </form>
             </div>
         </div>
-        <div class="contaier p-3">
+        {{-- <div class="contaier p-3">
             <button id="btn-approve" class="btn btn-success">Approve</button>
             <button id="btn-decline" class="btn btn-danger">Decline</button>
-        </div>
+        </div> --}}
     </div>
     <script src="{{ asset('assets/bootstrap-5.3.0-alpha2-dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/modal.js') }}"></script>
     <script>
-        document.getElementById('btn-approve').onclick = () => showModal('File Deletion',
-            'Do you want to delete this file?',
-            "Yes", "No", () => {
-                console.log('File deleted successfully');
-            });
+        // document.getElementById('btn-approve').onclick = () => showModal('File Deletion',
+        //     'Do you want to delete this file?',
+        //     "Yes", "No", () => {
+        //         console.log('File deleted successfully');
+        //     });
 
-        document.getElementById('btn-decline').onclick = () => showModal('File Deletion',
-            'Do you want to delete this file?',
-            "Yes", "No", () => {
-                alert('File deleted successfully');
-            });
+        // document.getElementById('btn-decline').onclick = () => showModal('File Deletion',
+        //     'Do you want to delete this file?',
+        //     "Yes", "No", () => {
+        //         alert('File deleted successfully');
+        //     });
     </script>
 </body>
 
