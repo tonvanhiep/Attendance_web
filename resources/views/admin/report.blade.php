@@ -68,7 +68,7 @@
     </div>
 
     <div class="board">
-        <table width="100%">
+        <table width="100%" class="table table-hover" style="margin-bottom: 0px">
             <thead>
                 <tr>
                     <th>Number</th>

@@ -9,8 +9,13 @@
     <div class="n2">
         <div class="notification" onclick="toggleNotifi()">
             <div class="notification-icon">
-                <i class="fa-solid fa-bell"></i>
-                <span>{{ count($notification) }}</span>
+                <i class="fa-solid fa-bell">
+                    @if (count($notification) > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    @endif
+                </i>
             </div>
             <div class="notification-box" id="list-notifi">
                 <h3>Notifications <span>{{ count($notification) }}</span></h3>

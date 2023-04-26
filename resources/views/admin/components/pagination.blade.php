@@ -9,14 +9,6 @@
             color: #222;
         }
 
-        a{
-            text-decoration: none;
-        }
-
-        p, li, a{
-            font-size: 14px;
-        }
-
         /* GRID */
 
         .twelve { width: 100%; }
@@ -72,6 +64,7 @@
 
         .pagination{
             padding: 0 0 20px 0;
+            justify-content: center;
         }
 
         .pagination ul{

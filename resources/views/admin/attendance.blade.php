@@ -90,8 +90,6 @@
 @endsection
 
 @push('js')
-    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
-    <script src="{{asset('assets/js/attendance-realtime.js');}}"></script>
     <script>
         jQuery(document).ready(function($) {
             $(".clickable-row").click(function() {

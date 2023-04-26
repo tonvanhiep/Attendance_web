@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EmployeesModel;
-use App\Models\FaceEmployeeImagesModel;
-use App\Models\TimesheetsModel;
+use App\Events\Attendance;
 use Illuminate\Http\Request;
+use App\Models\EmployeesModel;
+use App\Models\TimesheetsModel;
 use Illuminate\Support\Facades\Auth;
+use App\Models\FaceEmployeeImagesModel;
 use Illuminate\Support\Facades\Response;
 
 class AttendanceController extends Controller
@@ -74,7 +75,7 @@ class AttendanceController extends Controller
             'status' => $request->identity == 'true' ? 1 : 2,
             'timekeeper_id' => 4 //$request->timekeeper_id
         ];
-        $attendance->saveAttendance($data);
+        $id_attendance = $attendance->saveAttendance($data);
 
         if ($request->identity == 'true') {
             $message = 'ID:' . $employee[0]->id . '| ' . $employee[0]->last_name . ' ' . $employee[0]->first_name . ' diem danh thanh cong!!!';
@@ -86,6 +87,7 @@ class AttendanceController extends Controller
             'message'   =>  $message
         ];
 
+        broadcast(new Attendance($id_attendance))->toOthers();
         return response()->json($data);
     }
 

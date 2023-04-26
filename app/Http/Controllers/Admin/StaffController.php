@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\StaffExportCsv;
-use App\Http\Controllers\Controller;
-use App\Models\AccountsModel;
-use App\Models\EmployeesModel;
-use App\Models\FaceEmployeeImagesModel;
+use Illuminate\Support\Str;
 use App\Models\NoticesModel;
 use App\Models\OfficesModel;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Models\AccountsModel;
+use App\Models\EmployeesModel;
+use App\Exports\StaffExportCsv;
+use App\Models\TimesheetsModel;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\FaceEmployeeImagesModel;
 
 class StaffController extends Controller
 {
@@ -21,6 +22,7 @@ class StaffController extends Controller
         $employees = new EmployeesModel();
         $notification = new NoticesModel();
         $office = new OfficesModel();
+        $timesheet = new TimesheetsModel();
 
         $perPage = $request->show == null ? 50 : $request->show;
 
@@ -41,8 +43,9 @@ class StaffController extends Controller
 
         $notification = $notification->getNotifications([]);
         $office = $office->getOffices([]);
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
         $page = 'staff';
-        return view('admin.staff', compact('notification', 'list', 'page', 'pagination', 'office', 'condition'));
+        return view('admin.staff', compact('notification', 'list', 'page', 'pagination', 'office', 'condition','waitConfirm'));
     }
 
     public function exportCsv(Request $request)

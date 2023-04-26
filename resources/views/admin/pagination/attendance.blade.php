@@ -1,14 +1,16 @@
 <div class="board">
     @if (isset($waitConfirm) && $waitConfirm > 0)
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-warning" role="alert"  style="margin-bottom: 0px">
             There are many requests waiting for confirmation.
             @if ($condition['status'] != 2)
             <a href="{{ route('admin.attendance.list') . '?status=2' }}" class="alert-link">Go to and Confirm</a>
             @endif
         </div>
     @endif
+</div>
 
-    <table width="100%" class="table table-hover">
+<div class="board">
+    <table width="100%" class="table table-hover" style="margin-bottom: 0px">
         <thead>
             <tr>
                 <td>Name</td>

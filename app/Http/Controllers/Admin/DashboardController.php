@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\EmployeesModel;
 use App\Models\NoticesModel;
 use Illuminate\Http\Request;
+use App\Models\EmployeesModel;
+use App\Models\TimesheetsModel;
+use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
@@ -14,6 +15,7 @@ class DashboardController extends Controller
     {
         $employees = new EmployeesModel();
         $notification = new NoticesModel();
+        $timesheet = new TimesheetsModel();
 
         $list = $employees->pagination([
             'status' => [1, 2],
@@ -44,8 +46,9 @@ class DashboardController extends Controller
         ];
 
         // dd($info);
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
         $page = 'dashboard';
-        return view('admin.dashboard', compact('list', 'notification', 'info', 'page', 'pagination','request'));
+        return view('admin.dashboard', compact('list', 'notification', 'info', 'page', 'pagination','request','waitConfirm'));
     }
 
     public function pagination (Request $request)
