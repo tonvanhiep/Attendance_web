@@ -2,7 +2,7 @@
     @if (session('success'))
         {{ session('success') }}
     @endif
-    <table width="100%">
+    <table width="100%" class="table table-hover" style="margin-bottom: 0px">
         <thead>
             <tr>
                 <td>Name</td>
@@ -22,7 +22,7 @@
             @foreach ($list as $item)
                 <tr>
                     <td class="name">
-                        <h5>{{ $item->last_name }} {{ $item->first_name }}</h5>
+                        <p class="fw-bold">{{ $item->last_name }} {{ $item->first_name }}</p>
                     </td>
                     <td class="id">
                         <p>{{ $item->id }}</p>
@@ -60,4 +60,3 @@
 </div>
 
 @include('admin.components.pagination')
-

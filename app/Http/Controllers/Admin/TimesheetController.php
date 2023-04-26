@@ -113,9 +113,10 @@ class TimesheetController extends Controller
 
         $notification = $notification->getNotifications([]);
         $office = $office->getOffices([]);
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
         // $notification = [];
         $page = 'timesheet';
-        return view('admin.timesheet', compact('notification', 'page', 'office', 'employeesList', 'page', 'pagination', 'condition', 'list'));
+        return view('admin.timesheet', compact('notification', 'page', 'office', 'employeesList', 'page', 'pagination', 'condition', 'list','waitConfirm'));
     }
 
     public function exportCsv(Request $request)

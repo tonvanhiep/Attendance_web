@@ -1,5 +1,5 @@
 <div class="board">
-    <table width="100%">
+    <table width="100%" class="table table-hover" style="margin-bottom: 0px">
         <thead>
             <tr>
                 <td>Name</td>
@@ -15,7 +15,7 @@
                     <td class="person">
                         <img src="{{ asset("$item->avatar") }}" alt="avatar {{ $item->first_name }} {{ $item->last_name }}">
                         <div class="person-description">
-                            <h5>{{ $item->last_name }} {{ $item->first_name }}</h5>
+                            <p class="fw-bold">{{ $item->last_name }} {{ $item->first_name }}</p>
                             <p>...</p></p>
                         </div>
                     </td>
@@ -26,7 +26,7 @@
                         <p>{{ $item->office_name }}</p>
                     </td>
                     <td class="position">
-                        <h5>{{ $item->department }}</h5>
+                        <p class="fw-bold">{{ $item->department }}</p>
                         <p>{{ $item->position }}</p>
                     </td>
                     <td class="status">

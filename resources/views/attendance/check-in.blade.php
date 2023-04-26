@@ -61,16 +61,6 @@
         </div>
 
         <div id="id-input">
-            {{-- <button id="btn-shot" style="background: none;
-                color: white;
-                font-size: 18px;
-                border: 2px solid;
-                height: 45px;
-                width: 300px;
-                border-radius: 5px;
-                font-weight: 500;
-                margin-bottom:30px">Screenshot
-            </button> --}}
             <button id="btn-inp"
                 style="background: none;
                 color: white;
@@ -89,6 +79,8 @@
             </div>
         </div>
     </div>
+    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
     <script src="{{ asset('assets/bootstrap-5.3.0-alpha2-dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/modal.js') }}"></script>
     <script>

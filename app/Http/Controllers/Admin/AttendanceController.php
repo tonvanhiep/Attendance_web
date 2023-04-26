@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\AttendanceCsv;
-use App\Http\Controllers\Controller;
-use App\Models\EmployeesModel;
+use App\Events\Attendance;
 use App\Models\NoticesModel;
 use App\Models\OfficesModel;
-use App\Models\TimesheetsModel;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AttendanceCsv;
+use App\Models\EmployeesModel;
+use App\Models\TimesheetsModel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Cache\RateLimiting\Limit;
 
 class AttendanceController extends Controller
@@ -37,7 +38,8 @@ class AttendanceController extends Controller
             'lastPage' => $list->lastPage(),
             'currentPage' => $list->currentPage()
         ];
-        $waitConfirm = $timesheet->getCountAttendanceWaitingForConfirm([]);
+        // $waitConfirm = $timesheet->getCountAttendanceWaitingForConfirm([]);
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
         $page = 'attendance';
         $notification = $notification->getNotifications([]);
         $office = $office->getOffices([]);
@@ -108,8 +110,9 @@ class AttendanceController extends Controller
 
         $page = 'attendance';
         $notification = $notification->getNotifications([]);
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
 
-        return view('admin.detail-attendance', compact('detail', 'page', 'notification'));
+        return view('admin.detail-attendance', compact('detail', 'page', 'notification','waitConfirm'));
     }
 
     public function updateStatus(Request $request)
@@ -119,6 +122,7 @@ class AttendanceController extends Controller
             'id' => $request->id,
             'status' => $request->status
         ]);
+        broadcast(new Attendance($request->id))->toOthers();
 
         return response()-> json(['message' => 'success', 'code' => 200]);
     }

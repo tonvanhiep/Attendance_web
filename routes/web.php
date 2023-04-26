@@ -31,7 +31,8 @@ Route::get('/test', function () {
     dd(Auth::check());
 });
 Route::get('/', function () {
-    return view('admin.login.home-login');
+    return redirect()->route('admin.auth.login');
+    //return view('admin.login.home-login');
 });
 
 // Route::group(['prefix' => 'login', 'middleware' => 'loginmiddleware', 'as'=> 'login.'], function ()
