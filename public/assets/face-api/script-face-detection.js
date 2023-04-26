@@ -7,24 +7,23 @@ The video eventListener for play fires up too early on low-end machines, before 
 */
 import { showModal } from "./modal.js";
 
-const video = document.getElementById('video')
-const url = document.getElementById('url-face-api').textContent
-const urlImage = document.getElementById('url-image').textContent
-const urlModel = url + '/models'
-let image_ = '';
+const video = document.getElementById("video");
+const url = document.getElementById("url-face-api").textContent;
+const urlImage = document.getElementById("url-image").textContent;
+const urlModel = url + "/models";
+let image_ = "";
 
 $.ajaxSetup({
     headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
+        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+    },
 });
 
-document.getElementById('btn-inp').onclick = function()
-{
-    document.getElementById('btn-inp').style.display = 'none'
-    document.getElementById('div-inp').style.display = 'block'
-    document.getElementById('inp-id').focus()
-}
+document.getElementById("btn-inp").onclick = function () {
+    document.getElementById("btn-inp").style.display = "none";
+    document.getElementById("div-inp").style.display = "block";
+    document.getElementById("inp-id").focus();
+};
 
 // document.getElementById('btn-shot').onclick = function()
 // {
@@ -40,22 +39,19 @@ document.getElementById('btn-inp').onclick = function()
 //     console.log("Screenshot")
 // }
 
-function getSnapshot()
-{
-    let canvas = document.createElement('canvas');
-    let image = ''
+function getSnapshot() {
+    let canvas = document.createElement("canvas");
+    let image = "";
     canvas.width = video.width;
     canvas.height = video.height;
 
-    let ctx = canvas.getContext('2d');
-    ctx.drawImage( video, 0, 0, canvas.width, canvas.height );
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    image = canvas.toDataURL('image/jpeg');
-    console.log("Screenshot")
-    return image
+    image = canvas.toDataURL("image/jpeg");
+    console.log("Screenshot");
+    return image;
 }
-
-
 
 console.log("Loading...");
 Promise.all([
@@ -64,174 +60,194 @@ Promise.all([
     faceapi.nets.faceLandmark68Net.loadFromUri(urlModel),
     faceapi.nets.ssdMobilenetv1.loadFromUri(urlModel),
     // faceapi.nets.faceExpressionNet.loadFromUri('/Face-Api/models')
-]).then(start)
+]).then(start);
 
 function pause() {
-    startVideo()
+    startVideo();
 }
 
 function startVideo() {
     console.log("Start");
-    document.getElementById('text-loading').style.display = 'none'
+    document.getElementById("text-loading").style.display = "none";
     navigator.getUserMedia(
         { video: {} },
-        stream => video.srcObject = stream,
-        err => console.error(err)
-    )
+        (stream) => (video.srcObject = stream),
+        (err) => console.error(err)
+    );
 }
 
-
 function loadLabeledImages() {
-    const labels = Object.keys(faceRegination)
+    const labels = Object.keys(faceRegination);
     var len_labels = labels.length;
     var success = 0;
-    console.log("Start traning...")
+    console.log("Start traning...");
     return Promise.all(
-        labels.map(async label => {
+        labels.map(async (label) => {
             const descriptions = [];
 
             for (let i = 0; i < faceRegination[label].length; i++) {
-                var image = faceRegination[label][i]
-                if (image.search('https') == -1) {
-                    image = urlImage + image
+                var image = faceRegination[label][i];
+                if (image.search("https") == -1) {
+                    image = urlImage + image;
                 }
                 const img = await faceapi.fetchImage(image);
-                const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+                const detections = await faceapi
+                    .detectSingleFace(img)
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
                 try {
                     descriptions.push(detections.descriptor);
-                    console.log(image)
-                    console.log(detections.descriptor)
-                } catch(err) {
-                    console.log(image + ': error')
-                    continue
+                    console.log(image);
+                    console.log(detections.descriptor);
+                } catch (err) {
+                    console.log(image + ": error");
+                    continue;
                 }
             }
-            console.log((++success) + '/' + len_labels);
+            console.log(++success + "/" + len_labels);
             return new faceapi.LabeledFaceDescriptors(label, descriptions);
         })
-    )
+    );
 }
 
-
 async function start() {
-    console.log("Training data.")
+    console.log("Training data.");
 
     const labeledFaceDescriptors = await loadLabeledImages();
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
 
-    console.log("Completed training.")
+    console.log("Completed training.");
 
     startVideo();
 
-    video.addEventListener('playing', () => {
-        const canvas = faceapi.createCanvasFromMedia(video)
-        document.getElementById('webcam').append(canvas)
+    video.addEventListener("playing", () => {
+        const canvas = faceapi.createCanvasFromMedia(video);
+        document.getElementById("webcam").append(canvas);
 
-        const displaySize = { width: video.width, height: video.height }
-        faceapi.matchDimensions(canvas, displaySize)
+        const displaySize = { width: video.width, height: video.height };
+        faceapi.matchDimensions(canvas, displaySize);
 
-        setInterval(async () => {
-            const detections = await faceapi.detectAllFaces(video).withFaceLandmarks().withFaceDescriptors();
-            const resizedDetections = faceapi.resizeResults(detections, displaySize)
+        var modal_process = setInterval(async () => {
+            const detections = await faceapi
+                .detectAllFaces(video)
+                .withFaceLandmarks()
+                .withFaceDescriptors();
+            const resizedDetections = faceapi.resizeResults(
+                detections,
+                displaySize
+            );
 
-            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
+            canvas
+                .getContext("2d")
+                .clearRect(0, 0, canvas.width, canvas.height);
 
-            const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
+            const results = resizedDetections.map((d) =>
+                faceMatcher.findBestMatch(d.descriptor)
+            );
 
             //if (results.length > 0) console.log(results);
 
             results.forEach((result, i) => {
                 const box = resizedDetections[i].detection.box;
-                const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() });
+                const drawBox = new faceapi.draw.DrawBox(box, {
+                    label: result.toString(),
+                });
                 console.log(result._label);
                 console.log(result._distance);
                 drawBox.draw(canvas);
-                if (result._label != 'unknown')
-                // submitForm(result._label, getSnapshot(), true)
-                //can sua {
+                if (result._label != "unknown") {
+                    // submitForm(result._label, getSnapshot(), true)
+                    //can sua {
                     // var image = getSnapshot();
                     // push modal
                     // đợi người dùng chọn đồng ý || k đồng ý
                     // nếu đồng ý thì gọi submitForm gởi
                     // không đồng ý -> thoát modal nhận diện lại
                     // nhập ID -> hiển thị ra 1 dòng nhập ID bên dưới
-                // }
-                    {
-                        var image = getSnapshot();
-                        showModal('Face Detecttion','Please confirm your face?',"Yes", "No", () => {
-                            alert('Attendance success');
+                    // }
+                    var image = getSnapshot();
+                    // var modal_process = setTimeout(
+                     showModal(
+                        "Face Detecttion",
+                        "Please confirm your face?",
+                        "Yes",
+                        "No",
+                        () => {
+                            alert("Attendance success");
                             submitForm(result._label, image, true);
-                            }
-                        , () => {
-                            alert('Enter your ID');
-                            // setTimeout(() => { clearInterval(attend_process); alert('Enter your ID'); }, 6000);
-                            }
-                        );
-                    }
-                else {
-                    alertError('Không xác nhận được người dùng')
+                        },
+                        () => {
+                            clearInterval(modal_process);
+                            alert("Enter your ID");
+                            // console.log(document.getElementById("inp-id").value,modal_process);
+                            //submit ID rồi quay lại vòng lặp
+                            document.querySelector("#checkin-form").addEventListener("submit", () => {
+                                alert('ket thuc')
+                            })
+                        }
+                    )
+                    // ,5000);
+                } else {
+                    alertError("Không xác nhận được người dùng");
                 }
-
-            })
+            });
             // faceapi.draw.drawDetections(canvas, resizedDetections)
             // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
             // faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-        }, 7000)
-    })
+        }, 7000);
+    });
 
-    video.currentTime = 1
+    video.currentTime = 1;
 }
 
-
-$('#checkin-form').submit(function(e) {
+$("#checkin-form").submit(function (e) {
     e.preventDefault();
-    submitForm(document.getElementById('inp-id').value, getSnapshot(), false)
-    document.getElementById('inp-id').value = ''
-    document.getElementById('btn-inp').style.display = 'block'
-    document.getElementById('div-inp').style.display = 'none'
+    submitForm(document.getElementById("inp-id").value, getSnapshot(), false);
+    document.getElementById("inp-id").value = "";
+    document.getElementById("btn-inp").style.display = "block";
+    document.getElementById("div-inp").style.display = "none";
 });
 
-function submitForm(id, image, identity)
-{
-    $.ajax ({
-        type: 'POST',
+function submitForm(id, image, identity) {
+    $.ajax({
+        type: "POST",
         cache: false,
-        url: document.getElementById('checkin-form').action,
+        url: document.getElementById("checkin-form").action,
         data: {
-            "id" : id,
-            "image" : image,
-            "identity" : identity
+            id: id,
+            image: image,
+            identity: identity,
         },
-        success: function(data) {
+        success: function (data) {
             if (data.success == true) {
-                alertSuccess(data.message)
-            }
-            else alertError(data.message)
+                alertSuccess(data.message);
+            } else alertError(data.message);
         },
-        error: function(data) {
-            alertError(data.message)
+        error: function (data) {
+            alertError(data.message);
         },
     });
 }
 
-function alertError(message)
-{
-    document.getElementById('alert-message').style.backgroundColor = 'red'
-    document.getElementById('alert-message').textContent = message
-    setTimeout(function(){alertDisable()}, 1000);
+function alertError(message) {
+    document.getElementById("alert-message").style.backgroundColor = "red";
+    document.getElementById("alert-message").textContent = message;
+    setTimeout(function () {
+        alertDisable();
+    }, 1000);
 }
 
-function alertSuccess(message)
-{
-    document.getElementById('alert-message').style.backgroundColor = 'green'
-    document.getElementById('alert-message').textContent = message
-    setTimeout(function(){alertDisable()}, 1000);
+function alertSuccess(message) {
+    document.getElementById("alert-message").style.backgroundColor = "green";
+    document.getElementById("alert-message").textContent = message;
+    setTimeout(function () {
+        alertDisable();
+    }, 1000);
 }
 
-function alertDisable()
-{
-    document.getElementById('alert-message').style.background = 'none'
-    document.getElementById('alert-message').textContent = ''
+function alertDisable() {
+    document.getElementById("alert-message").style.background = "none";
+    document.getElementById("alert-message").textContent = "";
 }
 
 
