@@ -88,25 +88,10 @@
                 </form>
             </div>
         </div>
-        {{-- <div class="contaier p-3">
-            <button id="btn-approve" class="btn btn-success">Approve</button>
-            <button id="btn-decline" class="btn btn-danger">Decline</button>
-        </div> --}}
     </div>
     <script src="{{ asset('assets/bootstrap-5.3.0-alpha2-dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/modal.js') }}"></script>
     <script>
-        // document.getElementById('btn-approve').onclick = () => showModal('File Deletion',
-        //     'Do you want to delete this file?',
-        //     "Yes", "No", () => {
-        //         console.log('File deleted successfully');
-        //     });
-
-        // document.getElementById('btn-decline').onclick = () => showModal('File Deletion',
-        //     'Do you want to delete this file?',
-        //     "Yes", "No", () => {
-        //         alert('File deleted successfully');
-        //     });
     </script>
 </body>
 

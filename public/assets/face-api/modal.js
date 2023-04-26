@@ -21,6 +21,7 @@ export const showModal = (
 ) => {
     if (modalWrap !== null) {
         modalWrap.remove();
+        $('.modal-backdrop').remove();
     }
 
     modalWrap = document.createElement("div");
