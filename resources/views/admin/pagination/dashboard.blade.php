@@ -16,7 +16,7 @@
                         <img src="{{ asset("$item->avatar") }}" alt="avatar {{ $item->first_name }} {{ $item->last_name }}">
                         <div class="person-description">
                             <p class="fw-bold">{{ $item->last_name }} {{ $item->first_name }}</p>
-                            <p>...</p></p>
+                            <p>{{ $item->email != null ? $item->email : '...' }}</p></p>
                         </div>
                     </td>
                     <td class="id">

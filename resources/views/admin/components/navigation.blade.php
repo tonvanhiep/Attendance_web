@@ -34,14 +34,14 @@
 
         <div class="account" onclick="toggleAcc()">
             <div class="account-avatar">
-                <img src="{{asset('assets/img/quinhon.jpg');}}" alt="">
+                <img src="{{asset($profile->avatar);}}" alt="">
             </div>
             <div class="account-box" id="list-acc">
                 <div class="profile">
-                    <img src="{{asset('assets/img/quinhon.jpg');}}" alt="">
+                    <img src="{{asset($profile->avatar);}}" alt="">
                     <div class="info">
-                        <h3>Viet Cuong</h3>
-                        <p>@webdev</p>
+                        <h3>{{ $profile->first_name . ' ' . $profile->last_name }}</h3>
+                        <p>{{ '@' . $profile->position }}</p>
                     </div>
                 </div>
                 {{-- <a href="#" class="btn">

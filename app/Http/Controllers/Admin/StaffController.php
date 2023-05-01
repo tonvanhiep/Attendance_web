@@ -14,6 +14,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\FaceEmployeeImagesModel;
+use Illuminate\Support\Facades\Auth;
 
 class StaffController extends Controller
 {
@@ -44,8 +45,9 @@ class StaffController extends Controller
         $notification = $notification->getNotifications([]);
         $office = $office->getOffices([]);
         $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
         $page = 'staff';
-        return view('admin.staff', compact('notification', 'list', 'page', 'pagination', 'office', 'condition','waitConfirm'));
+        return view('admin.staff', compact('notification', 'profile', 'list', 'page', 'pagination', 'office', 'condition','waitConfirm'));
     }
 
     public function exportCsv(Request $request)
@@ -98,34 +100,15 @@ class StaffController extends Controller
 
     public function create() {
         $notification = new NoticesModel();
+        $employees = new EmployeesModel();
         $notification = $notification->getNotifications([]);
         $page = 'staff';
-        return view('admin.staff.add', compact('notification', 'page'));
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+
+        return view('admin.staff.add', compact('profile', 'notification', 'page'));
     }
 
     public function store(Request $request) {
-        // dd($request);
-        // $this->validate($request, [
-        //     'name' => 'required|unique:accounts',
-        //     'fl_admin' => 'required',
-        //     'email' => 'required|unique:accounts|email',
-        //     'password' => 'required|min:5|max:32',
-        //     'confirm' => 'same:password',
-        //     'first_name' => 'required',
-        //     'last_name' => 'required',
-        //     'birth_day' => 'required',
-        //     'gender' => 'required',
-        //     'address' => 'required',
-        //     'numberphone' => 'required|unique:employees',
-        //     'department' => 'required',
-        //     'position' => 'required',
-        //     'salary' => 'required',
-        //     'office_id' => 'required',
-        //     'join_day' => 'required',
-        //     'left_day' => 'required',
-        //     'image_url'=>'required',
-        // ]);
-
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
 
@@ -196,15 +179,18 @@ class StaffController extends Controller
     public function edit($id) {
         $notification = new NoticesModel();
         $notification = $notification->getNotifications([]);
+        $employees = new EmployeesModel();
 
         $staff = EmployeesModel::find($id);
 
         $employee_id = $staff->id;
         $account =  AccountsModel::where('employee_id', $employee_id)->first();
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+
         $page = 'staff';
         // dd($staff,$account);
 
-        return view('admin.staff.edit', compact('staff', 'notification', 'account', 'page'));
+        return view('admin.staff.edit', compact('staff', 'profile', 'notification', 'account', 'page'));
     }
 
     public function update(Request $request, $id) {
@@ -248,7 +234,7 @@ class StaffController extends Controller
         ]);
 
         $data = [
-            'name' => $request->name,
+            'user_name' => $request->name,
             'fl_admin' => $request->fl_admin,
             'email' => $request->email,
         ];

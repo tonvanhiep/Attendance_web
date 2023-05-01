@@ -13,6 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
@@ -21,6 +22,7 @@ class AttendanceController extends Controller
         $timesheet = new TimesheetsModel();
         $notification = new NoticesModel();
         $office = new OfficesModel();
+        $employees = new EmployeesModel();
 
         $perPage = $request->show == null ? 50 : $request->show;
         $condition = [
@@ -43,7 +45,9 @@ class AttendanceController extends Controller
         $page = 'attendance';
         $notification = $notification->getNotifications([]);
         $office = $office->getOffices([]);
-        return view('admin.attendance', compact('notification', 'list', 'office', 'page', 'pagination', 'condition', 'waitConfirm'));
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+
+        return view('admin.attendance', compact('notification', 'profile', 'list', 'office', 'page', 'pagination', 'condition', 'waitConfirm'));
     }
 
     public function exportCsv(Request $request)
@@ -102,7 +106,7 @@ class AttendanceController extends Controller
         $timesheet = new TimesheetsModel();
         $notification = new NoticesModel();
         $office = new OfficesModel();
-        $employee = new EmployeesModel();
+        $employees = new EmployeesModel();
 
         $detail = $timesheet->getDetailInfoAttendance(['id' => $id]);
         // dd($detail);
@@ -111,8 +115,9 @@ class AttendanceController extends Controller
         $page = 'attendance';
         $notification = $notification->getNotifications([]);
         $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
 
-        return view('admin.detail-attendance', compact('detail', 'page', 'notification','waitConfirm'));
+        return view('admin.detail-attendance', compact('detail', 'profile', 'page', 'notification','waitConfirm'));
     }
 
     public function updateStatus(Request $request)

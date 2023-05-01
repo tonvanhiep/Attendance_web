@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\EmployeesModel;
 use App\Models\TimesheetsModel;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     //
     public function index(Request $request)
     {
+        // dd(Auth::user()->employee_id);
         $employees = new EmployeesModel();
         $notification = new NoticesModel();
         $timesheet = new TimesheetsModel();
@@ -45,10 +47,10 @@ class DashboardController extends Controller
             'active' => $employees->getCountEmployees(['status' => 1]),
         ];
 
-        // dd($info);
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
         $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
         $page = 'dashboard';
-        return view('admin.dashboard', compact('list', 'notification', 'info', 'page', 'pagination','request','waitConfirm'));
+        return view('admin.dashboard', compact('list', 'notification', 'info', 'page', 'pagination','request','waitConfirm', 'profile'));
     }
 
     public function pagination (Request $request)

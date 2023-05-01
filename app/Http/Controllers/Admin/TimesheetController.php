@@ -114,9 +114,11 @@ class TimesheetController extends Controller
         $notification = $notification->getNotifications([]);
         $office = $office->getOffices([]);
         $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+
         // $notification = [];
         $page = 'timesheet';
-        return view('admin.timesheet', compact('notification', 'page', 'office', 'employeesList', 'page', 'pagination', 'condition', 'list','waitConfirm'));
+        return view('admin.timesheet', compact('notification', 'profile', 'page', 'office', 'employeesList', 'page', 'pagination', 'condition', 'list','waitConfirm'));
     }
 
     public function exportCsv(Request $request)
@@ -146,10 +148,12 @@ class TimesheetController extends Controller
     {
         $office = new OfficesModel();
         $office = $office->getOffices([]);
+        $employees = new EmployeesModel();
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
 
         $notification = [];
         $page = 'timesheet';
-        return view('admin.detail', compact('notification', 'page', 'office'));
+        return view('admin.detail', compact('notification', 'profile', 'page', 'office'));
     }
 
     public function attendance(Request $request)
