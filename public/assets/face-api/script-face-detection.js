@@ -110,6 +110,61 @@ function loadLabeledImages() {
     );
 }
 
+async function faceRecognition(faceMatcher, canvas, displaySize) {
+    i = i + 1;
+    console.log(i);
+    const detections = await faceapi
+        .detectAllFaces(video)
+        .withFaceLandmarks()
+        .withFaceDescriptors();
+    const resizedDetections = faceapi.resizeResults(
+        detections,
+        displaySize
+    );
+
+    canvas
+        .getContext("2d")
+        .clearRect(0, 0, canvas.width, canvas.height);
+
+    const results = resizedDetections.map((d) =>
+        faceMatcher.findBestMatch(d.descriptor)
+    );
+
+    results.forEach((result, i) => {
+        const box = resizedDetections[i].detection.box;
+        const drawBox = new faceapi.draw.DrawBox(box, {
+            label: result.toString(),
+        });
+        console.log(result._label);
+        console.log(result._distance);
+        drawBox.draw(canvas);
+        if (result._label != "unknown") {
+            if(RecognitionIntervalID != -1) clearInterval(RecognitionIntervalID);
+            var image = getSnapshot();
+            showModal(
+                "Face Detecttion",
+                "Please confirm your face?",
+                "Yes",
+                "No",
+                () => {
+                    alert("Attendance success");
+                    submitForm(result._label, image, true);
+                    RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+                },
+                () => {
+                    alert("Enter your ID");
+                    RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+                }
+            )
+        } else {
+            alertError("Không xác nhận được người dùng");
+        }
+    });
+}
+
+
+let i = 0;
+var RecognitionIntervalID = -1;
 async function start() {
     console.log("Training data.");
 
@@ -127,74 +182,7 @@ async function start() {
         const displaySize = { width: video.width, height: video.height };
         faceapi.matchDimensions(canvas, displaySize);
 
-        var modal_process = setInterval(async () => {
-            const detections = await faceapi
-                .detectAllFaces(video)
-                .withFaceLandmarks()
-                .withFaceDescriptors();
-            const resizedDetections = faceapi.resizeResults(
-                detections,
-                displaySize
-            );
-
-            canvas
-                .getContext("2d")
-                .clearRect(0, 0, canvas.width, canvas.height);
-
-            const results = resizedDetections.map((d) =>
-                faceMatcher.findBestMatch(d.descriptor)
-            );
-
-            //if (results.length > 0) console.log(results);
-
-            results.forEach((result, i) => {
-                const box = resizedDetections[i].detection.box;
-                const drawBox = new faceapi.draw.DrawBox(box, {
-                    label: result.toString(),
-                });
-                console.log(result._label);
-                console.log(result._distance);
-                drawBox.draw(canvas);
-                if (result._label != "unknown") {
-                    // submitForm(result._label, getSnapshot(), true)
-                    //can sua {
-                    // var image = getSnapshot();
-                    // push modal
-                    // đợi người dùng chọn đồng ý || k đồng ý
-                    // nếu đồng ý thì gọi submitForm gởi
-                    // không đồng ý -> thoát modal nhận diện lại
-                    // nhập ID -> hiển thị ra 1 dòng nhập ID bên dưới
-                    // }
-                    var image = getSnapshot();
-                    // var modal_process = setTimeout(
-                     showModal(
-                        "Face Detecttion",
-                        "Please confirm your face?",
-                        "Yes",
-                        "No",
-                        () => {
-                            alert("Attendance success");
-                            submitForm(result._label, image, true);
-                        },
-                        () => {
-                            clearInterval(modal_process);
-                            alert("Enter your ID");
-                            // console.log(document.getElementById("inp-id").value,modal_process);
-                            //submit ID rồi quay lại vòng lặp
-                            document.querySelector("#checkin-form").addEventListener("submit", () => {
-                                alert('ket thuc')
-                            })
-                        }
-                    )
-                    // ,5000);
-                } else {
-                    alertError("Không xác nhận được người dùng");
-                }
-            });
-            // faceapi.draw.drawDetections(canvas, resizedDetections)
-            // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
-            // faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-        }, 7000);
+        RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
     });
 
     video.currentTime = 1;
