@@ -169,7 +169,7 @@ async function start() {
     console.log("Training data.");
 
     const labeledFaceDescriptors = await loadLabeledImages();
-    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
+    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.4);
 
     console.log("Completed training.");
 
