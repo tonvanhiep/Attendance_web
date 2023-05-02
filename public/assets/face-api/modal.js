@@ -14,10 +14,11 @@ var modalWrap = null;
 export const showModal = (
     title,
     description,
-    yesBtnLabel = "Yes",
-    noBtnLabel = "Cancel",
+    yesBtnLabel ,
+    noBtnLabel,
     callback_Yes,
-    callback_No
+    callback_No,
+    callback_Close,
 ) => {
     if (modalWrap !== null) {
         modalWrap.remove();
@@ -48,10 +49,14 @@ export const showModal = (
     //   modalWrap?.querySelector('#yesBtn')?.addEventListener("click",callbackYes);
     //   modalWrap?.querySelector('#noBtn')?.addEventListener("click",callbackNo);
     //   modalWrap.querySelector('.modal-success-btn').onclick = callback;
+    document.body.addEventListener('click', () => {
+        console.log('body click')
+        callback_Close();
+    }, true);
 
     modalWrap.querySelectorAll("button").forEach((occurence) => {
         let id = occurence.getAttribute("id");
-        // console.log(occurence,id);
+        console.log(occurence,id);
         // occurence.addEventListener('click', callbackYes);
         // console.log(id,callback, callBack[id]);
         occurence.onclick = () => {
@@ -64,6 +69,11 @@ export const showModal = (
                 case "noBtn": {
                     console.log("click no");
                     callback_No();
+                    break;
+                }
+                case "closeBtn": {
+                    console.log("click close");
+                    callback_Close();
                     break;
                 }
             }
