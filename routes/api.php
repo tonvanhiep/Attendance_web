@@ -33,9 +33,9 @@ Route::group(['middleware' => 'auth:api', 'as'=> 'admin.'], function ()
 
 
     Route::get('/attendance', [AttendanceController::class, 'ApiGetAttendance'])->name('logout');
-
-    // Route::group(['prefix' => 'staff', 'as'=> 'staff.'], function () {
-    //     Route::get('/exportcsv', [StaffController::class, 'exportCsv'])->name('exportcsv');
-    //     Route::get('/exportpdf', [StaffController::class, 'exportPdf'])->name('exportpdf');
-    // });
 });
+
+// Route::group(['prefix' => 'staff', 'as'=> 'staff.'], function () {
+//     Route::get('/exportcsv', [StaffController::class, 'exportCsv'])->name('exportcsv');
+//     Route::get('/exportpdf', [StaffController::class, 'exportPdf'])->name('exportpdf');
+// });

@@ -18,11 +18,11 @@
                     <div class="form-group row">
                         <label for="date" class="col-form-label col-sm-1">From</label>
                         <div class="col-sm-3">
-                            <input type="date" name="fromDate" id="fromDate" class="form-control input-sm" value="{{ $request->input('fromDate') }}">
+                            <input type="date" name="from" id="from" class="form-control input-sm"value="{{ $condition['from'] }}" max="{{ $condition['today'] }}">
                         </div>
                         <label for="date" class="col-form-label col-sm-1">To</label>
                         <div class="col-sm-3">
-                            <input type="date" name="toDate" id="toDate" class="form-control input-sm" value="{{ $request->input('toDate') }}">
+                            <input type="date" name="to" id="to" class="form-control input-sm" value="{{ $condition['to'] }}" max="{{ $condition['today'] }}">
                         </div>
                         <div class="col-sm-2">
                             <button type="submit" class="btn btn-primary" name="seach" title="search">
