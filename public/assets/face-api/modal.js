@@ -56,7 +56,7 @@ export const showModal = (
 
     modalWrap.querySelectorAll("button").forEach((occurence) => {
         let id = occurence.getAttribute("id");
-        console.log(occurence,id);
+        // console.log(occurence,id);
         // occurence.addEventListener('click', callbackYes);
         // console.log(id,callback, callBack[id]);
         occurence.onclick = () => {
