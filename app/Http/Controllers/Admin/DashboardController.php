@@ -56,12 +56,12 @@ class DashboardController extends Controller
     public function pagination (Request $request)
     {
         $employees = new EmployeesModel();
-        $perPage = $request->show == null ? 10 : $request->show;
+        $perPage = $request->show == null ? 50 : $request->show;
 
         $list = $employees->pagination([
             'status' => [1, 2],
             'sort' => 1,
-        ], $request->page);
+        ], $request->page, $perPage);
 
         $pagination = [
             'perPage' => $list->perPage(),

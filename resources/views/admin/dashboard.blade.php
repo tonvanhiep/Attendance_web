@@ -46,7 +46,7 @@
         </div>
     </div>
     <div class="tool-board">
-        <form id="show-form" class="show" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}">
+        <form id="show-form" class="show" method="POST" action="{{ route('admin.dashboard.pagination') }}">
             <label for="show-text">Show</label>
             <div class="show-input">
                 <input id="input-show" type="text" list="nrows" size="10" formtarget="" name="show" value="{{ $pagination['perPage'] }}">

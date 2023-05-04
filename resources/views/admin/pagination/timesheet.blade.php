@@ -15,7 +15,7 @@
         </thead>
         <tbody>
             @foreach ($list as $item)
-                <tr onclick="window.location='http://127.0.0.1:9000/admin/timesheet/detail/2'">
+                <tr onclick="window.location=''">
                     <td class="name">
                         <p class="fw-bold">{{ $item['last_name'] . ' ' . $item['first_name'] }}</p>
                     </td>

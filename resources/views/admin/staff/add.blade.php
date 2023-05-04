@@ -61,20 +61,29 @@
                         <input type="text" name="position">
                     </div>
                     <div class="long form" >
-                        <label for="avatar">Avatar</label>
-                        <input type="file" name="avatar" accept="img/*">
-                    </div>
-                    <div class="long form" >
-                        <label for="office_id">Office ID</label>
-                        <input type="number" name="office_id">
-                    </div>
-                    <div class="long form" >
-                        <label for="status">Status</label>
-                        <input type="number" name="status">
+                        <label for="office_id">Office</label>
+                        {{-- <input type="number" name="office_id"> --}}
+                        <select name="office_id" style="
+                            flex: 1;
+                            display: inline-block;
+                            padding: 5px 10px;
+                            border-radius: 5px;
+                            border: 1px solid #6F6F6F;
+                        ">
+                            @foreach ($office as $item)
+                                <option value="{{ $item->id }}">{{ $item->office_name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="long form" >
                         <label for="working_day">Working_day</label>
-                        <input type="text" name="working_day">
+                        <input type="checkbox" name="working_day[]" value="2">Mon
+                        <input type="checkbox" name="working_day[]" value="3">Tue
+                        <input type="checkbox" name="working_day[]" value="4">Wed
+                        <input type="checkbox" name="working_day[]" value="5">Thu
+                        <input type="checkbox" name="working_day[]" value="6">Fri
+                        <input type="checkbox" name="working_day[]" value="7">Sat
+                        <input type="checkbox" name="working_day[]" value="1">Sun
                     </div>
                     {{-- <div class="long form" >
                         <label for="note">Content</label>
@@ -82,6 +91,41 @@
                     </div> --}}
                 </div>
                 <div class="board-right">
+                    @push('css')
+                        <style>
+                            #file-input {
+                                display: none;
+                            }
+
+                            .preview {
+                                padding: 10px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                flex-direction: column;
+                                width: 100%;
+                                max-width: 350px;
+                                margin: auto;
+                                background-color: rgb(255, 255, 255);
+                                box-shadow: 0 0 20px rgba(170, 170, 170, 0.2);
+                            }
+
+                            img {
+                                width: 100%;
+                                object-fit: cover;
+                            }
+                        </style>
+                    @endpush
+                    <div class="short form">
+                        <div class="preview">
+                            <img id="img-preview" src="https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png" />
+                        </div>
+                    </div>
+                    <div class="short form" >
+                        <label for="file-input">Avatar</label>
+                        <input type="file" name="avatar" accept="img/*" id="file-input">
+                    </div>
+
                     <div class="short form">
                         <label for="name">User Name</label>
                         <input type="text" name="name">
@@ -123,10 +167,6 @@
                             <label for="join_day">Join day</label>
                             <input type="date" name="join_day" >
                         </div>
-                        <div class="form">
-                            <label for="left_day">Left day</label>
-                            <input type="date" name="left_day">
-                        </div>
                     </div>
                 </div>
                 <div class="board-right">
@@ -165,3 +205,16 @@
             } );
     </script>
 @endsection --}}
+@push('js')
+    <script>
+        const input = document.getElementById('file-input');
+        const image = document.getElementById('img-preview');
+
+        input.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                const src = URL.createObjectURL(e.target.files[0]);
+                image.src = src;
+            }
+        });
+    </script>
+@endpush

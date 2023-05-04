@@ -16,25 +16,29 @@
 
     <form class="filter">
 
-        <div class="filter-depart">
-            <label for="office">Office</label>
-            <div class="filter-input">
-                <input type="text" list="office" name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
-                <!-- <i class="fa-solid fa-chevron-down"></i> -->
-            </div>
-            <datalist id="office">
-                @foreach ($office as $item)
-                    <option value="{{ $item->office_name }}"></option>
-                @endforeach
-            </datalist>
+        <form class="filter">
 
-            <label for="depart" style="margin-left: 30px">Department</label>
-            <div class="filter-input">
-                <input type="text" list="departs" name="department" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
-                <!-- <i class="fa-solid fa-chevron-down"></i> -->
+            <div class="filter-depart">
+                <label for="office">Office</label>
+                <div class="filter-input">
+                    <select name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
+                        <option value="">All</option>
+                        @foreach ($office as $item)
+                            <option value="{{ $item->id }}" @if ($condition['office'] == $item->id) selected @endif>{{ $item->office_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <label for="depart" style="margin-left: 30px">Department</label>
+                <div class="filter-input">
+                    <select name="depart" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
+                        <option value="">All</option>
+                        {{-- @foreach ($office as $item)
+                            <option value="{{ $item->office_name }}"></option>
+                        @endforeach --}}
+                    </select>
+                </div>
             </div>
-            <datalist id="departs"></datalist>
-        </div>
 
         <div class="filter-date">
             <label for="start-date">From date</label>

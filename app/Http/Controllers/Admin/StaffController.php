@@ -101,11 +101,15 @@ class StaffController extends Controller
     public function create() {
         $notification = new NoticesModel();
         $employees = new EmployeesModel();
+        $timesheet = new TimesheetsModel();
+        $office = new OfficesModel();
         $notification = $notification->getNotifications([]);
         $page = 'staff';
         $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+        $office = $office->getOffices([]);
 
-        return view('admin.staff.add', compact('profile', 'notification', 'page'));
+        return view('admin.staff.add', compact('profile', 'office', 'waitConfirm', 'notification', 'page'));
     }
 
     public function store(Request $request) {
@@ -129,22 +133,20 @@ class StaffController extends Controller
             'last_name' => $request->last_name,
             'birth_day' => $request->birth_day,
             'gender' => $request->gender,
-            'fl_admin' => $request->fl_admin,
             'address' => $request->address,
             'numberphone' => $request->numberphone,
             'department' => $request->department,
             'position' => $request->position,
-            'avatar' => 'storage/avatar/' . $image,
-            'working_day' => $request->working_day,
-            'status' => $request->status,
+            'avatar' =>  isset($image) ? randomAvatarUrl(rand(1, 20)) : 'storage/avatar/' . $image,
+            'working_day' => implode('|', $request->working_day),
+            'status' => 1,
             'salary' => $request->salary,
             'office_id' => $request->office_id,
             'join_day' => $request->join_day,
-            'left_day' => $request->left_day,
         ]);
 
         AccountsModel::create([
-            'name' => $request->name,
+            'user_name' => $request->name,
             'fl_admin' => $request->fl_admin,
             'email' => $request->email,
             'password' => bcrypt($request->password),
@@ -180,21 +182,24 @@ class StaffController extends Controller
         $notification = new NoticesModel();
         $notification = $notification->getNotifications([]);
         $employees = new EmployeesModel();
+        $timesheet = new TimesheetsModel();
+        $office = new OfficesModel();
 
         $staff = EmployeesModel::find($id);
 
         $employee_id = $staff->id;
         $account =  AccountsModel::where('employee_id', $employee_id)->first();
         $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+        $office = $office->getOffices([]);
 
         $page = 'staff';
-        // dd($staff,$account);
 
-        return view('admin.staff.edit', compact('staff', 'profile', 'notification', 'account', 'page'));
+        return view('admin.staff.edit', compact('staff', 'office', 'profile', 'notification', 'account', 'page', 'waitConfirm'));
     }
 
     public function update(Request $request, $id) {
-        // dd($request);
+        // dd($request, implode('|', $request->working_day));
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
 
@@ -212,7 +217,7 @@ class StaffController extends Controller
 
         $staff = EmployeesModel::find($id);
         $employee_id = $staff->id;
-        $account =  AccountsModel::where('employee_id', $employee_id);
+        $account =  AccountsModel::where('employee_id', $employee_id)->first();
         // dd($account);
 
         $staff->update([
@@ -229,7 +234,7 @@ class StaffController extends Controller
             'office_id' => $request->office_id,
             'join_day' => $request->join_day,
             'left_day' => $request->left_day,
-            'working_day' => $request->working_day,
+            'working_day' => implode('|', $request->working_day),
             'status' => $request->status,
         ]);
 
@@ -246,9 +251,15 @@ class StaffController extends Controller
             ]);
             $data['password'] = bcrypt($request->password);
         };
-        $account->update($data);
+        if($account == null) {
+            $data['employee_id'] = $employee_id;
+            AccountsModel::create($data);
+        } else {
+            $account =  AccountsModel::where('employee_id', $employee_id);
+            $account->update($data);
+        }
 
-        return redirect()->route('admin.staff.list')->with('success', 'Update successfully');
+        return redirect()->route('admin.staff.edit', ['id' => $id])->with('success', 'Update successfully');
     }
 
     public function delete($id) {
