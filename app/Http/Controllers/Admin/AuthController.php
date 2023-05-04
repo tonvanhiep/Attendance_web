@@ -54,7 +54,7 @@ class AuthController extends Controller
                 'last_name' => $info[0]->last_name
             ]);
         }
-        return response()->json(['message' => 'Login fail', 'code' => 501]);
+        return response()->json(['message' => 'Login fail', 'code' => 401]);
     }
 
     public function ApiLogout(Request $request)

@@ -13,25 +13,14 @@ use Illuminate\Support\Facades\Auth;
 
 class UserAttendanceController extends Controller
 {
-    //
     public function index(Request $request)
     {
         $timekeeper = new TimekeepersModel();
         $timesheet = new TimesheetsModel();
         $ex = new EmployeesModel();
         $titlePage = 'Attendance';
-        $user = EmployeesModel::find(Auth::user()->employee_id);
-        // $list_timesheets = TimesheetsModel::where('employee_id', Auth::user()->employee_id)->get();
-        // dd(Carbon::now()->format('Y-m-d'));
-
-
-        $fromDate = $request->input('fromDate') == null ? date('Y-m-01') : $request->input('fromDate');
-        $toDate = $request->input('to') == null ? date('Y-m-d') : $request->input('to');
-
-        $now = Carbon::now()->format('Y-m-d');
-
-        // $carbonFromDate = Carbon::createFromFormat('Y-m-d', $fromDate);
-        // $carbonTomDate = Carbon::createFromFormat('Y-m-d', $toDate);
+        $id = Auth::user()->employee_id;
+        $user = EmployeesModel::find($id);
 
         $count = 1;
         $perPage = $request->show == null ? 10 : $request->show;
@@ -43,11 +32,9 @@ class UserAttendanceController extends Controller
             'today' => date('Y-m-d'),
             'office' => $request->input('office'),
             'depart' => $request->input('depart'),
+            'id' => $id,
         ];
-
-        // $list_attendances = $timesheet->selectTimesheetsforUser()->paginate($perPage, '*', 'page', $request->page == null ?  1 : $request->page);
         $list_attendances = $timesheet->paginationTimesheetsforUser($condition, $request->page, $perPage);
-        // dd($list_attendances);
 
 
         $totalWeekDay = [0, 0, 0, 0, 0, 0, 0]; // [sun,mon,tue,wed,thur,fri,sat]
@@ -77,8 +64,6 @@ class UserAttendanceController extends Controller
             ];
             array_push($dayOfWeekArr, $subArr);
         }
-        // dd($dayOfWeekArr);
-        // dd($list_attendances->where('date','>=', '2023-01-01')->where('date','<=', '2023-12-31'),);
         $pagination = [
             'perPage' => $list_attendances->perPage(),
             'lastPage' => $list_attendances->lastPage(),
@@ -125,7 +110,6 @@ class UserAttendanceController extends Controller
             ];
             array_push($dayOfWeekArr, $subArr);
         }
-        // dd($dayOfWeekArr);
         return view('user.attendance', compact('dayOfWeekArr', 'titlePage', 'user'));
     }
 
@@ -140,9 +124,8 @@ class UserAttendanceController extends Controller
         $timesheet = new TimesheetsModel();
         $ex = new EmployeesModel();
         $titlePage = 'Attendance';
-        $user = EmployeesModel::find(Auth::user()->employee_id);
-        // $list_timesheets = TimesheetsModel::where('employee_id', Auth::user()->employee_id)->get();
-        // dd(Carbon::now()->format('Y-m-d'));
+        $id = Auth::user()->employee_id;
+        $user = EmployeesModel::find($id);
 
         $fromDate = $request->input('fromDate') == null ? date('Y-m-01') : $request->input('fromDate');
         $toDate = $request->input('to') == null ? date('Y-m-d') : $request->input('to');
@@ -158,23 +141,13 @@ class UserAttendanceController extends Controller
             'today' => date('Y-m-d'),
             'office' => $request->input('office'),
             'depart' => $request->input('depart'),
+            'id' => $id,
         ];
 
-        // $list_attendances = $timesheet->getTimesheetsforUser();
         $list_attendances = $timesheet->paginationTimesheetsforUser($condition, $request->page, $perPage);
 
-
-        // if (!($fromDate) || !($toDate)) {
-        //     $list_attendances = $timesheet->getTimesheetsforUser();
-        // } else {
-        //     $list_attendances = $timesheet->getTimesheetsforUser()->where('date', '>=', $fromDate)->where('date', '<=', $toDate);
-        // }
-
         $totalWeekDay = [0, 0, 0, 0, 0, 0, 0]; // [sun,mon,tue,wed,thur,fri,sat]
-
-
         $dayOfWeekArr = [];
-
         $weekMap = [
             0 => 'Sunday',
             1 => 'Monday',
@@ -200,7 +173,6 @@ class UserAttendanceController extends Controller
             ];
             array_push($dayOfWeekArr, $subArr);
         }
-        // $list = $timesheet->pagination($condition, $request->page, $perPage);
 
         $pagination = [
             'perPage' => $list_attendances->perPage(),

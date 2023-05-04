@@ -48,7 +48,4 @@ class Attendance implements ShouldBroadcast
             'attendance' => $attendance[0],
         ];
     }
-
-
-
 }
