@@ -184,7 +184,7 @@ class StaffController extends Controller
         $employees = new EmployeesModel();
         $timesheet = new TimesheetsModel();
         $office = new OfficesModel();
-
+        $face = new FaceEmployeeImagesModel();
         $staff = EmployeesModel::find($id);
 
         $employee_id = $staff->id;
@@ -192,10 +192,10 @@ class StaffController extends Controller
         $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
         $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
         $office = $office->getOffices([]);
-
+        $list = $face->getImages(['id' => $employee_id]);
         $page = 'staff';
 
-        return view('admin.staff.edit', compact('staff', 'office', 'profile', 'notification', 'account', 'page', 'waitConfirm'));
+        return view('admin.staff.edit', compact('staff', 'list', 'office', 'profile', 'notification', 'account', 'page', 'waitConfirm'));
     }
 
     public function update(Request $request, $id) {
@@ -257,6 +257,27 @@ class StaffController extends Controller
         } else {
             $account =  AccountsModel::where('employee_id', $employee_id);
             $account->update($data);
+        }
+
+        if($request->hasFile('face')) {
+            $facesFile = $request->file('face');
+            foreach($facesFile as $faceFile) {
+                $name_face_file = $faceFile->getClientOriginalName();
+                $extension_face_file = $faceFile->getClientOriginalExtension();
+                if(strcasecmp($extension_face_file, 'png') === 0 || strcasecmp($extension_face_file, 'jpg') === 0 || strcasecmp($extension_face_file, 'jpeg') === 0) {
+                    $image_face = Str::random(length: 5)."_".$name_face_file;  //tránh lưu trùng tên file
+                    while(file_exists("storage/face-recognition/".$image_face)) {
+                        $image_face = Str::random(length: 5)."_".$name_face_file;
+                    }
+                    $faceFile->move('storage/face-recognition/',$image_face);
+                    // dd($image_face);
+                    FaceEmployeeImagesModel::create([
+                        'employee_id' => $employee_id,
+                        'image_url' => 'storage/face-recognition/' . $image_face,
+                        'status' => 1
+                    ]);
+                }
+            }
         }
 
         return redirect()->route('admin.staff.edit', ['id' => $id])->with('success', 'Update successfully');

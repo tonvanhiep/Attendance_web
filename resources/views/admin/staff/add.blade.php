@@ -153,14 +153,10 @@
                         <label for="confirm">Confirm Password</label>
                         <input type="text" name="confirm">
                     </div>
-                    <div class="short form">
-                        <label for="image_url[]">Face</label>
-                        <input type="file" name="image_url[]" accept="img/*" multiple>
-                    </div>
                 </div>
             </div>
             <h5 style="margin-bottom: 15px">About Contract</h5>
-            <div class="container-bottom">
+            <div class="container-top">
                 <div class="board-left">
                     <div class="row">
                         <div class="form">
@@ -176,10 +172,27 @@
                     </div>
                 </div>
             </div>
+
+            <h5 style="margin-bottom: 15px">Face Recognition</h5>
+            <div class="container-top" style="display: block">
+                <div class="input-group" style="margin-bottom: 15px">
+                    <input type="file" id="inp-face" name="image_url[]" accept="img/*" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" multiple aria-label="Upload">
+                </div>
+
+                <style>
+                    .img-preview {
+                        max-width: 200px;
+                        margin: 5px;
+                    }
+                </style>
+                <div style="display: flex; flex-wrap:wrap">
+                    <div id="div-face-upload" style="display: flex; flex-wrap:wrap"></div>
+                </div>
+            </div>
         </div>
-        <div class="btn-save">
-            <button type="submit">
-                <i class="fa-solid fa-floppy-disk"></i>
+        <div class="d-grid gap-2">
+            <button style="margin:auto; min-width: 50%; background-color:#323FAE" type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-floppy-disk" style="padding-right: 10px"></i>
                 <span>Save</span>
             </button>
         </div>
@@ -216,5 +229,28 @@
                 image.src = src;
             }
         });
+
+        const ipnFileElement = document.getElementById('inp-face')
+        const resultElement = document.getElementById('div-face-upload')
+        // const validImageTypes = ['image/gif', 'image/jpeg', 'image/png']
+
+        ipnFileElement.addEventListener('change', function(e) {
+            const files = e.target.files
+            resultElement.innerHTML = ''
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i]
+                const fileType = file['type']
+
+                const fileReader = new FileReader()
+                fileReader.readAsDataURL(file)
+
+                fileReader.onload = function() {
+                    const url = fileReader.result
+                    resultElement.insertAdjacentHTML(
+                        'beforeend',
+                        `<img src="${url}" alt="${file.name}" class="rounded img-preview" />`
+                    )}
+            }
+        })
     </script>
 @endpush

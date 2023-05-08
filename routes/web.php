@@ -109,7 +109,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'loginmiddleware', 'as' => 'a
         Route::post('/', [TimesheetController::class, 'pagination'])->name('pagination');
 
         Route::get('/detail/{id}/attendance', [TimesheetController::class, 'attendance'])->name('attendance');
-        Route::get('/detail/{id}/', [TimesheetController::class, 'detail'])->name('detail');
+        Route::get('/detail/{id?}/', [TimesheetController::class, 'detail'])->name('detail');
     });
 
     Route::group(['prefix' => 'report', 'as' => 'report.'], function () {

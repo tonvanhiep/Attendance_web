@@ -15,30 +15,27 @@
     <h3 class="i-name">Timesheet</h3>
 
     <form class="filter">
-
-        <form class="filter">
-
-            <div class="filter-depart">
-                <label for="office">Office</label>
-                <div class="filter-input">
-                    <select name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
-                        <option value="">All</option>
-                        @foreach ($office as $item)
-                            <option value="{{ $item->id }}" @if ($condition['office'] == $item->id) selected @endif>{{ $item->office_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <label for="depart" style="margin-left: 30px">Department</label>
-                <div class="filter-input">
-                    <select name="depart" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
-                        <option value="">All</option>
-                        {{-- @foreach ($office as $item)
-                            <option value="{{ $item->office_name }}"></option>
-                        @endforeach --}}
-                    </select>
-                </div>
+        <div class="filter-depart">
+            <label for="office">Office</label>
+            <div class="filter-input">
+                <select name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
+                    <option value="">All</option>
+                    @foreach ($office as $item)
+                        <option value="{{ $item->id }}" @if ($condition['office'] == $item->id) selected @endif>{{ $item->office_name }}</option>
+                    @endforeach
+                </select>
             </div>
+
+            <label for="depart" style="margin-left: 30px">Department</label>
+            <div class="filter-input">
+                <select name="depart" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
+                    <option value="">All</option>
+                    {{-- @foreach ($office as $item)
+                        <option value="{{ $item->office_name }}"></option>
+                    @endforeach --}}
+                </select>
+            </div>
+        </div>
 
         <div class="filter-date">
             <label for="start-date">From date</label>
@@ -82,3 +79,13 @@
         @include('admin.pagination.timesheet')
     </div>
 @endsection
+
+@push('js')
+    <script>
+        jQuery(document).ready(function($) {
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+        });
+    </script>
+@endpush
