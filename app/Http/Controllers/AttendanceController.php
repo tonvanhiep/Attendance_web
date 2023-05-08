@@ -15,7 +15,7 @@ class AttendanceController extends Controller
     public function index()
     {
         $image = new FaceEmployeeImagesModel;
-        $image = $image->getImages([]);
+        $image = $image->getImages(['status' => 1]);
         //dd($image->toArray());
         $arr = [];
         foreach ($image as $key => $value) {
@@ -34,7 +34,7 @@ class AttendanceController extends Controller
     public function recognition()
     {
         $image = new FaceEmployeeImagesModel;
-        $image = $image->getImages([]);
+        $image = $image->getImages(['status' => 1]);
         //dd($image->toArray());
         $arr = [];
         foreach ($image as $key => $value) {

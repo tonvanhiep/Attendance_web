@@ -15,7 +15,7 @@
         </thead>
         <tbody>
             @foreach ($list as $item)
-                <tr onclick="window.location=''">
+                <tr class='clickable-row' data-href='{{ route('admin.timesheet.detail', ['id' => $item['id']]) }}'>
                     <td class="name">
                         <p class="fw-bold">{{ $item['last_name'] . ' ' . $item['first_name'] }}</p>
                     </td>

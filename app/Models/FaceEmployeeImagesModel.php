@@ -28,9 +28,13 @@ class FaceEmployeeImagesModel extends Model
     {
         $images = DB::table($this->table)
         ->join('employees', $this->table.'.employee_id', 'employees.id')
-        ->select('employees.last_name', 'employees.first_name', 'employees.id', $this->table.'.image_url')
-        ->where($this->table.'.status', 1);
-
+        ->select('employees.last_name', 'employees.first_name', 'employees.id', $this->table.'.image_url', $this->table.'.status');
+        if (isset($condition['id'])) {
+            $images = $images->where($this->table.'.employee_id', $condition['id']);
+        }
+        if (isset($condition['status'])) {
+            $images = $images->where($this->table . '.status', $condition['status']);
+        }
         return $images;
     }
 
@@ -38,6 +42,23 @@ class FaceEmployeeImagesModel extends Model
     {
         return $this->selectImages($condition)->get();
     }
+
+    // public function selectImcages($condition = null)
+    // {
+    //     $images = DB::table($this->table)
+    //         ->select($this->table.'.image_url', 'status')
+    //         ->orderByDesc($this->table . '.timekeeping_at');
+
+    //     if (isset($condition['id'])) {
+    //         $images = $images->where($this->table . '.id', $condition['id']);
+    //     }
+
+    //     if (isset($condition['status'])) {
+    //         $images = $images->where($this->table . '.id', $condition['status']);
+    //     }
+
+    //     return $images;
+    // }
 
     public function saveAttendance($data = null)
     {
