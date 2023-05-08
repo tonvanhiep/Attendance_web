@@ -22,7 +22,7 @@ class ExistedLoginMiddleWare
                 return redirect()->route('admin.dashboard');
             }
             if (Auth::user()->fl_admin == 0 || Auth::user()->fl_admin == 1) {
-                return redirect()->route('user.home');
+                return redirect()->route('user.index');
             }
         }
         return $next($request);
