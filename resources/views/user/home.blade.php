@@ -51,7 +51,7 @@
                 </div>
             </div>
         </div> --}}
-        <form action="{{ route('user.home.list') }}" method="GET" class=" my-2">
+        <form  method="GET" class=" my-2">
             @csrf
             <br>
             <div class="row p-2">
