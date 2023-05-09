@@ -35,6 +35,9 @@ class FaceEmployeeImagesModel extends Model
         if (isset($condition['status'])) {
             $images = $images->where($this->table . '.status', $condition['status']);
         }
+        if (isset($condition['office'])) {
+            $images = $images->where('employees.office_id', $condition['office']);
+        }
         return $images;
     }
 
