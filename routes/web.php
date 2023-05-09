@@ -114,6 +114,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'loginmiddleware', 'as' => 'a
 
     Route::group(['prefix' => 'report', 'as' => 'report.'], function () {
         Route::get('/', [ReportController::class, 'index'])->name('list');
+        Route::post('/', [ReportController::class, 'pagination'])->name('pagination');
 
         Route::get('/exportcsv', [ReportController::class, 'exportCsv'])->name('exportcsv');
         Route::get('/exportpdf', [ReportController::class, 'exportPdf'])->name('exportpdf');

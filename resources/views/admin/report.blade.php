@@ -14,94 +14,82 @@
 @section('content')
     <h3 class="i-name">Attendance Report</h3>
 
-    <form class="filter">
+    <form class="filter ">
 
-        <form class="filter">
-
-            <div class="filter-depart">
-                <label for="office">Office</label>
-                <div class="filter-input">
-                    <select name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
-                        <option value="">All</option>
-                        @foreach ($office as $item)
-                            <option value="{{ $item->id }}" >{{ $item->office_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <label for="depart" style="margin-left: 30px">Department</label>
-                <div class="filter-input">
-                    <select name="depart" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
-                        <option value="">All</option>
-                        {{-- @foreach ($office as $item)
-                            <option value="{{ $item->office_name }}"></option>
-                        @endforeach --}}
-                    </select>
-                </div>
+        <div class="filter-depart">
+            <label for="depart">Office</label>
+            <div class="filter-input">
+                <select name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
+                    <option value="">All</option>
+                    @foreach ($office as $item)
+                        <option value="{{ $item->id }}" @if ($condition['office'] == $item->id) selected @endif>{{ $item->office_name }}</option>
+                    @endforeach
+                </select>
             </div>
 
+            <label style="margin-left: 30px" for="depart">Status</label>
+            <div class="status">
+                <select name="status" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
+                    <option value="1" @if ($condition['status'] == 1) selected @endif>Successful confirmation</option>
+                    <option value="2" @if ($condition['status'] == 2) selected @endif>Waiting for confirmation</option>
+                    <option value="3" @if ($condition['status'] == 3) selected @endif>Confirm failure</option>
+                    <option value="0" @if ($condition['status'] == 0) selected @endif>All</option>
+                </select>
+            </div>
 
+        </div>
+
+
+        <div class="filter-date">
+            <label for="start-date">From date</label>
+            <div class="filter-input">
+                <input type="date" name="from" value="{{ $condition['from'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
+            </div>
+            <label for="end-date" style="margin-left: 50px">To date</label>
+            <div class="filter-input">
+                <input type="date" name="to" value="{{ $condition['to'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
+            </div>
+            <div class="get-btn">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="submit" value="Filter" style="background:none; color:white">
+            </div>
+        </div>
     </form>
 
     <div class="tool-board">
-        <form class="show">
+        <form id="show-form" class="show" method="POST" action="{{'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}">
             <label for="show-text">Show</label>
             <div class="show-input">
-                <input type="text" list="nrows" size="10" name="show-text">
+                <input id="input-show" type="text" list="nrows" size="10" formtarget="" name="show" value="{{ $pagination['perPage'] }}">
                 <!-- <i class="fa-solid fa-chevron-down"></i> -->
+                <datalist id="nrows">
+                    <option value="25"></option>
+                    <option value="50" selected></option>
+                    <option value="100"></option>
+                    <option value="200"></option>
+                </datalist>
             </div>
-            <datalist id="nrows">
-                <option value="10"></option>
-                <option value="15"></option>
-                <option value="20"></option>
-                <option value="25"></option>
-            </datalist>
         </form>
         <ul class="print">
-            <li><a href="#">CSV</a></li>
-            <li><a href="#">PDF</a></li>
+            <li><a href="{{ route('admin.report.exportcsv') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">CSV</a></li>
+            <li><a href="{{ route('admin.report.exportpdf') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">PDF</a></li>
             <li><a href="#">PRINT</a></li>
         </ul>
     </div>
 
-    <div class="board">
-        <table width="100%" class="table table-hover" style="margin-bottom: 0px">
-            <thead>
-                <tr>
-                    <th>Number</th>
-                    <td>Name</td>
-                    <td>ID</td>
-                    <td>Content</td>
-                    <td>Date</td>
-                    <td>Status</td>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach ($list as $item )
-                <tr>
-                    {{-- <td class="name">
-                        <h5>Ho Viet Cuong</h5>
-                    </td>
-                    <td class="id">
-                        <p>1912820</p>
-                    </td>
-                    <td class="date">
-                        <p>E, may cham cong tui bi sai kia</p>
-                    </td>
-                    <td class="date">
-                        <p>9:00:22 14-10-2022</p>
-                    </td>
-                    <td class="workhour">
-                        <p></p>
-                    </td> --}}
-                    <th><h5>{{ $count++ }}</h5></th>
-                    <td>{{ $item->last_name . ' ' . $item->first_name }}</td>
-                    <td>{{ $item->id }}</td>
-                    <td>{{ $item->comment }}</td>
-                    <td>{{ $item->created_at }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+
+    <p id="url-pagination" hidden>{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}</p>
+    <div id="content">
+        @include('admin.pagination.report')
     </div>
 @endsection
+
+@push('js')
+    <script>
+        jQuery(document).ready(function($) {
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+        });
+    </script>
+@endpush

@@ -354,7 +354,7 @@ class TimesheetController extends Controller
         $office = $office->getOffices([]);
         // $notification = [];
         $page = 'timesheet';
-        $returnHTML = view('admin.pagination.timesheet', compact('list', 'pagination', 'notification', 'page', 'office', 'employeesList', 'page', 'condition',))->render();
+        $returnHTML = view('admin.pagination.timesheet', compact('list', 'pagination', 'notification', 'page', 'office', 'employeesList', 'condition',))->render();
         return response()->json($returnHTML);
     }
 
