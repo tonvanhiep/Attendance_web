@@ -30,8 +30,8 @@ class ReportController extends Controller
         $condition = [
             'status' => $request->input('status') == null ? 0 : $request->input('status'),
             'sort' => 1,
-            'from' => $request->get('from') == null || $request->get('from') > date('Y-m-d') ? date('Y-m-01') : $request->input('from'),
-            'to' => $request->get('to') == null || $request->get('to') > date('Y-m-d') ? date('Y-m-d') : $request->input('to'),
+            'from' => $request->get('from') != null && $request->get('from') <= date('Y-m-d') ? $request->input('from') : date('Y-m-01'),
+            'to' => $request->get('to') != null && $request->get('to') <= date('Y-m-d') ? $request->input('to') : date('Y-m-d'),
             'today' => date('Y-m-d'),
             'office' => $request->input('office'),
             'depart' => $request->input('depart'),
@@ -54,8 +54,8 @@ class ReportController extends Controller
         $condition = [
             'status' => $request->input('status') == null ? 0 : $request->input('status'),
             'sort' => 1,
-            'from' => $request->get('from') == null || $request->get('from') > date('Y-m-d') ? date('Y-m-01') : $request->input('from'),
-            'to' => $request->get('to') == null || $request->get('to') > date('Y-m-d') ? date('Y-m-d') : $request->input('to'),
+            'from' => $request->get('from') != null && $request->get('from') <= date('Y-m-d') ? $request->input('from') : date('Y-m-01'),
+            'to' => $request->get('to') != null && $request->get('to') <= date('Y-m-d') ? $request->input('to') : date('Y-m-d'),
             'today' => date('Y-m-d'),
             'office' => $request->input('office'),
             'depart' => $request->input('depart'),
