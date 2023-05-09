@@ -49,6 +49,11 @@ function pagination(page = 1)
         },
         success: function(data) {
             document.getElementById('content').innerHTML = data;
+            jQuery(document).ready(function($) {
+                $(".clickable-row").click(function() {
+                    window.location = $(this).data("href");
+                });
+            });
         },
         error: function(data) {},
     });
@@ -72,6 +77,11 @@ if (inputShow != null) {
                 processData: false,
                 success: (data) => {
                     document.getElementById('content').innerHTML = data;
+                    jQuery(document).ready(function($) {
+                        $(".clickable-row").click(function() {
+                            window.location = $(this).data("href");
+                        });
+                    });
                 },
                 error: function(data){}
             });
