@@ -31,8 +31,8 @@ class TimesheetController extends Controller
         $condition = [
             'status' => 1,
             'sort' => 1,
-            'from' => $request->get('from') == null || $request->get('from') > date('Y-m-d') ? date('Y-m-01') : $request->input('from'),
-            'to' => $request->get('to') == null || $request->get('to') > date('Y-m-d') ? date('Y-m-d') : $request->input('to'),
+            'from' => $request->get('from') != null && $request->get('from') <= date('Y-m-d') ? $request->input('from') : date('Y-m-01'),
+            'to' => $request->get('to') != null && $request->get('to') <= date('Y-m-d') ? $request->input('to') : date('Y-m-d'),
             'today' => date('Y-m-d'),
             'office' => $request->input('office'),
             'depart' => $request->input('depart'),
@@ -152,8 +152,8 @@ class TimesheetController extends Controller
         $info = $employees->getEmployees(['id' => $id]);
 
         $condition = [
-            'from' => $request->get('from') == null || $request->get('from') > date('Y-m-d') ? date('Y-m-01') : $request->input('from'),
-            'to' => $request->get('to') == null || $request->get('to') > date('Y-m-d') ? date('Y-m-d') : $request->input('to'),
+            'from' => $request->get('from') != null && $request->get('from') <= date('Y-m-d') ? $request->input('from') : date('Y-m-01'),
+            'to' => $request->get('to') != null && $request->get('to') <= date('Y-m-d') ? $request->input('to') : date('Y-m-d'),
             'today' => date('Y-m-d'),
         ];
         $WEEKDAY = ['Sunday', 'Monday', 'Tuesday', 'Wesnesday', 'Thursday', 'Friday', 'Saturday'];
@@ -273,8 +273,8 @@ class TimesheetController extends Controller
             'search' => $search,
             'office' => $request->input('office'),
             'depart' => $request->input('depart'),
-            'from' => $request->get('from') == null || $request->get('from') > date('Y-m-d') ? date('Y-m-01') : $request->input('from'),
-            'to' => $request->get('to') == null || $request->get('to') > date('Y-m-d') ? date('Y-m-d') : $request->input('to'),
+            'from' => $request->get('from') != null && $request->get('from') <= date('Y-m-d') ? $request->input('from') : date('Y-m-01'),
+            'to' => $request->get('to') != null && $request->get('to') <= date('Y-m-d') ? $request->input('to') : date('Y-m-d'),
             'today' => date('Y-m-d'),
         ];
         // dd($list,$condition);
