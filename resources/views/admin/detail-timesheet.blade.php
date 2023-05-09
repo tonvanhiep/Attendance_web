@@ -57,7 +57,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class='clickable-row' data-href='{{ route('admin.timesheet.detail', ['id' => $overview['id']]) }}'>
+                    <tr>
                         <td class="name">
                             <p class="fw-bold">{{ $overview['last_name'] . ' ' . $overview['first_name'] }}</p>
                         </td>
@@ -104,7 +104,8 @@
                 </thead>
                 <tbody>
                     @foreach ($arrTimesheetDetail as $key => $item)
-                        <tr @if ($item['day_off']) style="color: lightgrey" @endif>
+                        <tr @if ($item['day_off']) style="color: lightgrey" @endif class='clickable-row'
+                        data-href='{{ route('admin.timesheet.attendance', ['id' => $overview['id']]) . ($key == date('Y-m-d') ? '' : '?date=' . $key) }}'>
                             <td class="weekday">
                                 <p @if (!$item['day_off']) class="fw-bold" @endif>{{ $item['weekday'] }}</p>
                             </td>

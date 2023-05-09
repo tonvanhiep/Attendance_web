@@ -130,14 +130,11 @@ Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' =>
 
     Route::get('/', [UserAttendanceController::class, 'index'])->name('index');
 
-    // Route::group(['prefix' => 'home', 'as' => 'home.'], function () {
-    //     Route::get('/', [HomeController::class, 'index'])->name('list');
-    //     Route::post('/', [HomeController::class, 'pagination'])->name('pagination');
-    // });
-
     Route::group(['prefix' => 'attendance', 'as' => 'attendance.'], function () {
         Route::get('/', [UserAttendanceController::class, 'index'])->name('list');
         Route::post('/', [UserAttendanceController::class, 'pagination'])->name('pagination');
+
+        Route::get('/detail', [UserAttendanceController::class, 'detail'])->name('detail');
 
         Route::post('search', [UserAttendanceController::class, 'search'])->name('search');
 

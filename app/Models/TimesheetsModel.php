@@ -37,7 +37,7 @@ class TimesheetsModel extends Model
 
     public function selectAttendances($condition = null)
     {
-        if ($condition == null) return [];
+        if ($condition === null) return [];
         $result = DB::table($this->table)->join('timekeepers', 'timekeepers.id', '=', $this->table . '.timekeeper_id')
             ->join('offices', 'offices.id', '=', 'timekeepers.office_id')
             ->join('employees', 'employees.id', '=', $this->table . '.employee_id')
@@ -49,13 +49,17 @@ class TimesheetsModel extends Model
                 $this->table . '.id as attendance_id',
                 'office_name',
                 'timekeepers.timekeeper_name',
-                'timekeeping_at'
+                'timekeeping_at',
+                'face_image'
             )
             ->orderByDesc($this->table . '.timekeeping_at')
             ->orderByDesc($this->table . '.id');
 
         if (isset($condition['office']) && $condition['office'] != 0) {
             $result = $result->where('offices.id', $condition['office']);
+        }
+        if (isset($condition['employee_id']) && $condition['employee_id'] != 0) {
+            $result = $result->where('employees.id', $condition['employee_id']);
         }
         if (isset($condition['id']) && $condition['id'] != 0) {
             $result = $result->where($this->table . '.id', $condition['id']);
@@ -76,7 +80,7 @@ class TimesheetsModel extends Model
     public function getAttendances($condition = null)
     {
         $timesheet = $this->selectAttendances($condition);
-        return $timesheet == [] ? [] : $timesheet->get();
+        return $timesheet === [] ? [] : $timesheet->get();
     }
 
 

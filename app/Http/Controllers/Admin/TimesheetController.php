@@ -54,9 +54,7 @@ class TimesheetController extends Controller
         }
 
         foreach ($employeesList as $item) {
-            // dd(gettype($item));
             $timesheetList = $timesheet->getTimesheetsByEmployeeId(['id' => $item->id, 'from' => $condition['from'], 'to' => $condition['to']]);
-            // dd($timesheetList);
             $lateList = 0;
             $earlyList = 0;
             $presentList = 0;
@@ -69,18 +67,20 @@ class TimesheetController extends Controller
                 }
                 foreach ($timesheetList as $timesheetItem) {
                     if (Carbon::parse($timesheetItem->timekeeping_at)->dayOfWeek == ((int)$day - 1)) {
-                        $check_in = new Carbon($timesheetItem->check_in);
-                        $check_out = new Carbon($timesheetItem->check_out);
+                        $start_time = new Carbon($timesheetItem->start_time);
+                        $end_time = new Carbon($timesheetItem->end_time);
                         if ($timesheetItem->check_in < $timesheetItem->start_time  && $timesheetItem->check_out > $timesheetItem->end_time) {
                             $presentList++;
                         }
-                        else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $check_in->addMinute(120)->toTimeString()) {
+                        else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $start_time->addMinute(120)->toTimeString()) {
                             if ($timesheetItem->check_out > $timesheetItem->end_time) {
                                 $lateList++;
                             }
                         }
-                        else if ($timesheetItem->check_out > $check_out->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
-                            $earlyList++;
+                        else if ($timesheetItem->check_out > $end_time->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
+                            if ($timesheetItem->check_in < $timesheetItem->start_time) {
+                                $earlyList++;
+                            }
                         }
                     }
                 }
@@ -191,21 +191,23 @@ class TimesheetController extends Controller
             }
             foreach ($timesheetList as $timesheetItem) {
                 if (Carbon::parse($timesheetItem->timekeeping_at)->dayOfWeek == ((int)$day - 1)) {
-                    $check_in = new Carbon($timesheetItem->check_in);
-                    $check_out = new Carbon($timesheetItem->check_out);
+                    $start_time = new Carbon($timesheetItem->start_time);
+                    $end_time = new Carbon($timesheetItem->end_time);
                     if ($timesheetItem->check_in < $timesheetItem->start_time  && $timesheetItem->check_out > $timesheetItem->end_time) {
                         $arrTimesheetDetail[$timesheetItem->date]['status'] = 'OK';
                         $presentList++;
                     }
-                    else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $check_in->addMinute(120)->toTimeString()) {
+                    else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $start_time->addMinute(120)->toTimeString()) {
                         if ($timesheetItem->check_out > $timesheetItem->end_time) {
                             $lateList++;
                             $arrTimesheetDetail[$timesheetItem->date]['status'] = 'Late';
                         }
                     }
-                    else if ($timesheetItem->check_out > $check_out->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
-                        $earlyList++;
-                        $arrTimesheetDetail[$timesheetItem->date]['status'] = 'Early';
+                    else if ($timesheetItem->check_out > $end_time->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
+                        if ($timesheetItem->check_in < $timesheetItem->start_time) {
+                            $earlyList++;
+                            $arrTimesheetDetail[$timesheetItem->date]['status'] = 'Early';
+                        }
                     }
                 }
 
@@ -233,11 +235,24 @@ class TimesheetController extends Controller
         return view('admin.detail-timesheet', compact('notification', 'waitConfirm', 'condition', 'arrTimesheetDetail', 'overview', 'profile', 'page'));
     }
 
-    public function attendance(Request $request)
+    public function attendance(Request $request, $id)
     {
+        $employees = new EmployeesModel();
+        $timesheet = new TimesheetsModel();
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+
+        $condition = [
+            'employee_id' => $id,
+            'from' => $request->get('date') == null || $request->get('date') > date('Y-m-d') ? date('Y:m:d') : $request->get('date'),
+            'to' => $request->get('date') == null || $request->get('date') > date('Y-m-d') ? date('Y:m:d') : $request->get('date'),
+            'today' => date('Y-m-d')
+        ];
         $notification = [];
+        $attendanceList = $timesheet->getAttendances($condition);
+        // dd($attendanceList);
         $page = 'timesheet';
-        return view('admin.attendance-detail', compact('notification', 'page'));
+        return view('admin.timesheet-detail-attendance', compact('notification', 'condition', 'waitConfirm', 'profile', 'attendanceList', 'page'));
     }
 
     public function pagination(Request $request)
@@ -293,18 +308,20 @@ class TimesheetController extends Controller
                 }
                 foreach ($timesheetList as $timesheetItem) {
                     if (Carbon::parse($timesheetItem->timekeeping_at)->dayOfWeek == ((int)$day - 1)) {
-                        $check_in = new Carbon($timesheetItem->check_in);
-                        $check_out = new Carbon($timesheetItem->check_out);
+                        $start_time = new Carbon($timesheetItem->start_time);
+                        $end_time = new Carbon($timesheetItem->end_time);
                         if ($timesheetItem->check_in < $timesheetItem->start_time  && $timesheetItem->check_out > $timesheetItem->end_time) {
                             $presentList++;
                         }
-                        else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $check_in->addMinute(120)->toTimeString()) {
+                        else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $start_time->addMinute(120)->toTimeString()) {
                             if ($timesheetItem->check_out > $timesheetItem->end_time) {
                                 $lateList++;
                             }
                         }
-                        else if ($timesheetItem->check_out > $check_out->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
-                            $earlyList++;
+                        else if ($timesheetItem->check_out > $end_time->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
+                            if ($timesheetItem->check_in < $timesheetItem->start_time) {
+                                $earlyList++;
+                            }
                         }
                     }
                 }
