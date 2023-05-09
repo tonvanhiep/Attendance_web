@@ -4,7 +4,7 @@
     </div>
     <div class="list-group list-group-flush my-3">
         <a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
-                class="fas fa-cmment-dots me-2"></i>Chat</a>
+                class="fas fa-comment-dots me-2"></i>Chat</a>
         <a href="{{ route('user.attendance.list') }}"
             class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                 class="fas fa-project-diagram me-2"></i>Attendance</a>

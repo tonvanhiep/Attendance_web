@@ -275,6 +275,7 @@ class TimesheetController extends Controller
             'depart' => $request->input('depart'),
             'from' => $request->get('from') == null || $request->get('from') > date('Y-m-d') ? date('Y-m-01') : $request->input('from'),
             'to' => $request->get('to') == null || $request->get('to') > date('Y-m-d') ? date('Y-m-d') : $request->input('to'),
+            'today' => date('Y-m-d'),
         ];
         // dd($list,$condition);
         $employeesList = $employees->pagination($condition, $request->page, $perPage);

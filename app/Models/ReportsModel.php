@@ -67,7 +67,7 @@ class ReportsModel extends Model
         return $report == [] ? [] : $report->get();
     }
 
-    public function selectAllReports()
+    public function selectAllReports($condition = null)
     {
         $result = DB::table($this->table)
             ->join('employees', 'employees.id', '=', $this->table . '.employee_id')
