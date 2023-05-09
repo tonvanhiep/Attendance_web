@@ -33,7 +33,7 @@
                     <td>Time</td>
                     <td>Timekeeper</td>
                     <td>Office</td>
-                    <td>Result Recogination</td>
+                    <td>Result Recognition</td>
                 </tr>
             </thead>
             <tbody>

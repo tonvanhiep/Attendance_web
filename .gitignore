@@ -17,3 +17,4 @@ yarn-error.log
 /.idea
 /.vscode
 laravel-echo-server.lock
+/public/assets/img/logo.*

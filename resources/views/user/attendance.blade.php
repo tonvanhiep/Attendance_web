@@ -24,7 +24,7 @@
                             <input type="date" name="to" id="to" class="form-control input-sm" value="{{ $condition['to'] }}" max="{{ $condition['today'] }}">
                         </div>
                         <div class="col-sm-2">
-                            <button type="submit" class="btn btn-primary" name="seach" title="search">
+                            <button type="submit" class="btn btn-primary"title="search">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>

@@ -226,4 +226,21 @@ class UserAttendanceController extends Controller
         $returnHTML = view('user.pagination.attendance', compact('pagination','titlePage', 'user', 'condition', 'count', 'dayOfWeekArr', 'request'))->render();
         return response()->json($returnHTML);
     }
+
+    public function detail(Request $request)
+    {
+        $timesheet = new TimesheetsModel();
+        $titlePage = 'Attendance';
+        $id = Auth::user()->employee_id;
+        $user = EmployeesModel::find($id);
+
+        $condition = [
+            'employee_id' => $id,
+            'from' => $request->get('date') == null || $request->get('date') > date('Y-m-d') ? date('Y:m:d') : $request->get('date'),
+            'to' => $request->get('date') == null || $request->get('date') > date('Y-m-d') ? date('Y:m:d') : $request->get('date'),
+            'today' => date('Y-m-d')
+        ];
+        $list = $timesheet->getAttendances($condition);
+        return view('user.detail-attendance', compact('titlePage', 'user', 'list', 'condition'));
+    }
 }

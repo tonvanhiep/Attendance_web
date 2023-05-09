@@ -28,42 +28,20 @@ use App\Http\Controllers\AttendanceController as ControllersAttendanceController
 */
 
 Route::get('/test', function () {
-    dd(Auth::check());
+    dd(Auth::guard('timekeeper')->check());
 });
 Route::get('/', function () {
     return redirect()->route('admin.auth.login');
-    //return view('admin.login.home-login');
 });
 
-// Route::group(['prefix' => 'login', 'middleware' => 'loginmiddleware', 'as'=> 'login.'], function ()
-// {
-//     Route::get('/', [LoginController::class, 'index'])->name('home');
-
-//     Route::get('/user', [LoginController::class, 'user'])->name('user');
-//     Route::post('/user', [LoginController::class, 'userLogin'])->name('p_user');
-
-//     Route::get('/admin', [LoginController::class, 'admin'])->name('admin');
-//     Route::post('/admin', [LoginController::class, 'adminLogin'])->name('p_admin');
-
-//     Route::get('/attendance', [LoginController::class, 'attendance'])->name('attendance');
-//     Route::post('/attendance', [LoginController::class, 'attendanceLogin'])->name('p_attendance');
-// });
 
 Route::group(['middleware' => 'existedloginmiddleware', 'as' => 'admin.'], function () {
     Route::group(['as' => 'auth.'], function () {
         Route::get('login', [AuthController::class, 'login'])->name('login');
         Route::post('login', [AuthController::class, 'checkLogin'])->name('check-login');
-        // Route::get('login', [AuthController::class, 'userLogin'])->name('userlogin');
-        // Route::post('login', [AuthController::class, 'userCheckLogin'])->name('usercheck-login');
     });
 });
 
-// Route::group(['middleware' => 'existedloginmiddleware', 'as' => 'user.'], function () {
-//     Route::group(['as' => 'auth.'], function () {
-//         Route::get('login', [AuthController::class, 'userLogin'])->name('userlogin');
-//         Route::post('login', [AuthController::class, 'userCheckLogin'])->name('usercheck-login');
-//     });
-// });
 
 Route::group(['prefix' => 'admin', 'middleware' => 'loginmiddleware', 'as' => 'admin.'], function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
@@ -121,9 +99,15 @@ Route::group(['prefix' => 'admin', 'middleware' => 'loginmiddleware', 'as' => 'a
     });
 });
 
-Route::get('/check-in', [ControllersAttendanceController::class, 'index'])->name('check-in');
-Route::get('/check-in/recoginition', [ControllersAttendanceController::class, 'recognition'])->name('recoginition');
-Route::post('/attendance', [ControllersAttendanceController::class, 'attendance'])->name('attendance');
+
+Route::get('/check-in/login', [ControllersAttendanceController::class, 'login'])->middleware('timekeeperloginexistedmiddleware')->name('check-in.login');
+Route::post('/check-in/login', [ControllersAttendanceController::class, 'actionLogin'])->middleware('timekeeperloginexistedmiddleware')->name('check-in.plogin');
+Route::group(['middleware' => 'timekeeperloginmiddleware'], function () {
+    Route::get('/check-in/logout', [ControllersAttendanceController::class, 'logout'])->name('check-in.logout');
+    Route::get('/check-in', [ControllersAttendanceController::class, 'index'])->name('check-in');
+    Route::get('/check-in/recoginition', [ControllersAttendanceController::class, 'recognition'])->name('recoginition');
+    Route::post('/attendance', [ControllersAttendanceController::class, 'attendance'])->name('attendance');
+});
 
 
 Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' => 'user.'], function () {

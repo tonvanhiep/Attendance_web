@@ -17,7 +17,7 @@
         <!-- Sidebar -->
         <div class="bg-white" id="sidebar-wrapper">
             <div class="sidebar-heading text-center py-4 primary-text fs-4 fw-bold text-uppercase border-bottom">
-                <img src="{{ asset('assets/img/logoBK.png') }}" style="width:150px;height:auto" alt="">HCMUT
+                <img src="{{ asset(env('WEB_LOGO')) }}" style="width:150px;height:auto" alt="">{{ env('WEB_NAME') }}
             </div>
             <div class="list-group list-group-flush my-3">
                 <a href="#" class="list-group-item list-group-item-action bg-transparent second-text active"><i

@@ -15,7 +15,7 @@ class AttendanceController extends Controller
     public function index()
     {
         $image = new FaceEmployeeImagesModel;
-        $image = $image->getImages(['status' => 1]);
+        $image = $image->getImages(['status' => 1, 'office' => Auth::guard('timekeeper')->user()->office_id]);
         //dd($image->toArray());
         $arr = [];
         foreach ($image as $key => $value) {
@@ -34,7 +34,7 @@ class AttendanceController extends Controller
     public function recognition()
     {
         $image = new FaceEmployeeImagesModel;
-        $image = $image->getImages(['status' => 1]);
+        $image = $image->getImages(['status' => 1, 'office' => Auth::guard('timekeeper')->user()->office_id]);
         //dd($image->toArray());
         $arr = [];
         foreach ($image as $key => $value) {
@@ -73,7 +73,7 @@ class AttendanceController extends Controller
             'employee_id' => $employee[0]->id,
             'face_image' => $file_name,
             'status' => $request->identity == 'true' ? 1 : 2,
-            'timekeeper_id' => 4 //$request->timekeeper_id
+            'timekeeper_id' => Auth::guard('timekeeper')->user()->office_id
         ];
         $id_attendance = $attendance->saveAttendance($data);
 
@@ -89,6 +89,27 @@ class AttendanceController extends Controller
 
         broadcast(new Attendance($id_attendance))->toOthers();
         return response()->json($data);
+    }
+
+    public function login()
+    {
+        return view('attendance.login');
+    }
+
+    public function actionLogin(Request $request)
+    {
+        if (Auth::guard('timekeeper')->attempt(['account' => $request->name, 'password' => $request->password])) {
+            if (Auth::guard('timekeeper')->user()->status == 1) {
+                return redirect()->route('check-in');
+            }
+        }
+        return redirect()->route('check-in.login')->with('error', 'Login failed');
+    }
+
+    public function logout()
+    {
+        Auth::guard('timekeeper')->logout();
+        return redirect()->route('check-in.login');
     }
 
     //API

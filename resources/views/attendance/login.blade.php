@@ -17,7 +17,7 @@
             <img style="max-height: 150px; margin-top:30px" src="{{ asset(env('WEB_LOGO')) }}" alt="">
         </div>
         <h1>Login</h1>
-        <form action="{{ route('admin.auth.check-login') }}" method="post">
+        <form action="{{ route('check-in.plogin') }}" method="post">
             @csrf
             <div class="text-container">
                 <input type="text" name="name" required>
@@ -29,7 +29,6 @@
                 <span></span>
                 <label for="password">Password</label>
             </div>
-            <div class="forgot">Forgot Password?</div>
             @if (session('success'))
                 {{ session('success') }}
             @endif

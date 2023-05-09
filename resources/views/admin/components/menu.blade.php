@@ -1,7 +1,7 @@
 <section id="menu">
     <div class="logo">
-        <img src="{{asset('assets/img/logoBK.png');}}" alt="">
-        <h2>HCMUT</h2>
+        <img src="{{asset(env('WEB_LOGO'));}}" alt="">
+        <h2>{{ env('WEB_NAME') }}</h2>
     </div>
     <ul class="items" style="padding-left: 0px;">
         <li style="{{ $page == 'dashboard' ? 'border-left: 4px solid #fff;' : '' }}"><i class="fa-solid fa-gauge"></i><a href="{{route('admin.dashboard')}}">Dashboard</a></li>

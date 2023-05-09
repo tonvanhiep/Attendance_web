@@ -66,7 +66,7 @@
         <tbody>
             @foreach ($arrTimesheetDetail as $key => $item)
                 <tr @if ($item['day_off']) style="color: lightgrey" @endif
-                class='clickable-row' data-href='{{ route('user.attendance.detail') . '?date=' }}'>
+                class='clickable-row' data-href='{{ route('user.attendance.detail') . ($key == date('Y-m-d') ? '' : '?date=' . $key) }}'>
                     <td class="weekday">
                         <p @if (!$item['day_off']) class="fw-bold" @endif>{{ $item['weekday'] }}</p>
                     </td>
@@ -89,3 +89,14 @@
 </div>
 
 @include('user.components.pagination')
+
+@push('js')
+    <script>
+        jQuery(document).ready(function($) {
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+        });
+    </script>
+@endpush
+
