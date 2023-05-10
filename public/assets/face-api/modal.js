@@ -14,25 +14,25 @@ var modalWrap = null;
 export const showModal = (
     title,
     description,
-    yesBtnLabel ,
+    yesBtnLabel,
     noBtnLabel,
     callback_Yes,
-    callback_No,
-    callback_Close,
+    callback_No
+    // callback_Close,
 ) => {
     if (modalWrap !== null) {
         modalWrap.remove();
-        $('.modal-backdrop').remove();
+        $(".modal-backdrop").remove();
     }
 
     modalWrap = document.createElement("div");
     modalWrap.innerHTML = `
-    <div class="modal fade" tabindex="-1">
+    <div class="modal fade" data-bs-backdrop="static"
+    data-bs-keyboard="false" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-light">
             <h5 class="modal-title">${title}</h5>
-            <button type="button" id="closeBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <p>${description}</p>
@@ -46,19 +46,8 @@ export const showModal = (
     </div>
   `;
 
-    //   modalWrap?.querySelector('#yesBtn')?.addEventListener("click",callbackYes);
-    //   modalWrap?.querySelector('#noBtn')?.addEventListener("click",callbackNo);
-    //   modalWrap.querySelector('.modal-success-btn').onclick = callback;
-    document.body.addEventListener('click', () => {
-        console.log('body click')
-        callback_Close();
-    }, true);
-
     modalWrap.querySelectorAll("button").forEach((occurence) => {
         let id = occurence.getAttribute("id");
-        // console.log(occurence,id);
-        // occurence.addEventListener('click', callbackYes);
-        // console.log(id,callback, callBack[id]);
         occurence.onclick = () => {
             switch (id) {
                 case "yesBtn": {
@@ -71,11 +60,11 @@ export const showModal = (
                     callback_No();
                     break;
                 }
-                case "closeBtn": {
-                    console.log("click close");
-                    callback_Close();
-                    break;
-                }
+                // case "closeBtn": {
+                //     console.log("click close");
+                //     callback_Close();
+                //     break;
+                // }
             }
         };
     });

@@ -157,7 +157,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                 },
                 () => {
                     // alert("Wait for timekeeping again");
-                    RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+                    // RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
                 }
             )
         } else {
