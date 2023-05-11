@@ -71,21 +71,25 @@ class UserAttendanceController extends Controller
             }
             foreach ($timesheetList as $timesheetItem) {
                 if (Carbon::parse($timesheetItem->timekeeping_at)->dayOfWeek == ((int)$day - 1)) {
-                    $check_in = new Carbon($timesheetItem->check_in);
-                    $check_out = new Carbon($timesheetItem->check_out);
+                    // $check_in = new Carbon($timesheetItem->check_in);
+                    // $check_out = new Carbon($timesheetItem->check_out);
+                    $start_time = new Carbon($timesheetItem->start_time);
+                    $end_time = new Carbon($timesheetItem->end_time);
                     if ($timesheetItem->check_in < $timesheetItem->start_time  && $timesheetItem->check_out > $timesheetItem->end_time) {
                         $arrTimesheetDetail[$timesheetItem->date]['status'] = 'OK';
                         $presentList++;
                     }
-                    else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $check_in->addMinute(120)->toTimeString()) {
+                    else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $start_time->addMinute(120)->toTimeString()) {
                         if ($timesheetItem->check_out > $timesheetItem->end_time) {
                             $lateList++;
                             $arrTimesheetDetail[$timesheetItem->date]['status'] = 'Late';
                         }
                     }
-                    else if ($timesheetItem->check_out > $check_out->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
-                        $earlyList++;
-                        $arrTimesheetDetail[$timesheetItem->date]['status'] = 'Early';
+                    else if ($timesheetItem->check_out > $end_time->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
+                        if ($timesheetItem->check_in < $timesheetItem->start_time) {
+                            $earlyList++;
+                            $arrTimesheetDetail[$timesheetItem->date]['status'] = 'Early';
+                        }
                     }
                 }
 
