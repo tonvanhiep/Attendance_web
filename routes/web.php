@@ -128,6 +128,7 @@ Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' =>
     });
 
     Route::get('profile', [ProfileController::class, 'index'])->name('profile');
+    Route::post('profile/reset-pass', [ProfileController::class, 'resetPass'])->name('reset-pass');
 
     // Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
     //     Route::get('/', [ProfileController::class, 'index'])->name('');

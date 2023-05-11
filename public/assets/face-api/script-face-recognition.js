@@ -48,7 +48,7 @@ async function start() {
     const labeledFaceDescriptors = await loadLabeledImages();
     console.log("Completed training.")
 
-    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.5);
+    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.4);
 
     let image;
     let canvas;
