@@ -17,8 +17,9 @@ function val() {
         document.getElementById('inp-left-day').value = '';
     }
 }
-    const url = document.getElementById("url-face-api").textContent;
-    const urlModel = url + "/models";
+
+const url = document.getElementById("url-face-api").textContent;
+const urlModel = url + "/models";
 Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri(urlModel),
     faceapi.nets.faceRecognitionNet.loadFromUri(urlModel),
@@ -28,19 +29,6 @@ Promise.all([
 ]).then(
     console.log('Module is loaded')
 )
-var modelsIsLoaded = false;
-// function loadModel() {
-//     const url = document.getElementById("url-face-api").textContent;
-//     const urlModel = url + "/models";
-//     Promise.all([
-//         faceapi.nets.tinyFaceDetector.loadFromUri(urlModel),
-//         faceapi.nets.faceRecognitionNet.loadFromUri(urlModel),
-//         faceapi.nets.faceLandmark68Net.loadFromUri(urlModel),
-//         faceapi.nets.ssdMobilenetv1.loadFromUri(urlModel),
-//         faceapi.nets.faceExpressionNet.loadFromUri(urlModel)
-//     ])
-//     modelsIsLoaded = true;
-// }
 
 
 const ipnFileElement = document.getElementById('inp-face')
@@ -48,12 +36,16 @@ const resultElement = document.getElementById('div-face-upload')
 // const validImageTypes = ['image/gif', 'image/jpeg', 'image/png']
 
 ipnFileElement.addEventListener('change', async function(e) {
-    // if(!modelsIsLoaded) {
-    //     loadModel()
-    // }
+    var errorAlert = document.getElementById('div-alert-error')
+    errorAlert.hidden=true;
+    errorAlert.innerHTML='';
+    document.getElementById('processing-noti').hidden = false;
+
     const files = e.target.files
     resultElement.innerHTML = ''
     let image;
+    var errorAlert = document.getElementById('div-alert-error')
+    var deleted = 0;
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i]
@@ -62,12 +54,14 @@ ipnFileElement.addEventListener('change', async function(e) {
         if (image) image.remove();
         image = await faceapi.bufferToImage(file);
 
-        const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors();
-        console.log(detections);
-
-        if(detections.length == 0) {
-            // thong bao anh khong co khuon mat
-            removeFileFromFileList(i);
+        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
+        if(detections == null || detections.length == 0) {
+            errorAlert.hidden=false
+            var paragraph = document.createElement("p");
+            paragraph.textContent = "Cannot detect face in image '" + file.name + "'";
+            errorAlert.append(paragraph);
+            removeFileFromFileList(i - deleted);
+            deleted++;
             continue;
         }
 
@@ -81,6 +75,8 @@ ipnFileElement.addEventListener('change', async function(e) {
                 `<img src="${url}" alt="${file.name}" class="rounded img-preview" />`
             )}
         }
+    document.getElementById('processing-noti').hidden = true
+
 })
 
 function removeFileFromFileList(index) {

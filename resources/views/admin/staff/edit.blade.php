@@ -26,8 +26,7 @@
         <div class="modal-dialog" style="
         min-width: 500px;
         width: 50% !important;
-        max-width: 1000px;
-    ">
+        max-width: 1000px;">
             <div class="modal-content">
 
                 <!-- Modal Header -->
@@ -38,22 +37,17 @@
 
                 <div class="modal-footer" style="display: block">
                     <div class="input-group" style="margin-bottom: 15px">
-                        <input type="file" id="inp-face" name="face[]" accept="img/*" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" multiple aria-label="Upload">
+                        <input form="form-user-info" type="file" id="inp-face" name="face[]" accept="img/*" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" multiple aria-label="Upload">
                     </div>
                     <div>
-                        <div style="display: flex; justify-content: center;"><p id="loading-notification">Loading</p></div>
-                        <div class="alert alert-danger" role="alert">
-                            <p>Can't detect face in image 'sjsbkfsa'</p>
-                            <p>Can't detect face in image 'sjsbkfsa'</p>
-                            <p>Can't detect face in image 'sjsbkfsa'</p>
-                            <p>Can't detect face in image 'sjsbkfsa'</p>
-                        </div>
+                        <div style="display: flex; justify-content: center;"><p hidden id="processing-noti">Processing...</p></div>
+                        <div hidden id="div-alert-error" class="alert alert-danger" role="alert"></div>
                     </div>
                     <div style="display: flex; flex-wrap:wrap; margin-bottom:30px">
                         <div id="div-face-upload" style="display: flex; flex-wrap:wrap"></div>
                     </div>
                     <div style="display: flex; justify-content: center;">
-                        <button type="button" class="btn btn-success" style="min-width: 50%;">Upload</button>
+                        <button type="button" class="btn btn-success" style="min-width: 50%;" data-bs-dismiss="modal">OK</button>
                     </div>
                 </div>
 
@@ -62,25 +56,28 @@
     </div>
 
     <div class="modal" id="myModal2">
-        <div class="modal-dialog">
+        <div class="modal-dialog" style="
+        min-width: fit-content;
+        width: 50% !important;
+        max-width: 1000px;">
             <div class="modal-content">
-
-                <!-- Modal Header -->
                 <div class="modal-header">
                     <h4 class="modal-title">Face scan</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <!-- Modal body -->
-                {{-- <div class="modal-body">
-                    Modal body..
-                </div> --}}
-
-                <!-- Modal footer -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <div class="modal-footer" style="display: block">
+                    <div id="div-scan" style="display: flex; justify-content: center;">
+                        <div id="webcam" style="width: fit-content;
+                        height: fit-content; border: solid; border-radius: 1000px;">
+                            <video id="video" width="560" height="560" autoplay muted></video>
+                            {{-- <h2 id="text-loading">Loading...</h2> --}}
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: center; margin-top:30px">
+                        <button type="button" class="btn btn-success" style="min-width: 50%;" data-bs-dismiss="modal">OK</button>
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -100,7 +97,7 @@
             </div>
         @endforeach
     @endif
-    <form class="board" action="{{ route('admin.staff.update', $staff->id) }}" method="post" enctype="multipart/form-data">
+    <form id="form-user-info" class="board" action="{{ route('admin.staff.update', $staff->id) }}" method="post" enctype="multipart/form-data">
         @csrf
         @method('put')
         <h4>Edit Staff</h4>
