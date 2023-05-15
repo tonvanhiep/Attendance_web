@@ -73,7 +73,7 @@ class AttendanceController extends Controller
             'employee_id' => $employee[0]->id,
             'face_image' => $file_name,
             'status' => $request->identity == 'true' ? 1 : 2,
-            'timekeeper_id' => Auth::guard('timekeeper')->user()->office_id
+            'timekeeper_id' => Auth::guard('timekeeper')->user()->id
         ];
         $id_attendance = $attendance->saveAttendance($data);
 

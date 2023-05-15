@@ -8,10 +8,79 @@
 
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/css/add.css') }}">
+    <style>
+        .img-preview {
+            max-width: 200px;
+            margin: 5px;
+        }
+        .dropdown-toggle::after {
+            content: none;
+        }
+    </style>
 @endpush
 
 
 @section('content')
+    <p id="url-face-api" hidden>{{ asset('assets/face-api') }}</p>
+    <div class="modal" id="myModal">
+        <div class="modal-dialog" style="
+        min-width: 500px;
+        width: 50% !important;
+        max-width: 1000px;">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Upload face recognition image</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-footer" style="display: block">
+                    <div class="input-group" style="margin-bottom: 15px">
+                        <input form="form-user-info" type="file" id="inp-face" name="face[]" accept="img/*" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" multiple aria-label="Upload">
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: center;"><p hidden id="processing-noti">Processing...</p></div>
+                        <div hidden id="div-alert-error" class="alert alert-danger" role="alert"></div>
+                    </div>
+                    <div style="display: flex; flex-wrap:wrap; margin-bottom:30px">
+                        <div id="div-face-upload" style="display: flex; flex-wrap:wrap"></div>
+                    </div>
+                    <div style="display: flex; justify-content: center;">
+                        <button type="button" class="btn btn-success" style="min-width: 50%;" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="myModal2">
+        <div class="modal-dialog" style="
+        min-width: fit-content;
+        width: 50% !important;
+        max-width: 1000px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Face scan</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-footer" style="display: block">
+                    <div id="div-scan" style="display: flex; justify-content: center;">
+                        <div id="webcam" style="width: fit-content;
+                        height: fit-content; border: solid; border-radius: 1000px;">
+                            <video id="video" width="560" height="560" autoplay muted></video>
+                            {{-- <h2 id="text-loading">Loading...</h2> --}}
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: center; margin-top:30px">
+                        <button type="button" class="btn btn-success" style="min-width: 50%;" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <h3 class="i-name">Staff List / Add New Staff</h3>
 
     <form class="board" action="{{ route('admin.staff.store') }}" method="post" enctype="multipart/form-data">
@@ -173,7 +242,7 @@
                 </div>
             </div>
 
-            <h5 style="margin-bottom: 15px">Face Recognition</h5>
+            {{-- <h5 style="margin-bottom: 15px">Face Recognition</h5>
             <div class="container-top" style="display: block">
                 <div class="input-group" style="margin-bottom: 15px">
                     <input type="file" id="inp-face" name="image_url[]" accept="img/*" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" multiple aria-label="Upload">
@@ -187,6 +256,27 @@
                 </style>
                 <div style="display: flex; flex-wrap:wrap">
                     <div id="div-face-upload" style="display: flex; flex-wrap:wrap"></div>
+                </div>
+            </div> --}}
+            <div style="margin-bottom:10px; display: flex; justify-content: space-between;">
+                <h5 style="margin-bottom: 15px; display:inline">Face Recognition</h5>
+                <div class="dropdown">
+                        <button style="background-color: #323FAE" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-plus" style="padding-right: 10px"></i>Add Image
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#myModal">Upload image</button></li>
+                            <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#myModal2">Face scan</button></li>
+                        </ul>
+                </div>
+            </div>
+            <div class="container-top" style="display: block">
+                <div style="display: flex; flex-wrap:wrap">
+                    <div id="div-face-available" style="display: flex; flex-wrap:wrap">
+                        {{-- @foreach ($list as $item)
+                            <img src="{{ asset($item->image_url) }}" class="rounded img-preview" alt="...">
+                        @endforeach --}}
+                    </div>
                 </div>
             </div>
         </div>
@@ -209,48 +299,9 @@
     @endif
 @endsection
 
-{{-- @section('scripts')
-    <script>
-        ClassicEditor
-            .create( document.querySelector( '#editor' ) )
-            .catch( error => {
-                console.error( error );
-            } );
-    </script>
-@endsection --}}
+
 @push('js')
-    <script>
-        const input = document.getElementById('file-input');
-        const image = document.getElementById('img-preview');
-
-        input.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                const src = URL.createObjectURL(e.target.files[0]);
-                image.src = src;
-            }
-        });
-
-        const ipnFileElement = document.getElementById('inp-face')
-        const resultElement = document.getElementById('div-face-upload')
-        // const validImageTypes = ['image/gif', 'image/jpeg', 'image/png']
-
-        ipnFileElement.addEventListener('change', function(e) {
-            const files = e.target.files
-            resultElement.innerHTML = ''
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i]
-                const fileType = file['type']
-
-                const fileReader = new FileReader()
-                fileReader.readAsDataURL(file)
-
-                fileReader.onload = function() {
-                    const url = fileReader.result
-                    resultElement.insertAdjacentHTML(
-                        'beforeend',
-                        `<img src="${url}" alt="${file.name}" class="rounded img-preview" />`
-                    )}
-            }
-        })
-    </script>
+    <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
+    <script defer type="module" src="{{ asset('assets/face-api/edit-staff.js') }}"></script>
+    {{-- <script src="{{ asset('assets/face-api/edit-staff.js')}}"></script> --}}
 @endpush

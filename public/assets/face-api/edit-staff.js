@@ -8,15 +8,7 @@ input.addEventListener('change', (e) => {
     }
 });
 
-function val() {
-    d = document.getElementById("select-status").value;
-    if(d == 0) {
-        document.getElementById('div-left-day').style.display = 'block';
-    } else {
-        document.getElementById('div-left-day').style.display = 'none';
-        document.getElementById('inp-left-day').value = '';
-    }
-}
+
 
 const url = document.getElementById("url-face-api").textContent;
 const urlModel = url + "/models";

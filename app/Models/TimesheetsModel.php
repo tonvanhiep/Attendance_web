@@ -37,10 +37,11 @@ class TimesheetsModel extends Model
 
     public function selectAttendances($condition = null)
     {
+        // dd($condition);
         if ($condition === null) return [];
         $result = DB::table($this->table)->join('timekeepers', 'timekeepers.id', '=', $this->table . '.timekeeper_id')
-            ->join('offices', 'offices.id', '=', 'timekeepers.office_id')
             ->join('employees', 'employees.id', '=', $this->table . '.employee_id')
+            ->join('offices', 'offices.id', '=', 'employees.office_id')
             ->select(
                 'employees.id',
                 $this->table . '.status',

@@ -320,5 +320,16 @@
 @push('js')
     <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
     <script defer type="module" src="{{ asset('assets/face-api/edit-staff.js') }}"></script>
+    <script>
+        function val() {
+            d = document.getElementById("select-status").value;
+            if(d == 0) {
+                document.getElementById('div-left-day').style.display = 'block';
+            } else {
+                document.getElementById('div-left-day').style.display = 'none';
+                document.getElementById('inp-left-day').value = '';
+            }
+        }
+    </script>
     {{-- <script src="{{ asset('assets/face-api/edit-staff.js')}}"></script> --}}
 @endpush

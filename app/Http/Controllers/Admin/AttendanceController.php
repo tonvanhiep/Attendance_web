@@ -34,7 +34,7 @@ class AttendanceController extends Controller
             'today' => date('Y-m-d')
         ];
         $list = $timesheet-> paginationAttenndance($condition, $request->page, $perPage);
-        // dd($list);
+        // dd($list, $condition);
         $pagination = [
             'perPage' => $list->perPage(),
             'lastPage' => $list->lastPage(),
