@@ -18,7 +18,7 @@ class TimekeeperLoginMiddleware
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::guard('timekeeper')->check()) {
-            return redirect()->route('check-in.login')->with('error', 'Check your pass');
+            return redirect()->route('check-in.login')->with('error', 'Login Failed');
         }
         else return $next($request);
     }

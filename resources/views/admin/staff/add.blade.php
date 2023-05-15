@@ -89,24 +89,24 @@
         <div class="input-container">
             <div class="container-top">
                 <div class="board-left">
-                    <div class="long form" >
+                    <div class="long form">
                         <label for="first_name">First Name</label>
                         <input type="text" name="first_name">
                     </div>
-                    <div class="long form" >
+                    <div class="long form">
                         <label for="last_name">Last Name</label>
                         <input type="text" name="last_name">
                     </div>
 
-                    <div  class="long form" >
+                    <div class="long form">
                         <label for="numberphone">Phone</label>
                         <input type="text" name="numberphone">
                     </div>
-                    <div  class="long form" >
+                    <div class="long form">
                         <label for="address">Address</label>
                         <input type="text" name="address">
                     </div>
-                    <div class="long form" >
+                    <div class="long form">
                         <label for="birth_day">Date of birth</label>
                         <input type="date" name="birth_day">
                     </div>
@@ -114,25 +114,28 @@
                         <label>Gender</label>
                         <div>
                             <label for="male">Male</label>
-                            <input type="radio" name="gender" id="male" value="1" {{ old('gender') === '1' ? 'checked' : '' }}>
+                            <input type="radio" name="gender" id="male" value="1"
+                                {{ old('gender') === '1' ? 'checked' : '' }}>
                         </div>
                         <div>
                             <label for="female">Female</label>
-                            <input type="radio" name="gender" id="female" value="0" {{ old('gender') === '0' ? 'checked' : '' }}>
+                            <input type="radio" name="gender" id="female" value="0"
+                                {{ old('gender') === '0' ? 'checked' : '' }}>
                         </div>
                     </div>
-                    <div class="long form" >
+                    <div class="long form">
                         <label for="department">Department</label>
                         <input type="text" name="department">
                     </div>
-                    <div class="long form" >
+                    <div class="long form">
                         <label for="position">Position</label>
                         <input type="text" name="position">
                     </div>
-                    <div class="long form" >
+                    <div class="long form">
                         <label for="office_id">Office</label>
                         {{-- <input type="number" name="office_id"> --}}
-                        <select name="office_id" style="
+                        <select name="office_id"
+                            style="
                             flex: 1;
                             display: inline-block;
                             padding: 5px 10px;
@@ -144,7 +147,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="long form" >
+                    <div class="long form">
                         <label for="working_day">Working_day</label>
                         <input type="checkbox" name="working_day[]" value="2">Mon
                         <input type="checkbox" name="working_day[]" value="3">Tue
@@ -187,10 +190,11 @@
                     @endpush
                     <div class="short form">
                         <div class="preview">
-                            <img id="img-preview" src="https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png" />
+                            <img id="img-preview"
+                                src="https://www.shareicon.net/data/512x512/2017/01/06/868320_people_512x512.png" />
                         </div>
                     </div>
-                    <div class="short form" >
+                    <div class="short form">
                         <label for="file-input">Avatar</label>
                         <input type="file" name="avatar" accept="img/*" id="file-input">
                     </div>
@@ -203,14 +207,16 @@
                         <label>Role</label>
                         <div>
                             <label for="admin">Admin</label>
-                            <input type="radio" name="fl_admin" id="admin" value="1" {{ old('fl_admin') === '1' ? 'checked' : '' }}>
+                            <input type="radio" name="fl_admin" id="admin" value="1"
+                                {{ old('fl_admin') === '1' ? 'checked' : '' }}>
                         </div>
                         <div>
                             <label for="user">User</label>
-                            <input type="radio" name="fl_admin" id="user" value="0" {{ old('fl_admin') === '0' ? 'checked' : '' }}>
+                            <input type="radio" name="fl_admin" id="user" value="0"
+                                {{ old('fl_admin') === '0' ? 'checked' : '' }}>
                         </div>
                     </div>
-                    <div class="short form" >
+                    <div class="short form">
                         <label for="email">Email</label>
                         <input type="email" name="email">
                     </div>
@@ -230,7 +236,7 @@
                     <div class="row">
                         <div class="form">
                             <label for="join_day">Join day</label>
-                            <input type="date" name="join_day" >
+                            <input type="date" name="join_day">
                         </div>
                     </div>
                 </div>
@@ -245,7 +251,8 @@
             {{-- <h5 style="margin-bottom: 15px">Face Recognition</h5>
             <div class="container-top" style="display: block">
                 <div class="input-group" style="margin-bottom: 15px">
-                    <input type="file" id="inp-face" name="image_url[]" accept="img/*" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" multiple aria-label="Upload">
+                    <input type="file" id="inp-face" name="image_url[]" accept="img/*" class="form-control"
+                        id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" multiple aria-label="Upload">
                 </div>
 
                 <style>
@@ -288,20 +295,61 @@
         </div>
     </form>
 
-    @if (session('Success'))
-        {{ session('Success') }}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible" style="margin: 30px;">>
+            {{ session('success') }}
+            <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">
+                <i class="fa-solid fa-x"></i>
+            </a>
+        </div>
     @endif
 
     @if (count($errors) > 0)
         @foreach ($errors->all() as $error)
-            {{ $error }} <br>
+            <div class="alert alert-danger alert-dismissible" style="margin: 30px;">>
+                {{ $error }}
+                <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">
+                    <i class="fa-solid fa-x"></i>
+                </a>
+            </div>
         @endforeach
     @endif
 @endsection
 
 
 @push('js')
-    <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
-    <script defer type="module" src="{{ asset('assets/face-api/edit-staff.js') }}"></script>
-    {{-- <script src="{{ asset('assets/face-api/edit-staff.js')}}"></script> --}}
+    <script>
+        const input = document.getElementById('file-input');
+        const image = document.getElementById('img-preview');
+
+        input.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                const src = URL.createObjectURL(e.target.files[0]);
+                image.src = src;
+            }
+        });
+
+        const ipnFileElement = document.getElementById('inp-face')
+        const resultElement = document.getElementById('div-face-upload')
+        // const validImageTypes = ['image/gif', 'image/jpeg', 'image/png']
+
+        ipnFileElement.addEventListener('change', function(e) {
+            const files = e.target.files
+            resultElement.innerHTML = ''
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i]
+                const fileType = file['type']
+
+                const fileReader = new FileReader()
+                fileReader.readAsDataURL(file)
+
+                fileReader.onload = function() {
+                    const url = fileReader.result
+                    resultElement.insertAdjacentHTML(
+                        'beforeend',
+                        `<img src="${url}" alt="${file.name}" class="rounded img-preview" />`
+                    )}
+            }
+        })
+    </script>
 @endpush

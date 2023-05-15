@@ -84,16 +84,22 @@
 
 
     <h3 class="i-name">Staff List / Edit Staff</h3>
-    @if (session('Success'))
-        <div class="alert alert-success">
-            {{ session('Success') }}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible" style="margin: 30px;">
+            {{ session('success') }}
+            <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">
+                <i class="fa-solid fa-x"></i>
+            </a>
         </div>
     @endif
 
     @if (count($errors) > 0)
         @foreach ($errors->all() as $error)
-            <div class="alert alert-danger">
+            <div class="alert alert-danger alert-dismissible" style="margin: 30px;">>
                 {{ $error }}
+                <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">
+                    <i class="fa-solid fa-x"></i>
+                </a>
             </div>
         @endforeach
     @endif
