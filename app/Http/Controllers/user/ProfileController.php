@@ -33,7 +33,7 @@ class ProfileController extends Controller
         ]);
         if(Hash::check($request->input('old-pass'), Auth::user()->password)) {
             $data = [
-                'password' => bcrypt($request->password),
+                'password' => bcrypt($request->input('new-pass')),
                 'updated_at' => now(),
                 'updated_user' => Auth::user()->employee_id
             ];

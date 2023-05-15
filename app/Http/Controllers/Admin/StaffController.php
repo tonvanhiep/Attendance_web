@@ -153,9 +153,8 @@ class StaffController extends Controller
             'employee_id' => $staff->id,
         ]);
 
-        if($request->hasFile('image_url')) {
-            $facesFile = $request->file('image_url');
-            // dd($facesFile);
+        if($request->hasFile('face')) {
+            $facesFile = $request->file('face');
             foreach($facesFile as $faceFile) {
                 $name_face_file = $faceFile->getClientOriginalName();
                 $extension_face_file = $faceFile->getClientOriginalExtension();

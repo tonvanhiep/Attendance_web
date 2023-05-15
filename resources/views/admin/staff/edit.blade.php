@@ -85,12 +85,15 @@
 
     <h3 class="i-name">Staff List / Edit Staff</h3>
     @if (session('success'))
-        <div class="alert alert-success alert-dismissible" style="margin: 30px;">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
             {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {{-- <div class="alert alert-success alert-dismissible" style="margin: 30px;">
             <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">
                 <i class="fa-solid fa-x"></i>
             </a>
-        </div>
+        </div> --}}
     @endif
 
     @if (count($errors) > 0)

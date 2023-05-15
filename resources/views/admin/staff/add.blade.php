@@ -83,7 +83,7 @@
     </div>
     <h3 class="i-name">Staff List / Add New Staff</h3>
 
-    <form class="board" action="{{ route('admin.staff.store') }}" method="post" enctype="multipart/form-data">
+    <form id="form-user-info" class="board" action="{{ route('admin.staff.store') }}" method="post" enctype="multipart/form-data">
         @csrf
         <h4>Add New Staff</h4>
         <div class="input-container">
@@ -222,11 +222,11 @@
                     </div>
                     <div class="short form">
                         <label for="password">Password</label>
-                        <input type="text" name="password">
+                        <input type="password" name="password">
                     </div>
                     <div class="short form">
                         <label for="confirm">Confirm Password</label>
-                        <input type="text" name="confirm">
+                        <input type="password" name="confirm">
                     </div>
                 </div>
             </div>
@@ -318,7 +318,9 @@
 
 
 @push('js')
-    <script>
+    <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
+    <script defer type="module" src="{{ asset('assets/face-api/edit-staff.js') }}"></script>
+    {{-- <script>
         const input = document.getElementById('file-input');
         const image = document.getElementById('img-preview');
 
@@ -351,5 +353,5 @@
                     )}
             }
         })
-    </script>
+    </script> --}}
 @endpush
