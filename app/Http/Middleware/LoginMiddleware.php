@@ -23,6 +23,6 @@ class LoginMiddleware
             }
             return redirect()->route('admin.auth.login')->with('error', 'Check your Role!');
         }
-        return redirect()->route('admin.auth.login')->with('error', 'Check your pass');
+        return redirect()->route('admin.auth.login')->with('error', 'Login Failed');
     }
 }
