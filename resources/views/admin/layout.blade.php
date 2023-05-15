@@ -33,7 +33,7 @@
 
         @yield('content')
     </section>
-    <script type="text/javascript" src="{{ asset('assets/bootstrap-5.3.0-alpha2-dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/bootstrap-5.3.0-alpha2-dist/js/bootstrap.min.js') }}"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="{{asset('assets/js/main.js');}}"></script>
     <script src="http://localhost:6001/socket.io/socket.io.js"></script>
