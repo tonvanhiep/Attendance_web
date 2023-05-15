@@ -85,7 +85,7 @@
 
     <h3 class="i-name">Staff List / Edit Staff</h3>
     @if (session('success'))
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" style="margin: 30px;" role="alert">
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>

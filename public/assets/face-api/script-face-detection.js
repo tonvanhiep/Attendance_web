@@ -139,29 +139,27 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
         console.log(result._distance);
         drawBox.draw(canvas);
         if (result._label != "unknown") {
+            if(RecognitionIntervalID != -1) clearInterval(RecognitionIntervalID);
             var image = getSnapshot();
-            submitForm(result._label, image, true);
-            // if(RecognitionIntervalID != -1) clearInterval(RecognitionIntervalID);
-            // var image = getSnapshot();
-            // showModal(
-            //     "Face Detecttion",
-            //     "Please confirm your face?",
-            //     "Yes",
-            //     "No",
-            //     () => {
-            //         alert("Attendance success");
-            //         submitForm(result._label, image, true);
-            //         RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
-            //     },
-            //     () => {
-            //         alert("Enter your ID");
-            //         RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
-            //     },
-            //     () => {
-            //         // alert("Wait for timekeeping again");
-            //         // RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
-            //     }
-            // )
+            showModal(
+                "Face Detecttion",
+                "Please confirm your face?",
+                "Yes",
+                "No",
+                () => {
+                    alert("Attendance success");
+                    submitForm(result._label, image, true);
+                    RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+                },
+                () => {
+                    alert("Enter your ID");
+                    RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+                },
+                () => {
+                    // alert("Wait for timekeeping again");
+                    // RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+                }
+            )
         } else {
             alertError("Không xác nhận được người dùng");
         }

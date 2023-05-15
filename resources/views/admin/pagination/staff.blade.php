@@ -1,8 +1,8 @@
 <div class="board">
     @if (session('success'))
-        <div class="alert alert-success alert-dismissible">
+        <div class="alert alert-success alert-dismissible fade show" style="margin: 30px;" role="alert">
             {{ session('success') }}
-            <a href="#" class="close" data-bs-dismiss="alert" aria-label="close"><i class="fa-solid fa-x"></i></a>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
     <table width="100%" class="table table-hover" style="margin-bottom: 0px">
