@@ -1,6 +1,9 @@
 <div class="board">
     @if (session('success'))
-        {{ session('success') }}
+        <div class="alert alert-success alert-dismissible">
+            {{ session('success') }}
+            <a href="#" class="close" data-bs-dismiss="alert" aria-label="close"><i class="fa-solid fa-x"></i></a>
+        </div>
     @endif
     <table width="100%" class="table table-hover" style="margin-bottom: 0px">
         <thead>

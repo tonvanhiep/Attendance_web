@@ -137,7 +137,7 @@ class StaffController extends Controller
             'numberphone' => $request->numberphone,
             'department' => $request->department,
             'position' => $request->position,
-            'avatar' =>  isset($image) ? randomAvatarUrl(rand(1, 20)) : 'storage/avatar/' . $image,
+            'avatar' =>  isset($image) ? 'storage/avatar/' . $image : randomAvatarUrl(rand(1, 20)),
             'working_day' => implode('|', $request->working_day),
             'status' => 1,
             'salary' => $request->salary,
