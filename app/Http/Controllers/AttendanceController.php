@@ -22,8 +22,7 @@ class AttendanceController extends Controller
             $name = $value->id;
             if (isset($arr[$name])) {
                 array_push($arr[$name], $value->image_url);
-            }
-            else {
+            } else {
                 $arr[$name] = [];
                 array_push($arr[$name], $value->image_url);
             }
@@ -41,8 +40,7 @@ class AttendanceController extends Controller
             $name = $value->id;
             if (isset($arr[$name])) {
                 array_push($arr[$name], $value->image_url);
-            }
-            else {
+            } else {
                 $arr[$name] = [];
                 array_push($arr[$name], $value->image_url);
             }
@@ -66,7 +64,7 @@ class AttendanceController extends Controller
         $image_type = $image_type_aux[1];
         $image_base64 = base64_decode($image_parts[1]);
 
-        $file_name = $employee[0]->last_name . $employee[0]->first_name . time(). rand(0,10000) . '.' . $image_type;
+        $file_name = $employee[0]->last_name . $employee[0]->first_name . time() . rand(0, 10000) . '.' . $image_type;
 
         file_put_contents($folderPath . $file_name, $image_base64);
         $data = [
@@ -112,6 +110,23 @@ class AttendanceController extends Controller
         return redirect()->route('check-in.login');
     }
 
+    public function test()
+    {
+        $image = new FaceEmployeeImagesModel;
+        $image = $image->getImages(['status' => 1, 'office' => Auth::guard('timekeeper')->user()->office_id]);
+        //dd($image->toArray());
+        $arr = [];
+        foreach ($image as $key => $value) {
+            $name = $value->id;
+            if (isset($arr[$name])) {
+                array_push($arr[$name], $value->image_url);
+            } else {
+                $arr[$name] = [];
+                array_push($arr[$name], $value->image_url);
+            }
+        }
+        return view('attendance.test', compact('arr'));
+    }
     //API
     public function ApiGetAttendance(Request $request)
     {
@@ -131,7 +146,7 @@ class AttendanceController extends Controller
         ]);
         $timesheets = $timesheets->getTimesheetsByEmployeeId([
             'id' => Auth::user()->employee_id,
-            'from' => date('Y-m').'-1',
+            'from' => date('Y-m') . '-1',
             'to' => date('Y-m-d'),
             'status' => 1
         ]);

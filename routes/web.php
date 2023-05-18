@@ -106,6 +106,7 @@ Route::group(['middleware' => 'timekeeperloginmiddleware'], function () {
     Route::get('/check-in/logout', [ControllersAttendanceController::class, 'logout'])->name('check-in.logout');
     Route::get('/check-in', [ControllersAttendanceController::class, 'index'])->name('check-in');
     Route::get('/check-in/recoginition', [ControllersAttendanceController::class, 'recognition'])->name('recoginition');
+    Route::get('/recoginition/test', [ControllersAttendanceController::class, 'test'])->name('test');
     Route::post('/attendance', [ControllersAttendanceController::class, 'attendance'])->name('attendance');
 });
 
@@ -135,7 +136,7 @@ Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' =>
     //     Route::post('/', [ProfileController::class, 'pagination'])->name('pagination');
     // });
 
-    Route::group(['prefix' =>'report', 'as' => 'report.'], function () {
+    Route::group(['prefix' => 'report', 'as' => 'report.'], function () {
         Route::get('/', [UserReportController::class, 'index'])->name('list');
         Route::post('/', [UserReportController::class, 'pagination'])->name('pagination');
 
