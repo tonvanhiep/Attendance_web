@@ -70,7 +70,7 @@ async function startTest(faceMatcher) {
             var arr = {
                 'stt' : stt++,
                 'image' : urlImage + folderName + j + '.jpeg',
-                'label' : i,
+                'label' : arrLabel[i]['label'],
                 'recognition' : '',
                 'distance' : 0,
                 'result': ''
