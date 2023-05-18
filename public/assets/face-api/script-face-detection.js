@@ -153,7 +153,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                 },
                 () => {
                     alert("Enter your ID");
-                    RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+                    RecognitionIntervalID = setInterval(faceRecognition, 7000, faceMatcher, canvas, displaySize);
                 },
                 () => {
                     // alert("Wait for timekeeping again");

@@ -21,3 +21,5 @@ laravel-echo-server.lock
 /public/storage/avatar/*
 /public/storage/face-recognition/*
 /public/storage/image-checkin/*
+/public/assets/img_test/
+

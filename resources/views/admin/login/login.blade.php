@@ -43,7 +43,7 @@
             @endif
 
             @if (session('error'))
-                <div class="alert alert-danger alert-dismissible">
+                <div class="alert alert-danger alert-dismissible" style="display:flex;justify-content:space-between">
                     {{ session('error') }}
                     <a href="#" class="close" data-bs-dismiss="alert" aria-label="close"><i class="fa-solid fa-x"></i></a>
                 </div>
