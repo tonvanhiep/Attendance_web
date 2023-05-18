@@ -66,16 +66,21 @@ async function startTest(faceMatcher) {
     var _true = 0;
     var _false = 0;
     for (let i = 0; i < arrLabel.length; i++) {
-        for (let j = 0; j < arrLabel[i].sl; j++) {
+        for (let j = 1; j < arrLabel[i].sl; j++) {
             var arr = {
                 'stt' : stt++,
                 'image' : urlImage + folderName + j + '.jpeg',
-                'label' : i,
+                'label' : arrLabel[i]['label'],
                 'recognition' : '',
                 'distance' : 0,
                 'result': ''
             };
-
+            var image;
+            try {
+                image = await faceapi.fetchImage(arr['image']);
+            } catch(err) {
+                continue
+            }
             image = await faceapi.fetchImage(arr['image']);
             const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptor();
 
