@@ -75,7 +75,12 @@ async function startTest(faceMatcher) {
                 'distance' : 0,
                 'result': ''
             };
-
+            var image;
+            try {
+                image = await faceapi.fetchImage(arr['image']);
+            } catch(err) {
+                continue
+            }
             image = await faceapi.fetchImage(arr['image']);
             const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptor();
 
