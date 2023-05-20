@@ -59,7 +59,7 @@ Promise.all([
     faceapi.nets.faceRecognitionNet.loadFromUri(urlModel),
     faceapi.nets.faceLandmark68Net.loadFromUri(urlModel),
     faceapi.nets.ssdMobilenetv1.loadFromUri(urlModel),
-    // faceapi.nets.faceExpressionNet.loadFromUri('/Face-Api/models')
+    faceapi.nets.faceExpressionNet.loadFromUri(urlModel)
 ]).then(start);
 
 function pause() {
@@ -108,6 +108,21 @@ function loadLabeledImages() {
             return new faceapi.LabeledFaceDescriptors(label, descriptions);
         })
     );
+}
+
+async function faceDetection() {
+    const canvas = faceapi.createCanvasFromMedia(video);
+    document.body.append(canvas)
+    const displaySize = { width: video.width, height: video.height }
+    faceapi.matchDimensions(canvas, displaySize)
+    setInterval(async () => {
+        const detections = await faceapi.detectAllFaces(video).withFaceLandmarks().withFaceExpressions()
+        const resizedDetections = faceapi.resizeResults(detections, displaySize)
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
+        faceapi.draw.drawDetections(canvas, resizedDetections)
+        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
+        faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
+    }, 100)
 }
 
 async function faceRecognition(faceMatcher, canvas, displaySize) {
@@ -179,15 +194,17 @@ async function start() {
 
     startVideo();
 
-    video.addEventListener("playing", () => {
-        const canvas = faceapi.createCanvasFromMedia(video);
-        document.getElementById("webcam").append(canvas);
+    video.addEventListener("playing", faceDetection)
 
-        const displaySize = { width: video.width, height: video.height };
-        faceapi.matchDimensions(canvas, displaySize);
+    // video.addEventListener("playing", () => {
+    //     const canvas = faceapi.createCanvasFromMedia(video);
+    //     document.getElementById("webcam").append(canvas);
 
-        RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
-    });
+    //     const displaySize = { width: video.width, height: video.height };
+    //     faceapi.matchDimensions(canvas, displaySize);
+
+    //     RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+    // });
 
     video.currentTime = 1;
 }
