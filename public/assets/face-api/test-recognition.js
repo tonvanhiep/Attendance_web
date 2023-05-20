@@ -13,7 +13,18 @@ const arrLabel = [
     {'label': 61, 'sl': 12},
     {'label': 78, 'sl': 9},
     {'label': 80, 'sl': 7},
-    {'label': 'unknown', 'sl': 55},
+    {'label': 81, 'sl': 10},
+    {'label': 82, 'sl': 10},
+    {'label': 83, 'sl': 10},
+    {'label': 85, 'sl': 7},
+    {'label': 86, 'sl': 9},
+    {'label': 87, 'sl': 9},
+    {'label': 88, 'sl': 9},
+    {'label': 89, 'sl': 9},
+    {'label': 90, 'sl': 8},
+    {'label': 91, 'sl': 10},
+    {'label': 92, 'sl': 12},
+    {'label': 'unknown', 'sl': 30},
 ];
 
 

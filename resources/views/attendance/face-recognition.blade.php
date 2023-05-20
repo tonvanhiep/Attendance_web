@@ -10,6 +10,7 @@
 
         <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
         <script defer src="{{ asset('assets/face-api/script-face-recognition.js') }}"></script>
+        {{-- <script src="https://docs.opencv.org/master/opencv.js" async></script> --}}
 
         <title>Face Recognition</title>
         <style>
