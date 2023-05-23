@@ -9,7 +9,8 @@ Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri(urlModel),
     faceapi.nets.faceRecognitionNet.loadFromUri(urlModel),
     faceapi.nets.faceLandmark68Net.loadFromUri(urlModel),
-    faceapi.nets.ssdMobilenetv1.loadFromUri(urlModel)
+    faceapi.nets.ssdMobilenetv1.loadFromUri(urlModel),
+    faceapi.nets.faceExpressionNet.loadFromUri(urlModel)
 ]).then(start);
 
 function loadLabeledImages() {
@@ -72,18 +73,31 @@ async function start() {
         faceapi.matchDimensions(canvas, displaySize);
 
         console.log("Processing...")
-        const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors();
-        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+        const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor().withFaceExpressions();
 
-        const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
-
-        results.forEach((result, i) => {
-            const box = resizedDetections[i].detection.box;
+        if(detections != null) {
+            console.log('detections = ', detections);
+            const resizedDetections = faceapi.resizeResults(detections, displaySize);
+            const result = faceMatcher.findBestMatch(detections.descriptor)
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
+            faceapi.draw.drawDetections(canvas, resizedDetections)
+            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
+            faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
+            const box = resizedDetections.detection.box;
             const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() });
-            console.log(result._label);
-            console.log(result._distance);
             drawBox.draw(canvas);
-        })
+
+
+            // tinh khoang cach
+            const pointNose = detections.landmarks.positions[30]
+            const leftPoint = detections.landmarks.positions[2]
+            const rightPoint = detections.landmarks.positions[14]
+
+            const distanceLeft = Math.sqrt(Math.abs(Math.pow(pointNose.x, 2) - Math.pow(leftPoint.x, 2)) + Math.abs(Math.pow(pointNose.y, 2) - Math.pow(leftPoint.y, 2)))
+            const distanceRight = Math.sqrt(Math.abs(Math.pow(pointNose.x, 2) - Math.pow(rightPoint.x, 2)) + Math.abs(Math.pow(pointNose.y, 2) - Math.pow(rightPoint.y, 2)))
+            console.log('distanceLeft = ', distanceLeft);
+            console.log('distanceRight = ', distanceRight);
+        }
         console.log("Finish")
     });
 }
