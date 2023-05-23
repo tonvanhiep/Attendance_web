@@ -18,16 +18,18 @@ class AttendanceController extends Controller
         $image = $image->getImages(['status' => 1, 'office' => Auth::guard('timekeeper')->user()->office_id]);
         //dd($image->toArray());
         $arr = [];
+        $arrName = [];
         foreach ($image as $key => $value) {
-            $name = $value->id;
-            if (isset($arr[$name])) {
-                array_push($arr[$name], $value->image_url);
+            $id = $value->id;
+            if (isset($arr[$id])) {
+                array_push($arr[$id], $value->image_url);
             } else {
-                $arr[$name] = [];
-                array_push($arr[$name], $value->image_url);
+                $arr[$id] = [];
+                $arrName[$id] = $value->last_name . ' ' . $value->first_name;
+                array_push($arr[$id], $value->image_url);
             }
         }
-        return view('attendance.check-in', compact('arr'));
+        return view('attendance.check-in', compact('arr', 'arrName'));
     }
 
     public function recognition()
@@ -36,16 +38,18 @@ class AttendanceController extends Controller
         $image = $image->getImages(['status' => 1, 'office' => Auth::guard('timekeeper')->user()->office_id]);
         //dd($image->toArray());
         $arr = [];
+        $arrName = [];
         foreach ($image as $key => $value) {
-            $name = $value->id;
-            if (isset($arr[$name])) {
-                array_push($arr[$name], $value->image_url);
+            $id = $value->id;
+            if (isset($arr[$id])) {
+                array_push($arr[$id], $value->image_url);
             } else {
-                $arr[$name] = [];
-                array_push($arr[$name], $value->image_url);
+                $arr[$id] = [];
+                $arrName[$id] = $value->last_name . ' ' . $value->first_name;
+                array_push($arr[$id], $value->image_url);
             }
         }
-        return view('attendance.face-recognition', compact('arr'));
+        return view('attendance.face-recognition', compact('arr', 'arrName'));
     }
 
     public function attendance(Request $request)
@@ -116,16 +120,18 @@ class AttendanceController extends Controller
         $image = $image->getImages(['status' => 1, 'office' => Auth::guard('timekeeper')->user()->office_id]);
         //dd($image->toArray());
         $arr = [];
+        $arrName = [];
         foreach ($image as $key => $value) {
-            $name = $value->id;
-            if (isset($arr[$name])) {
-                array_push($arr[$name], $value->image_url);
+            $id = $value->id;
+            if (isset($arr[$id])) {
+                array_push($arr[$id], $value->image_url);
             } else {
-                $arr[$name] = [];
-                array_push($arr[$name], $value->image_url);
+                $arr[$id] = [];
+                $arrName[$id] = $value->last_name . ' ' . $value->first_name;
+                array_push($arr[$id], $value->image_url);
             }
         }
-        return view('attendance.test', compact('arr'));
+        return view('attendance.test', compact('arr', 'arrName'));
     }
     //API
     public function ApiGetAttendance(Request $request)

@@ -97,8 +97,6 @@ function loadLabeledImages() {
                     .withFaceDescriptor();
                 try {
                     descriptions.push(detections.descriptor);
-                    console.log(image);
-                    console.log(detections.descriptor);
                 } catch (err) {
                     console.log(image + ": error");
                     continue;
@@ -125,62 +123,170 @@ async function faceDetection() {
     }, 100)
 }
 
+var faceAntiSpoofing = {
+    'isCheck': false,
+    'label': '',
+    'distance': 0,
+    'action': -1,
+    'actionName': ''
+};
 async function faceRecognition(faceMatcher, canvas, displaySize) {
-    i = i + 1;
-    console.log(i);
-    const detections = await faceapi
-        .detectAllFaces(video)
-        .withFaceLandmarks()
-        .withFaceDescriptors();
-    const resizedDetections = faceapi.resizeResults(
-        detections,
-        displaySize
-    );
-
     canvas
         .getContext("2d")
         .clearRect(0, 0, canvas.width, canvas.height);
+    // const detections = await faceapi
+    //     .detectAllFaces(video)
+    //     .withFaceLandmarks()
+    //     .withFaceDescriptors();
+    // const resizedDetections = faceapi.resizeResults(
+    //     detections,
+    //     displaySize
+    // );
+    // canvas
+    //     .getContext("2d")
+    //     .clearRect(0, 0, canvas.width, canvas.height);
+    // const results = resizedDetections.map((d) =>
+    //     faceMatcher.findBestMatch(d.descriptor)
+    // );
+    // faceapi.draw.drawDetections(canvas, resizedDetections)
+    // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
+    // faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
+    // results.forEach((result, i) => {
+    //     const box = resizedDetections[i].detection.box;
+    //     const drawBox = new faceapi.draw.DrawBox(box, {
+    //         label: result.toString(),
+    //     });
+    //     console.log(result._label);
+    //     console.log(result._distance);
+    //     drawBox.draw(canvas);
+    //     if (result._label != "unknown") {
+    //         if(RecognitionIntervalID != -1) clearInterval(RecognitionIntervalID);
+    //         var image = getSnapshot();
+    //         showModal(
+    //             "Face Detecttion",
+    //             "Please confirm your face?",
+    //             "Yes",
+    //             "No",
+    //             () => {
+    //                 alert("Attendance success");
+    //                 submitForm(result._label, image, true);
+    //                 RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+    //             },
+    //             () => {
+    //                 alert("Enter your ID");
+    //                 RecognitionIntervalID = setInterval(faceRecognition, 7000, faceMatcher, canvas, displaySize);
+    //             },
+    //             () => {
+    //                 // alert("Wait for timekeeping again");
+    //                 // RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+    //             }
+    //         )
+    //     } else {
+    //         alertError("Không xác nhận được người dùng");
+    //     }
+    // });
 
-    const results = resizedDetections.map((d) =>
-        faceMatcher.findBestMatch(d.descriptor)
-    );
+    const detections = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor().withFaceExpressions();
 
-    results.forEach((result, i) => {
-        const box = resizedDetections[i].detection.box;
-        const drawBox = new faceapi.draw.DrawBox(box, {
-            label: result.toString(),
-        });
-        console.log(result._label);
-        console.log(result._distance);
-        drawBox.draw(canvas);
-        if (result._label != "unknown") {
-            if(RecognitionIntervalID != -1) clearInterval(RecognitionIntervalID);
-            var image = getSnapshot();
-            showModal(
-                "Face Detecttion",
-                "Please confirm your face?",
-                "Yes",
-                "No",
-                () => {
-                    alert("Attendance success");
-                    submitForm(result._label, image, true);
-                    RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
-                },
-                () => {
-                    alert("Enter your ID");
-                    RecognitionIntervalID = setInterval(faceRecognition, 7000, faceMatcher, canvas, displaySize);
-                },
-                () => {
-                    // alert("Wait for timekeeping again");
-                    // RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+    if(detections != null) {
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+
+        faceapi.draw.drawDetections(canvas, resizedDetections)
+
+        const result = faceMatcher.findBestMatch(detections.descriptor)
+
+        if(result._distance < (faceAntiSpoofing.isCheck == true ? 0.55 : 0.4)) {
+            //kiem tra da cham cong
+            //
+            //
+            //
+
+            const box = resizedDetections.detection.box;
+            const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() });
+            drawBox.draw(canvas);
+
+            if (faceAntiSpoofing.isCheck == true) {
+                if(faceAntiSpoofing.label == result._label)
+                    var actionName = rotateFaceToLeftRight(detections)
+
+                if(faceAntiSpoofing.label != result._label || actionName != faceAntiSpoofing.actionName) {
+                    removeFaceAntiSpoofing(faceMatcher, canvas, displaySize, false);
                 }
-            )
-        } else {
-            alertError("Không xác nhận được người dùng");
+
+                if (actionName == faceAntiSpoofing.actionName) {
+                    removeFaceAntiSpoofing(faceMatcher, canvas, displaySize, true);
+                    //modal
+                }
+            }
+            else {
+                faceAntiSpoofing = {
+                    'isCheck': true,
+                    'label': result._label,
+                    'distance': result._distance,
+                    'action': Math.floor(Math.random() * 2)
+                };
+
+                switch (faceAntiSpoofing.action) {
+                    case 0:
+                        alertAction('Vui long quay mat sang phai')
+                        faceAntiSpoofing.actionName = 'rotateRight'
+                        break;
+                    case 1:
+                        alertAction('Vui long quay mat sang trai')
+                        faceAntiSpoofing.actionName = 'rotateLeft'
+                        break;
+                    default:
+                        faceAntiSpoofing.actionName = ''
+                        break;
+                }
+                console.log(faceAntiSpoofing)
+
+                clearInterval(RecognitionIntervalID)
+                RecognitionIntervalID = setInterval(faceRecognition, 1200, faceMatcher, canvas, displaySize)
+                faceAntiSpoofing.idTimeout = setTimeout(removeFaceAntiSpoofing, 2000, faceMatcher, canvas, displaySize, false)
+            }
         }
-    });
+
+    }
 }
 
+function removeFaceAntiSpoofing(faceMatcher, canvas, displaySize, isSuccess) {
+    clearTimeout(faceAntiSpoofing.idTimeout);
+
+    if(isSuccess)
+        alertSuccess('Xac nhan thanh cong')
+    else
+        alertError('Xac nhan khong thanh cong')
+
+    faceAntiSpoofing = {
+        'isCheck': false,
+        'label': '',
+        'distance': 0,
+        'action': -1,
+        'actionName': '',
+        'idTimeout' : -1
+    };
+
+    clearInterval(RecognitionIntervalID);
+    RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+}
+
+function rotateFaceToLeftRight(detections) {
+    const pointNose = detections.landmarks.positions[30]
+    const leftPoint = detections.landmarks.positions[2]
+    const rightPoint = detections.landmarks.positions[14]
+
+    const distanceLeft = Math.abs(pointNose.x - leftPoint.x)
+    const distanceRight = Math.abs(pointNose.x - rightPoint.x)
+    if(distanceLeft / 4 >= distanceRight) {
+        console.log('Left', distanceLeft/distanceRight)
+        return 'rotateLeft'
+    }
+    else if(distanceRight / 4 >= distanceLeft) {
+        console.log('Right', distanceRight/distanceLeft)
+        return 'rotateRight'
+    }
+}
 
 let i = 0;
 var RecognitionIntervalID = -1;
@@ -188,23 +294,23 @@ async function start() {
     console.log("Training data.");
 
     const labeledFaceDescriptors = await loadLabeledImages();
-    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.4);
+    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
 
     console.log("Completed training.");
 
     startVideo();
 
-    video.addEventListener("playing", faceDetection)
+    // video.addEventListener("playing", faceDetection)
 
-    // video.addEventListener("playing", () => {
-    //     const canvas = faceapi.createCanvasFromMedia(video);
-    //     document.getElementById("webcam").append(canvas);
+    video.addEventListener("playing", () => {
+        const canvas = faceapi.createCanvasFromMedia(video);
+        document.getElementById("webcam").append(canvas);
 
-    //     const displaySize = { width: video.width, height: video.height };
-    //     faceapi.matchDimensions(canvas, displaySize);
+        const displaySize = { width: video.width, height: video.height };
+        faceapi.matchDimensions(canvas, displaySize);
 
-    //     RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
-    // });
+        RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+    });
 
     video.currentTime = 1;
 }
@@ -238,8 +344,15 @@ function submitForm(id, image, identity) {
     });
 }
 
+function alertAction(message) {
+    document.getElementById("alert-message").style.backgroundColor = "none";
+    document.getElementById("alert-message").style.textAlign = "center";
+    document.getElementById("alert-message").textContent = message;
+}
+
 function alertError(message) {
     document.getElementById("alert-message").style.backgroundColor = "red";
+    document.getElementById("alert-message").style.textAlign = "left";
     document.getElementById("alert-message").textContent = message;
     setTimeout(function () {
         alertDisable();
@@ -248,6 +361,7 @@ function alertError(message) {
 
 function alertSuccess(message) {
     document.getElementById("alert-message").style.backgroundColor = "green";
+    document.getElementById("alert-message").style.textAlign = "left";
     document.getElementById("alert-message").textContent = message;
     setTimeout(function () {
         alertDisable();
@@ -256,6 +370,7 @@ function alertSuccess(message) {
 
 function alertDisable() {
     document.getElementById("alert-message").style.background = "none";
+    document.getElementById("alert-message").style.textAlign = "left";
     document.getElementById("alert-message").textContent = "";
 }
 

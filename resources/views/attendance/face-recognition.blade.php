@@ -6,6 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <script>
             var faceRegination = {!! json_encode($arr) !!};
+            var arrName = {!! json_encode($arrName) !!};
         </script>
 
         <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
