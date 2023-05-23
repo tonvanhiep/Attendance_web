@@ -59,7 +59,7 @@ Promise.all([
     faceapi.nets.faceRecognitionNet.loadFromUri(urlModel),
     faceapi.nets.faceLandmark68Net.loadFromUri(urlModel),
     faceapi.nets.ssdMobilenetv1.loadFromUri(urlModel),
-    faceapi.nets.faceExpressionNet.loadFromUri(urlModel)
+    faceapi.nets.faceExpressionNet.loadFromUri(urlModel),
 ]).then(start);
 
 function pause() {
@@ -110,30 +110,34 @@ function loadLabeledImages() {
 
 async function faceDetection() {
     const canvas = faceapi.createCanvasFromMedia(video);
-    document.body.append(canvas)
-    const displaySize = { width: video.width, height: video.height }
-    faceapi.matchDimensions(canvas, displaySize)
+    document.body.append(canvas);
+    const displaySize = { width: video.width, height: video.height };
+    faceapi.matchDimensions(canvas, displaySize);
     setInterval(async () => {
-        const detections = await faceapi.detectAllFaces(video).withFaceLandmarks().withFaceExpressions()
-        const resizedDetections = faceapi.resizeResults(detections, displaySize)
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-        faceapi.draw.drawDetections(canvas, resizedDetections)
-        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
-        faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-    }, 100)
+        const detections = await faceapi
+            .detectAllFaces(video)
+            .withFaceLandmarks()
+            .withFaceExpressions();
+        const resizedDetections = faceapi.resizeResults(
+            detections,
+            displaySize
+        );
+        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+        faceapi.draw.drawDetections(canvas, resizedDetections);
+        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+        faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+    }, 100);
 }
 
 var faceAntiSpoofing = {
-    'isCheck': false,
-    'label': '',
-    'distance': 0,
-    'action': -1,
-    'actionName': ''
+    isCheck: false,
+    label: "",
+    distance: 0,
+    action: -1,
+    actionName: "",
 };
 async function faceRecognition(faceMatcher, canvas, displaySize) {
-    canvas
-        .getContext("2d")
-        .clearRect(0, 0, canvas.width, canvas.height);
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
     // const detections = await faceapi
     //     .detectAllFaces(video)
     //     .withFaceLandmarks()
@@ -186,106 +190,229 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
     //     }
     // });
 
-    const detections = await faceapi.detectSingleFace(video).withFaceLandmarks().withFaceDescriptor().withFaceExpressions();
+    const detections = await faceapi
+        .detectSingleFace(video)
+        .withFaceLandmarks()
+        .withFaceDescriptor()
+        .withFaceExpressions();
+    console.log(detections.expressions);
 
-    if(detections != null) {
-        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+    if (detections != null) {
+        const resizedDetections = faceapi.resizeResults(
+            detections,
+            displaySize
+        );
 
-        faceapi.draw.drawDetections(canvas, resizedDetections)
+        faceapi.draw.drawDetections(canvas, resizedDetections);
 
-        const result = faceMatcher.findBestMatch(detections.descriptor)
+        const result = faceMatcher.findBestMatch(detections.descriptor);
 
-        if(result._distance < (faceAntiSpoofing.isCheck == true ? 0.55 : 0.4)) {
+        if (
+            result._distance < (faceAntiSpoofing.isCheck == true ? 0.55 : 0.4)
+        ) {
             //kiem tra da cham cong
             //
             //
             //
 
             const box = resizedDetections.detection.box;
-            const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() });
+            const drawBox = new faceapi.draw.DrawBox(box, {
+                label: result.toString(),
+            });
             drawBox.draw(canvas);
 
             if (faceAntiSpoofing.isCheck == true) {
-                if(faceAntiSpoofing.label == result._label)
-                    var actionName = rotateFaceToLeftRight(detections)
+                if (faceAntiSpoofing.label == result._label)
+                    var check_action = checkAction(
+                        detections,
+                        faceAntiSpoofing.action
+                    );
 
-                if(faceAntiSpoofing.label != result._label || actionName != faceAntiSpoofing.actionName) {
-                    removeFaceAntiSpoofing(faceMatcher, canvas, displaySize, false);
+                if (faceAntiSpoofing.label != result._label || !check_action) {
+                    removeFaceAntiSpoofing(
+                        faceMatcher,
+                        canvas,
+                        displaySize,
+                        false
+                    );
                 }
 
-                if (actionName == faceAntiSpoofing.actionName) {
-                    removeFaceAntiSpoofing(faceMatcher, canvas, displaySize, true);
+                if (check_action) {
+                    removeFaceAntiSpoofing(
+                        faceMatcher,
+                        canvas,
+                        displaySize,
+                        true
+                    );
                     //modal
+                    if (RecognitionIntervalID != -1)
+                        clearInterval(RecognitionIntervalID);
+                    var image = getSnapshot();
+                    showModal(
+                        "Face Detecttion",
+                        "Please confirm your face?",
+                        "Yes",
+                        "No",
+                        () => {
+                            alert("Attendance success");
+                            submitForm(result._label, image, true);
+                            RecognitionIntervalID = setInterval(
+                                faceRecognition,
+                                3000,
+                                faceMatcher,
+                                canvas,
+                                displaySize
+                            );
+                        },
+                        () => {
+                            alert("Enter your ID");
+                            RecognitionIntervalID = setInterval(
+                                faceRecognition,
+                                7000,
+                                faceMatcher,
+                                canvas,
+                                displaySize
+                            );
+                        }
+                    );
                 }
-            }
-            else {
+            } else {
                 faceAntiSpoofing = {
-                    'isCheck': true,
-                    'label': result._label,
-                    'distance': result._distance,
-                    'action': Math.floor(Math.random() * 2)
+                    isCheck: true,
+                    label: result._label,
+                    distance: result._distance,
+                    // 'action': Math.floor(Math.random() * 4)
+                    action: 3,
                 };
 
                 switch (faceAntiSpoofing.action) {
                     case 0:
-                        alertAction('Vui long quay mat sang phai')
-                        faceAntiSpoofing.actionName = 'rotateRight'
+                        alertAction("Vui long quay mat sang phai");
+                        faceAntiSpoofing.actionName = "rotateRight";
                         break;
                     case 1:
-                        alertAction('Vui long quay mat sang trai')
-                        faceAntiSpoofing.actionName = 'rotateLeft'
+                        alertAction("Vui long quay mat sang trai");
+                        faceAntiSpoofing.actionName = "rotateLeft";
+                        break;
+                    case 2:
+                        alertAction("Vui long  cuoi");
+                        faceAntiSpoofing.actionName = "happy";
+                        break;
+                    case 3:
+                        alertAction("Vui long ha mieng");
+                        faceAntiSpoofing.actionName = "surprised";
                         break;
                     default:
-                        faceAntiSpoofing.actionName = ''
+                        faceAntiSpoofing.actionName = "";
                         break;
                 }
-                console.log(faceAntiSpoofing)
+                // console.log(faceAntiSpoofing)
 
-                clearInterval(RecognitionIntervalID)
-                RecognitionIntervalID = setInterval(faceRecognition, 1200, faceMatcher, canvas, displaySize)
-                faceAntiSpoofing.idTimeout = setTimeout(removeFaceAntiSpoofing, 2000, faceMatcher, canvas, displaySize, false)
+                clearInterval(RecognitionIntervalID);
+                RecognitionIntervalID = setInterval(
+                    faceRecognition,
+                    2000,
+                    faceMatcher,
+                    canvas,
+                    displaySize
+                );
+                faceAntiSpoofing.idTimeout = setTimeout(
+                    removeFaceAntiSpoofing,
+                    3000,
+                    faceMatcher,
+                    canvas,
+                    displaySize,
+                    false
+                );
             }
         }
-
+        else {
+            alertError("Không xác nhận được người dùng");
+        }
     }
 }
 
 function removeFaceAntiSpoofing(faceMatcher, canvas, displaySize, isSuccess) {
     clearTimeout(faceAntiSpoofing.idTimeout);
 
-    if(isSuccess)
-        alertSuccess('Xac nhan thanh cong')
-    else
-        alertError('Xac nhan khong thanh cong')
+    if (isSuccess) alertSuccess("Xac nhan thanh cong");
+    else alertError("Xac nhan khong thanh cong");
 
     faceAntiSpoofing = {
-        'isCheck': false,
-        'label': '',
-        'distance': 0,
-        'action': -1,
-        'actionName': '',
-        'idTimeout' : -1
+        isCheck: false,
+        label: "",
+        distance: 0,
+        action: -1,
+        actionName: "",
+        idTimeout: -1,
     };
 
     clearInterval(RecognitionIntervalID);
-    RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+    RecognitionIntervalID = setInterval(
+        faceRecognition,
+        3000,
+        faceMatcher,
+        canvas,
+        displaySize
+    );
 }
 
 function rotateFaceToLeftRight(detections) {
-    const pointNose = detections.landmarks.positions[30]
-    const leftPoint = detections.landmarks.positions[2]
-    const rightPoint = detections.landmarks.positions[14]
+    const pointNose = detections.landmarks.positions[30];
+    const leftPoint = detections.landmarks.positions[2];
+    const rightPoint = detections.landmarks.positions[14];
 
-    const distanceLeft = Math.abs(pointNose.x - leftPoint.x)
-    const distanceRight = Math.abs(pointNose.x - rightPoint.x)
-    if(distanceLeft / 4 >= distanceRight) {
-        console.log('Left', distanceLeft/distanceRight)
-        return 'rotateLeft'
+    const distanceLeft = Math.abs(pointNose.x - leftPoint.x);
+    const distanceRight = Math.abs(pointNose.x - rightPoint.x);
+    if (distanceLeft / 4 >= distanceRight) {
+        console.log("Left", distanceLeft / distanceRight);
+        return "rotateLeft";
+    } else if (distanceRight / 4 >= distanceLeft) {
+        console.log("Right", distanceRight / distanceLeft);
+        return "rotateRight";
     }
-    else if(distanceRight / 4 >= distanceLeft) {
-        console.log('Right', distanceRight/distanceLeft)
-        return 'rotateRight'
+}
+
+function useEmotion(detections) {
+    let result_expression = [];
+    if (detections.expressions) {
+        let arr = Object.values(detections.expressions);
+        let max = Math.max(...arr);
+        let index = arr.indexOf(max);
+        let key = Object.keys(detections.expressions);
+        result_expression.push(key[index], max);
+        console.log(result_expression);
+        if (result_expression[0] == "happy") {
+            return "happy";
+        } else if (result_expression[0] == "surprised") {
+            return "surprised";
+        }
     }
+    return "nothing";
+}
+
+function checkAction(detections, action) {
+    if (action == 0) {
+        if (rotateFaceToLeftRight(detections) == "rotateRight") {
+            return true;
+        }
+    }
+    if (action == 1) {
+        if (rotateFaceToLeftRight(detections) == "rotateLeft") {
+            return true;
+        }
+    }
+    if (action == 2) {
+        if (useEmotion(detections) == "happy") {
+            return true;
+        }
+    }
+    if (action == 3) {
+        if (useEmotion(detections) == "surprised") {
+            return true;
+        }
+    }
+    return false;
 }
 
 let i = 0;
@@ -309,7 +436,13 @@ async function start() {
         const displaySize = { width: video.width, height: video.height };
         faceapi.matchDimensions(canvas, displaySize);
 
-        RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
+        RecognitionIntervalID = setInterval(
+            faceRecognition,
+            3000,
+            faceMatcher,
+            canvas,
+            displaySize
+        );
     });
 
     video.currentTime = 1;
@@ -373,5 +506,3 @@ function alertDisable() {
     document.getElementById("alert-message").style.textAlign = "left";
     document.getElementById("alert-message").textContent = "";
 }
-
-
