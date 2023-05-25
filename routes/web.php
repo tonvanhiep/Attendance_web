@@ -109,6 +109,7 @@ Route::group(['middleware' => 'timekeeperloginmiddleware'], function () {
     Route::get('/check-in/recoginition', [ControllersAttendanceController::class, 'recognition'])->name('recoginition');
     Route::get('/recoginition/test', [ControllersAttendanceController::class, 'test'])->name('test');
     Route::post('/attendance', [ControllersAttendanceController::class, 'attendance'])->name('attendance');
+    Route::post('/check-in/check-attendance', [ControllersAttendanceController::class, 'checkAttendance'])->name('check-attendance');
 });
 
 

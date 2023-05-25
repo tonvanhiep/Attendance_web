@@ -5,7 +5,8 @@ var modalWrap = null;
 /**
  *
  * @param {string} title
- * @param {string} description content of modal body
+ * @param {string} name content of modal body
+ * @param {string} id content of modal body
  * @param {string} yesBtnLabel label of Yes button
  * @param {string} noBtnLabel label of No button
  * @param {function} callback_Yes callback function when click Yes button
@@ -13,7 +14,8 @@ var modalWrap = null;
  */
 export const showModal = (
     title,
-    description,
+    name,
+    id,
     yesBtnLabel,
     noBtnLabel,
     callback_Yes,
@@ -35,7 +37,7 @@ export const showModal = (
             <h5 class="modal-title">${title}</h5>
           </div>
           <div class="modal-body">
-            <p>${description}</p>
+            <p>Are you <span class="fw-bold">${name}</span> with id: <span class="fw-bold">${id}</span> ?</p>
           </div>
           <div class="modal-footer bg-light">
             <button type="button" id="yesBtn" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal">${yesBtnLabel}</button>
