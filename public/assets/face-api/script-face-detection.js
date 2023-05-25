@@ -136,6 +136,8 @@ var faceAntiSpoofing = {
     action: -1,
     actionName: "",
 };
+
+var check_attendance
 async function faceRecognition(faceMatcher, canvas, displaySize) {
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
     // const detections = await faceapi
@@ -195,7 +197,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
         .withFaceLandmarks()
         .withFaceDescriptor()
         .withFaceExpressions();
-    console.log(detections.expressions);
+    // console.log(detections.expressions);
 
     if (detections != null) {
         const resizedDetections = faceapi.resizeResults(
@@ -214,10 +216,18 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
             //
             //
             //
-
+            var check_result
+            checkAttendance(result._label).done(() => {
+                check_result = check_attendance.success
+            });
+            console.log(check_result);
+            if(check_result == true) {
+                alertSuccess("You've attended! Please comeback after 5 minute!");
+                return ;
+            }
             const box = resizedDetections.detection.box;
             const drawBox = new faceapi.draw.DrawBox(box, {
-                label: result.toString(),
+                label: arrName[result._label] + ' (' + result._label +')',
             });
             drawBox.draw(canvas);
 
@@ -250,11 +260,11 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                     var image = getSnapshot();
                     showModal(
                         "Face Detecttion",
-                        "Please confirm your face?",
+                        arrName[result._label],
+                        result._label,
                         "Yes",
                         "No",
                         () => {
-                            alert("Attendance success");
                             submitForm(result._label, image, true);
                             RecognitionIntervalID = setInterval(
                                 faceRecognition,
@@ -265,7 +275,6 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                             );
                         },
                         () => {
-                            alert("Enter your ID");
                             RecognitionIntervalID = setInterval(
                                 faceRecognition,
                                 7000,
@@ -381,7 +390,7 @@ function useEmotion(detections) {
         let index = arr.indexOf(max);
         let key = Object.keys(detections.expressions);
         result_expression.push(key[index], max);
-        console.log(result_expression);
+        // console.log(result_expression);
         if (result_expression[0] == "happy") {
             return "happy";
         } else if (result_expression[0] == "surprised") {
@@ -415,6 +424,23 @@ function checkAction(detections, action) {
     return false;
 }
 
+function checkAttendance(id) {
+        var k = $.Deferred()
+        $.ajax({
+            async: false,
+            type: "POST",
+            // cache: false,
+            url: 'http://127.0.0.1:8000/check-in/check-attendance',
+            data: {
+                id: id,
+            },
+        }).done(function (data) {
+            // console.log(data)
+            check_attendance = data;
+            k.resolve();
+            });
+        return k.promise()
+}
 let i = 0;
 var RecognitionIntervalID = -1;
 async function start() {

@@ -150,6 +150,11 @@ class TimesheetsModel extends Model
     {
         return $this->selectAttendances($condition)->paginate($perPage, '*', 'page', $page);
     }
+
+    public function getCountAttendanceToCheck($condition = null) {
+        $timesheet = $this->selectAttendances($condition);
+        return $timesheet == [] ? [] : $timesheet->count();
+    }
     //user
     public function selectTimesheetsforUser($condition = null)
     {

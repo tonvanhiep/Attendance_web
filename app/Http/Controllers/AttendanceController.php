@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Events\Attendance;
 use Illuminate\Http\Request;
 use App\Models\EmployeesModel;
@@ -30,6 +31,22 @@ class AttendanceController extends Controller
             }
         }
         return view('attendance.check-in', compact('arr', 'arrName'));
+    }
+
+    public function checkAttendance(Request $request)
+    {
+        //xu ly
+        $timesheet = new TimesheetsModel();
+        $now = Carbon::now();
+        $data = [
+            'employee_id' => $request->id,
+            'from' => $now->subMinute(5)->toDateTimeString(),
+        ];
+        $count = $timesheet->getCountAttendanceToCheck($data);
+        $result = [
+            'success' => $count == 0 ? false : true,
+        ];
+        return response()->json($result);
     }
 
     public function recognition()
