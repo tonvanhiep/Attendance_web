@@ -42,23 +42,23 @@ btnStart.onclick = function () {
 var action = 0;
 var arrAction = {
     0 : {
-        'message' : 'Vui long giu im khuon mat',
+        'message' : "Don't move your face",
         'success' : false
     },
     1 : {
-        'message' : 'Vui long cuoi',
+        'message' : 'Make a Smile',
         'success' : false
     },
     2 : {
-        'message' : 'Vui long ha mieng',
+        'message' : 'Open your Mouth',
         'success' : false
     },
     3 : {
-        'message' : 'Vui long xoay mat sang trai',
+        'message' : 'Turn your face to the Left',
         'success' : false
     },
     4 : {
-        'message' : 'Vui long xoay mat sang phai',
+        'message' : 'Turn your face to the Right',
         'success' : false
     }
 }
@@ -153,10 +153,10 @@ async function faceDetection(canvas, displaySize) {
             if(getExpression(detections) == "surprised") getSnapshotAndAddToFileList()
             break;
         case 3:
-            if(rotateFaceToLeftRight(detections) <= 1/4) getSnapshotAndAddToFileList()
+            if(rotateFaceToLeftRight(detections) >= 4) getSnapshotAndAddToFileList()
             break;
         case 4:
-            if(rotateFaceToLeftRight(detections) >= 4) getSnapshotAndAddToFileList()
+            if(rotateFaceToLeftRight(detections) <= 1/4) getSnapshotAndAddToFileList()
             break;
         default:
             return

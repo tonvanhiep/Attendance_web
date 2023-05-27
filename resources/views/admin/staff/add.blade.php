@@ -13,6 +13,7 @@
             max-width: 200px;
             margin: 5px;
         }
+
         .dropdown-toggle::after {
             content: none;
         }
@@ -21,9 +22,17 @@
 
 
 @section('content')
+    <style>
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
     <p id="url-face-api" hidden>{{ asset('assets/face-api') }}</p>
     <div class="modal" id="myModal">
-        <div class="modal-dialog" style="
+        <div class="modal-dialog"
+            style="
         min-width: 500px;
         width: 50% !important;
         max-width: 1000px;">
@@ -37,17 +46,22 @@
 
                 <div class="modal-footer" style="display: block">
                     <div class="input-group" style="margin-bottom: 15px">
-                        <input form="form-user-info" type="file" id="inp-face" name="face[]" accept="img/*" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" multiple aria-label="Upload">
+                        <input form="form-user-info" type="file" id="inp-face" name="face[]" accept="img/*"
+                            class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" multiple
+                            aria-label="Upload">
                     </div>
                     <div>
-                        <div style="display: flex; justify-content: center;"><p hidden id="processing-noti">Processing...</p></div>
+                        <div style="display: flex; justify-content: center;">
+                            <p hidden id="processing-noti">Processing...</p>
+                        </div>
                         <div hidden id="div-alert-error" class="alert alert-danger" role="alert"></div>
                     </div>
                     <div style="display: flex; flex-wrap:wrap; margin-bottom:30px">
                         <div id="div-face-upload" style="display: flex; flex-wrap:wrap"></div>
                     </div>
                     <div style="display: flex; justify-content: center;">
-                        <button type="button" class="btn btn-success" style="min-width: 50%;" data-bs-dismiss="modal">OK</button>
+                        <button type="button" class="btn btn-success" style="min-width: 50%;"
+                            data-bs-dismiss="modal">OK</button>
                     </div>
                 </div>
 
@@ -56,7 +70,8 @@
     </div>
 
     <div class="modal" id="myModal2">
-        <div class="modal-dialog" style="
+        <div class="modal-dialog"
+            style="
         min-width: fit-content;
         width: 50% !important;
         max-width: 1000px;">
@@ -67,23 +82,57 @@
                 </div>
 
                 <div class="modal-footer" style="display: block">
-                    <div id="div-scan" style="display: flex; justify-content: center;">
-                        <div id="webcam" style="width: fit-content;
-                        height: fit-content; border: solid; border-radius: 1000px;">
-                            <video id="video" width="560" height="560" autoplay muted></video>
+                    <div id="div-scan"
+                        style="display: flex; justify-content: center; align-items: center; flex-direction:column">
+                        <div style="height: 40px">
+                            <h5 id="action-name" style="height: 25px"></h5>
+                        </div>
+
+                        <div id="webcam" style="width: fit-content; height: fit-content; position: relative;">
+                            <video id="video" width="720" height="560" autoplay muted
+                                style="border: solid; border-radius: 1000px;"></video>
                             {{-- <h2 id="text-loading">Loading...</h2> --}}
                         </div>
+
+                        <div style="display: flex; flex-wrap:wrap; margin-bottom:30px; max-width: 50vw">
+                            <div id="div-face-scan" style="display: flex; flex-wrap:wrap; justify-content: center;">
+                            </div>
+                        </div>
                     </div>
-                    <div style="display: flex; justify-content: center; margin-top:30px">
-                        <button type="button" class="btn btn-success" style="min-width: 50%;" data-bs-dismiss="modal">OK</button>
+
+                    <div style="display: flex; justify-content: space-around; margin-top:30px">
+                        <button id="btn-start" type="button" class="btn btn-success" style="min-width: 45%;">Start</button>
+                        <button id="btn-done" type="button" class="btn btn-warning" data-bs-dismiss="modal"
+                            style="min-width: 45%;">Done</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <h3 class="i-name">Staff List / Add New Staff</h3>
 
-    <form id="form-user-info" class="board" action="{{ route('admin.staff.store') }}" method="post" enctype="multipart/form-data">
+    <h3 class="i-name">Staff List / Add New Staff</h3>
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible" style="margin: 30px;">>
+            {{ session('success') }}
+            <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">
+                <i class="fa-solid fa-x"></i>
+            </a>
+        </div>
+    @endif
+
+    @if (count($errors) > 0)
+        @foreach ($errors->all() as $error)
+            <div class="alert alert-danger alert-dismissible" style="margin: 30px;">>
+                {{ $error }}
+                <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">
+                    <i class="fa-solid fa-x"></i>
+                </a>
+            </div>
+        @endforeach
+    @endif
+
+    <form id="form-user-info" class="board" action="{{ route('admin.staff.store') }}" method="post"
+        enctype="multipart/form-data">
         @csrf
         <h4>Add New Staff</h4>
         <div class="input-container">
@@ -294,26 +343,6 @@
             </button>
         </div>
     </form>
-
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible" style="margin: 30px;">>
-            {{ session('success') }}
-            <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">
-                <i class="fa-solid fa-x"></i>
-            </a>
-        </div>
-    @endif
-
-    @if (count($errors) > 0)
-        @foreach ($errors->all() as $error)
-            <div class="alert alert-danger alert-dismissible" style="margin: 30px;">>
-                {{ $error }}
-                <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">
-                    <i class="fa-solid fa-x"></i>
-                </a>
-            </div>
-        @endforeach
-    @endif
 @endsection
 
 

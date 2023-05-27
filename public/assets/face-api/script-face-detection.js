@@ -199,8 +199,8 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                     isCheck: true,
                     label: result._label,
                     distance: result._distance,
-                    // 'action': Math.floor(Math.random() * 4)
-                    action: 3,
+                    'action': Math.floor(Math.random() * 4)
+                    // action: 3,
                 };
 
                 switch (faceAntiSpoofing.action) {
