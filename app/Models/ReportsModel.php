@@ -79,11 +79,12 @@ class ReportsModel extends Model
                 'employees.department',
                 'offices.office_name',
                 $this->table.'.comment',
+                $this->table.'.status',
                 $this->table.'.created_at',
                 DB::raw('date(reports.created_at) as date'),
             )
             // ->orderByDesc($this->table . '.employee_id')
-            ->orderByDesc('date');
+            ->orderByDesc($this->table.'.created_at');
 
         if (isset($condition['id'])) {
             if (is_array($condition['id'])) {
@@ -119,5 +120,25 @@ class ReportsModel extends Model
     public function pagination($condition = [], $page = 1, $perPage = 50)
     {
         return $this->selectAllReports($condition)->paginate($perPage, '*', 'page', $page);
+    }
+
+    public function saveReport($data = null)
+    {
+        if ($data == null) return;
+        DB::table($this->table)->insert([
+            'employee_id' => $data['employee_id'],
+            'status' => $data['status'],
+            'comment' => $data['comment'],
+            'created_user' => $data['employee_id'],
+            'updated_user' => $data['employee_id'],
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ]);
+    }
+
+    public function getCountReportWithStatus($condition = null)
+    {
+        $result = DB::table($this->table)->select('id')->where('status', $condition['status']);
+        return $result->count();
     }
 }

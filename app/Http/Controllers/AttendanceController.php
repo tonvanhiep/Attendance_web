@@ -41,6 +41,7 @@ class AttendanceController extends Controller
         $data = [
             'employee_id' => $request->id,
             'from' => $now->subMinute(5)->toDateTimeString(),
+            'status' => 1
         ];
         $count = $timesheet->getCountAttendanceToCheck($data);
         $result = [

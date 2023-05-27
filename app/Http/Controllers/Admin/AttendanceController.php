@@ -26,7 +26,7 @@ class AttendanceController extends Controller
 
         $perPage = $request->show == null ? 50 : $request->show;
         $condition = [
-            'status' => $request->input('status') == null ? 1 : $request->input('status'),
+            'status' => $request->input('status') == null ? 0 : $request->input('status'),
             'sort' => 1,
             'from' => $request->input('from') == null ? date('Y-m-d') : $request->input('from'),
             'to' => $request->input('to') == null ? date('Y-m-d') : $request->input('to'),
@@ -80,7 +80,7 @@ class AttendanceController extends Controller
         $perPage = $request->show == null ? 50 : $request->show;
 
         $condition = [
-            'status' => $request->input('status') == null ? 1 : $request->input('status'),
+            'status' => $request->input('status') == null ? 0 : $request->input('status'),
             'sort' => 1,
             'from' => $request->input('from') == null ? date('Y-m-d') : $request->input('from'),
             'to' => $request->input('to') == null ? date('Y-m-d') : $request->input('to'),

@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="{{asset('assets/css/report.css');}}">
 @endpush
 
+@push('js')
+    <script src="{{ asset('assets/js/report-realtime.js') }}"></script>
+@endpush
 
 @section('content')
     <h3 class="i-name">Attendance Report</h3>
@@ -32,7 +35,7 @@
                 <select name="status" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
                     <option value="1" @if ($condition['status'] == 1) selected @endif>Successful confirmation</option>
                     <option value="2" @if ($condition['status'] == 2) selected @endif>Waiting for confirmation</option>
-                    <option value="3" @if ($condition['status'] == 3) selected @endif>Confirm failure</option>
+                    {{-- <option value="3" @if ($condition['status'] == 3) selected @endif>Confirm failure</option> --}}
                     <option value="0" @if ($condition['status'] == 0) selected @endif>All</option>
                 </select>
             </div>

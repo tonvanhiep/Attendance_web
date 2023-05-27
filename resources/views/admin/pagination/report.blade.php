@@ -10,6 +10,7 @@
                 <td>Department</td>
                 <td>Comment</td>
                 <td>Status</td>
+                {{-- <td>Check</td> --}}
             </tr>
         </thead>
         <tbody>
@@ -37,6 +38,10 @@
                 <td>
                     <p class="fw-bold">{{ $item->comment }}</p>
                 </td>
+                {{-- <td>{{ $item->status }}</td>
+                <td>
+                    <input type="checkbox" id="check-status" value="1" @if ($item->status == 1)checked @endif>
+                </td> --}}
             </tr>
             @endforeach
         </tbody>
