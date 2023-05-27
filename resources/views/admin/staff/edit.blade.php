@@ -128,8 +128,8 @@
         @method('put')
         <h4>Edit Staff</h4>
         <div class="input-container">
-            <div class="container-top">
-                <div class="board-left">
+            <div class="container-top" style="display: flex; flex-wrap: wrap;">
+                <div class="board-left" style="max-width: 800px">
                     <div class="long form" >
                         <label for="first_name">First Name</label>
                         <input type="text" name="first_name" value="{{ $staff->first_name }}">
@@ -203,7 +203,7 @@
                             <option value="0" @if ($staff->status == 0) selected @endif>Quit job</option>
                         </select>
                     </div>
-                    <div class="long form" >
+                    <div class="long form" style="display: flex; flex-wrap: wrap;">
                         <label for="working_day">Working_day</label>
                         {{-- <input type="text" name="working_day" value="{{ $staff->working_day}}"> --}}
                         <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '2') !== false) checked @endif value="2">Mon
@@ -287,7 +287,7 @@
             </div>
 
             <h5 style="margin-bottom: 15px">About Contract</h5>
-            <div class="container-top">
+            <div class="container-top" style="display: flex; flex-wrap: wrap;">
                 <div class="board-left">
                     <div class="row">
                         <div class="form">
@@ -330,6 +330,7 @@
                 </div>
             </div>
         </div>
+
         <div class="d-grid gap-2">
             <button style="margin:auto; min-width: 50%; background-color:#323FAE" type="submit" class="btn btn-primary">
                 <i class="fa-solid fa-floppy-disk" style="padding-right: 10px"></i>

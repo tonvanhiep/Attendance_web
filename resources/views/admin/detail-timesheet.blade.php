@@ -15,7 +15,7 @@
     <h3 class="i-name"> </h3>
 
     <form class="filter">
-        <div class="filter-date">
+        <div class="filter-date" style="display: flex; flex-wrap: wrap;">
             <label for="start-date">From date</label>
             <div class="filter-input">
                 <input type="date" name="from" value="{{ $condition['from'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
@@ -41,7 +41,7 @@
 
     <div id="content">
         <h5 style="text-align: center">Overview</h5>
-        <div class="board">
+        <div class="board" style="overflow-x:auto;">
             <table width="100%" class="table table-hover" style="margin-bottom: 0px">
                 <thead>
                     <tr>
@@ -91,7 +91,7 @@
         </div>
 
         <h5 style="text-align: center">Detail</h5>
-        <div class="board">
+        <div class="board" style="overflow-x:auto;">
             <table width="100%" class="table table-hover" style="margin-bottom: 0px">
                 <thead>
                     <tr>

@@ -13,7 +13,7 @@
 <h3 class="i-name"> </h3>
 
 <form class="filter">
-    <div class="filter-date">
+    <div class="filter-date" style="display: flex; flex-wrap: wrap;">
         <label for="start-date">Date</label>
         <div class="filter-input">
             <input type="date" name="date" value="{{ $condition['from'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
@@ -26,7 +26,7 @@
 </form>
 
 <div id="content">
-    <div class="board">
+    <div class="board" style="overflow-x:auto;">
         <table width="100%" class="table table-hover" style="margin-bottom: 0px">
             <thead>
                 <tr>

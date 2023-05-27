@@ -1,4 +1,4 @@
-<div class="board">
+<div class="board" style="overflow-x:auto;">
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" style="margin: 30px;" role="alert">
             {{ session('success') }}
