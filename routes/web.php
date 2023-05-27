@@ -28,6 +28,7 @@ use App\Http\Controllers\AttendanceController as ControllersAttendanceController
 */
 
 Route::get('/test', function () {
+    return response()->json(['name' => 'hiep']);
     dd(Auth::guard('timekeeper')->check());
 });
 Route::get('/', function () {

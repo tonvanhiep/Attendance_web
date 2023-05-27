@@ -74,7 +74,7 @@ async function start() {
 
         console.log("Processing...")
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor().withFaceExpressions();
-
+        console.log(detections)
         if(detections != null) {
             console.log('detections = ', detections);
             const resizedDetections = faceapi.resizeResults(detections, displaySize);
@@ -84,7 +84,7 @@ async function start() {
             faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
             faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
             const box = resizedDetections.detection.box;
-            const drawBox = new faceapi.draw.DrawBox(box, { label: result.toString() });
+            const drawBox = new faceapi.draw.DrawBox(box, { label: arrName[result._label] + ' - ' + result._distance });
             drawBox.draw(canvas);
 
 

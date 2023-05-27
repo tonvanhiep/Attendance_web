@@ -25,7 +25,7 @@
 
     <form class="filter">
 
-        <div class="filter-depart">
+        <div class="filter-depart" style="display: flex; flex-wrap: wrap;">
             <label for="depart">Office</label>
             <div class="filter-input">
                 <select name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
@@ -49,7 +49,7 @@
         </div>
 
 
-        <div class="filter-date">
+        <div class="filter-date" style="display: flex; flex-wrap: wrap;">
             <label for="start-date">From date</label>
             <div class="filter-input">
                 <input type="date" name="from" value="{{ $condition['from'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
@@ -65,7 +65,7 @@
         </div>
     </form>
 
-    <div class="tool-board">
+    <div class="tool-board" style="display: flex; flex-wrap: wrap;">
         <form id="show-form" class="show" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}">
             <label for="show-text">Show</label>
             <div class="show-input">

@@ -25,20 +25,6 @@ document.getElementById("btn-inp").onclick = function () {
     document.getElementById("inp-id").focus();
 };
 
-// document.getElementById('btn-shot').onclick = function()
-// {
-//     let canvas = document.createElement('canvas');
-
-//     canvas.width = video.width;
-//     canvas.height = video.height;
-
-//     let ctx = canvas.getContext('2d');
-//     ctx.drawImage( video, 0, 0, canvas.width, canvas.height );
-
-//     image_ = canvas.toDataURL('image/jpeg');
-//     console.log("Screenshot")
-// }
-
 function getSnapshot() {
     let canvas = document.createElement("canvas");
     let image = "";
@@ -62,12 +48,7 @@ Promise.all([
     faceapi.nets.faceExpressionNet.loadFromUri(urlModel),
 ]).then(start);
 
-function pause() {
-    startVideo();
-}
-
 function startVideo() {
-    console.log("Start");
     document.getElementById("text-loading").style.display = "none";
     navigator.getUserMedia(
         { video: {} },
@@ -80,7 +61,6 @@ function loadLabeledImages() {
     const labels = Object.keys(faceRegination);
     var len_labels = labels.length;
     var success = 0;
-    console.log("Start traning...");
     return Promise.all(
         labels.map(async (label) => {
             const descriptions = [];
@@ -102,32 +82,12 @@ function loadLabeledImages() {
                     continue;
                 }
             }
-            console.log(++success + "/" + len_labels);
             return new faceapi.LabeledFaceDescriptors(label, descriptions);
         })
     );
 }
 
-async function faceDetection() {
-    const canvas = faceapi.createCanvasFromMedia(video);
-    document.body.append(canvas);
-    const displaySize = { width: video.width, height: video.height };
-    faceapi.matchDimensions(canvas, displaySize);
-    setInterval(async () => {
-        const detections = await faceapi
-            .detectAllFaces(video)
-            .withFaceLandmarks()
-            .withFaceExpressions();
-        const resizedDetections = faceapi.resizeResults(
-            detections,
-            displaySize
-        );
-        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        faceapi.draw.drawDetections(canvas, resizedDetections);
-        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-        faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
-    }, 100);
-}
+
 
 var faceAntiSpoofing = {
     isCheck: false,
@@ -140,64 +100,13 @@ var faceAntiSpoofing = {
 var check_attendance
 async function faceRecognition(faceMatcher, canvas, displaySize) {
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-    // const detections = await faceapi
-    //     .detectAllFaces(video)
-    //     .withFaceLandmarks()
-    //     .withFaceDescriptors();
-    // const resizedDetections = faceapi.resizeResults(
-    //     detections,
-    //     displaySize
-    // );
-    // canvas
-    //     .getContext("2d")
-    //     .clearRect(0, 0, canvas.width, canvas.height);
-    // const results = resizedDetections.map((d) =>
-    //     faceMatcher.findBestMatch(d.descriptor)
-    // );
-    // faceapi.draw.drawDetections(canvas, resizedDetections)
-    // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
-    // faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-    // results.forEach((result, i) => {
-    //     const box = resizedDetections[i].detection.box;
-    //     const drawBox = new faceapi.draw.DrawBox(box, {
-    //         label: result.toString(),
-    //     });
-    //     console.log(result._label);
-    //     console.log(result._distance);
-    //     drawBox.draw(canvas);
-    //     if (result._label != "unknown") {
-    //         if(RecognitionIntervalID != -1) clearInterval(RecognitionIntervalID);
-    //         var image = getSnapshot();
-    //         showModal(
-    //             "Face Detecttion",
-    //             "Please confirm your face?",
-    //             "Yes",
-    //             "No",
-    //             () => {
-    //                 alert("Attendance success");
-    //                 submitForm(result._label, image, true);
-    //                 RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
-    //             },
-    //             () => {
-    //                 alert("Enter your ID");
-    //                 RecognitionIntervalID = setInterval(faceRecognition, 7000, faceMatcher, canvas, displaySize);
-    //             },
-    //             () => {
-    //                 // alert("Wait for timekeeping again");
-    //                 // RecognitionIntervalID = setInterval(faceRecognition, 3000, faceMatcher, canvas, displaySize);
-    //             }
-    //         )
-    //     } else {
-    //         alertError("Không xác nhận được người dùng");
-    //     }
-    // });
 
     const detections = await faceapi
         .detectSingleFace(video)
         .withFaceLandmarks()
         .withFaceDescriptor()
         .withFaceExpressions();
-    // console.log(detections.expressions);
+    console.log(detections.expressions);
 
     if (detections != null) {
         const resizedDetections = faceapi.resizeResults(
@@ -222,7 +131,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
             });
             console.log(check_result);
             if(check_result == true) {
-                alertSuccess("You've attended! Please come back in 5 minutes!");
+                alertSuccess("You've attended! Please comeback after 5 minute!");
                 return ;
             }
             const box = resizedDetections.detection.box;
@@ -259,7 +168,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                         clearInterval(RecognitionIntervalID);
                     var image = getSnapshot();
                     showModal(
-                        // "Please confirm",
+                        "Face Detecttion",
                         arrName[result._label],
                         result._label,
                         "Yes",
@@ -290,32 +199,31 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                     isCheck: true,
                     label: result._label,
                     distance: result._distance,
-                    action: Math.floor(Math.random() * 4)
-                    // action: 3,
+                    // 'action': Math.floor(Math.random() * 4)
+                    action: 3,
                 };
 
                 switch (faceAntiSpoofing.action) {
                     case 0:
-                        alertAction("Turn your face to the Right");
+                        alertAction("Vui long quay mat sang phai");
                         faceAntiSpoofing.actionName = "rotateRight";
                         break;
                     case 1:
-                        alertAction("Turn your face to the Left");
+                        alertAction("Vui long quay mat sang trai");
                         faceAntiSpoofing.actionName = "rotateLeft";
                         break;
                     case 2:
-                        alertAction("Make a Smile");
+                        alertAction("Vui long  cuoi");
                         faceAntiSpoofing.actionName = "happy";
                         break;
                     case 3:
-                        alertAction("Open your Mouth");
+                        alertAction("Vui long ha mieng");
                         faceAntiSpoofing.actionName = "surprised";
                         break;
                     default:
                         faceAntiSpoofing.actionName = "";
                         break;
                 }
-                // console.log(faceAntiSpoofing)
 
                 clearInterval(RecognitionIntervalID);
                 RecognitionIntervalID = setInterval(
@@ -336,7 +244,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
             }
         }
         else {
-            alertError("Unable to confirm employee");
+            alertError("Không xác nhận được người dùng");
         }
     }
 }
@@ -344,8 +252,8 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
 function removeFaceAntiSpoofing(faceMatcher, canvas, displaySize, isSuccess) {
     clearTimeout(faceAntiSpoofing.idTimeout);
 
-    if (isSuccess) alertSuccess("Right action");
-    else alertError("Wrong action");
+    if (isSuccess) alertSuccess("Xac nhan thanh cong");
+    else alertError("Xac nhan khong thanh cong");
 
     faceAntiSpoofing = {
         isCheck: false,
@@ -401,25 +309,25 @@ function useEmotion(detections) {
 }
 
 function checkAction(detections, action) {
-    if (action == 0) {
-        if (rotateFaceToLeftRight(detections) == "rotateRight") {
-            return true;
-        }
-    }
-    if (action == 1) {
-        if (rotateFaceToLeftRight(detections) == "rotateLeft") {
-            return true;
-        }
-    }
-    if (action == 2) {
-        if (useEmotion(detections) == "happy") {
-            return true;
-        }
-    }
-    if (action == 3) {
-        if (useEmotion(detections) == "surprised") {
-            return true;
-        }
+    switch (action) {
+        case 0:
+            if (rotateFaceToLeftRight(detections) == "rotateRight") {
+                return true;
+            }
+        case 1:
+            if (rotateFaceToLeftRight(detections) == "rotateLeft") {
+                return true;
+            }
+        case 2:
+            if (useEmotion(detections) == "happy") {
+                return true;
+            }
+        case 3:
+            if (useEmotion(detections) == "surprised") {
+                return true;
+            }
+        default:
+            return false;
     }
     return false;
 }
@@ -444,16 +352,10 @@ function checkAttendance(id) {
 let i = 0;
 var RecognitionIntervalID = -1;
 async function start() {
-    console.log("Training data.");
-
     const labeledFaceDescriptors = await loadLabeledImages();
     const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
 
-    console.log("Completed training.");
-
     startVideo();
-
-    // video.addEventListener("playing", faceDetection)
 
     video.addEventListener("playing", () => {
         const canvas = faceapi.createCanvasFromMedia(video);

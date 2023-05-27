@@ -21,6 +21,13 @@
 
 
 @section('content')
+    <style>
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
     <p id="url-face-api" hidden>{{ asset('assets/face-api') }}</p>
     <div class="modal" id="myModal">
         <div class="modal-dialog" style="
@@ -67,15 +74,25 @@
                 </div>
 
                 <div class="modal-footer" style="display: block">
-                    <div id="div-scan" style="display: flex; justify-content: center;">
-                        <div id="webcam" style="width: fit-content;
-                        height: fit-content; border: solid; border-radius: 1000px;">
-                            <video id="video" width="560" height="560" autoplay muted></video>
+                    <div id="div-scan" style="display: flex; justify-content: center; align-items: center; flex-direction:column">
+                        <div style="height: 40px">
+                            <h5 id="action-name" style="height: 25px"></h5>
+                        </div>
+
+                        <div id="webcam" style="width: fit-content; height: fit-content; position: relative;">
+                            <video id="video" width="720" height="560" autoplay muted style="border: solid; border-radius: 1000px;"></video>
                             {{-- <h2 id="text-loading">Loading...</h2> --}}
                         </div>
+
+                        <div style="display: flex; flex-wrap:wrap; margin-bottom:30px; max-width: 50vw">
+                            <div id="div-face-scan" style="display: flex; flex-wrap:wrap; justify-content: center;">
+                            </div>
+                        </div>
                     </div>
-                    <div style="display: flex; justify-content: center; margin-top:30px">
-                        <button type="button" class="btn btn-success" style="min-width: 50%;" data-bs-dismiss="modal">OK</button>
+
+                    <div style="display: flex; justify-content: space-around; margin-top:30px">
+                        <button id="btn-start" type="button" class="btn btn-success" style="min-width: 45%;">Start</button>
+                        <button id="btn-done" type="button" class="btn btn-warning" data-bs-dismiss="modal" style="min-width: 45%;">Done</button>
                     </div>
                 </div>
             </div>
@@ -111,8 +128,8 @@
         @method('put')
         <h4>Edit Staff</h4>
         <div class="input-container">
-            <div class="container-top">
-                <div class="board-left">
+            <div class="container-top" style="display: flex; flex-wrap: wrap;">
+                <div class="board-left" style="max-width: 800px">
                     <div class="long form" >
                         <label for="first_name">First Name</label>
                         <input type="text" name="first_name" value="{{ $staff->first_name }}">
@@ -186,7 +203,7 @@
                             <option value="0" @if ($staff->status == 0) selected @endif>Quit job</option>
                         </select>
                     </div>
-                    <div class="long form" >
+                    <div class="long form" style="display: flex; flex-wrap: wrap;">
                         <label for="working_day">Working_day</label>
                         {{-- <input type="text" name="working_day" value="{{ $staff->working_day}}"> --}}
                         <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '2') !== false) checked @endif value="2">Mon
@@ -270,7 +287,7 @@
             </div>
 
             <h5 style="margin-bottom: 15px">About Contract</h5>
-            <div class="container-top">
+            <div class="container-top" style="display: flex; flex-wrap: wrap;">
                 <div class="board-left">
                     <div class="row">
                         <div class="form">
@@ -313,6 +330,7 @@
                 </div>
             </div>
         </div>
+
         <div class="d-grid gap-2">
             <button style="margin:auto; min-width: 50%; background-color:#323FAE" type="submit" class="btn btn-primary">
                 <i class="fa-solid fa-floppy-disk" style="padding-right: 10px"></i>

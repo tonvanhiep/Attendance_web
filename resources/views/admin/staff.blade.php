@@ -17,7 +17,7 @@
 
     <form class="filter">
 
-        <div class="filter-depart">
+        <div class="filter-depart" style="display: flex; flex-wrap: wrap;">
             <label for="office">Office</label>
             <div class="filter-input">
                 <select name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <div class="filter-date">
+        <div class="filter-date" style="display: flex; flex-wrap: wrap;">
             <label for="status">Status</label>
             <div class="status">
                 <select name="status" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
@@ -67,7 +67,7 @@
         </div>
     </form>
 
-    <div class="tool-board">
+    <div class="tool-board" style="display: flex; flex-wrap: wrap;">
         <form id="show-form" class="show" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}">
             <label for="show-text">Show</label>
             <div class="show-input">
