@@ -38,7 +38,7 @@
     <script src="{{asset('assets/js/main.js');}}"></script>
     <script src="http://localhost:6001/socket.io/socket.io.js"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
-    <script src="{{ asset('assets/js/attendance-realtime.js') }}"></script>
+    {{-- <script src="{{ asset('assets/js/attendance-realtime.js') }}"></script> --}}
     @stack('js')
 </body>
 </html>

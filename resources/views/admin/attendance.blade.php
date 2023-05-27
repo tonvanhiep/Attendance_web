@@ -16,6 +16,9 @@
     </style>
 @endpush
 
+@push('js')
+    <script src="{{ asset('assets/js/attendance-realtime.js') }}"></script>
+@endpush
 
 @section('content')
     <h3 class="i-name">Real-time Attendance</h3>
