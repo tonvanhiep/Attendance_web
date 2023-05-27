@@ -49,7 +49,7 @@ Promise.all([
 ]).then(start);
 
 function startVideo() {
-    document.getElementById("text-loading").style.display = "none";
+    document.getElementById("text-loading").style.display = "none";zz
     navigator.getUserMedia(
         { video: {} },
         (stream) => (video.srcObject = stream),

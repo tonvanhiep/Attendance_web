@@ -74,7 +74,7 @@ async function start() {
 
         console.log("Processing...")
         const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor().withFaceExpressions();
-
+        console.log(detections)
         if(detections != null) {
             console.log('detections = ', detections);
             const resizedDetections = faceapi.resizeResults(detections, displaySize);

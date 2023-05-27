@@ -76,11 +76,11 @@
                 <div class="modal-footer" style="display: block">
                     <div id="div-scan" style="display: flex; justify-content: center; align-items: center; flex-direction:column">
                         <div style="height: 40px">
-                            <h5 style="height: 25px" hidden></h5>
+                            <h5 id="action-name" style="height: 25px"></h5>
                         </div>
 
                         <div id="webcam" style="width: fit-content; height: fit-content; position: relative;">
-                            <video id="video" width="560" height="560" autoplay muted style="border: solid; border-radius: 1000px;"></video>
+                            <video id="video" width="720" height="560" autoplay muted style="border: solid; border-radius: 1000px;"></video>
                             {{-- <h2 id="text-loading">Loading...</h2> --}}
                         </div>
 
@@ -92,6 +92,7 @@
 
                     <div style="display: flex; justify-content: space-around; margin-top:30px">
                         <button id="btn-start" type="button" class="btn btn-success" style="min-width: 45%;">Start</button>
+                        <button id="btn-done" type="button" class="btn btn-warning" data-bs-dismiss="modal" style="min-width: 45%;">Done</button>
                     </div>
                 </div>
             </div>
