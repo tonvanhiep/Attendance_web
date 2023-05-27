@@ -13,7 +13,7 @@ var modalWrap = null;
  * @param {function} callback_No callback function when click No button
  */
 export const showModal = (
-    title,
+    // title,
     name,
     id,
     yesBtnLabel,
@@ -34,10 +34,7 @@ export const showModal = (
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-light">
-            <h5 class="modal-title">${title}</h5>
-          </div>
-          <div class="modal-body">
-            <p>Are you <span class="fw-bold">${name}</span> with id: <span class="fw-bold">${id}</span> ?</p>
+            <h5 class="modal-title">Are you <span class="fw-bold">${name}</span> with id: <span class="fw-bold">${id}</span>?</h5>
           </div>
           <div class="modal-footer bg-light">
             <button type="button" id="yesBtn" class="btn btn-primary modal-success-btn" data-bs-dismiss="modal">${yesBtnLabel}</button>

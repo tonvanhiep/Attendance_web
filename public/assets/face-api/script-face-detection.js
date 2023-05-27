@@ -131,7 +131,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
             });
             console.log(check_result);
             if(check_result == true) {
-                alertSuccess("You've attended! Please comeback after 5 minute!");
+                alertSuccess("You've attended! Please come back in 5 minutes!");
                 return ;
             }
             const box = resizedDetections.detection.box;
@@ -168,7 +168,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                         clearInterval(RecognitionIntervalID);
                     var image = getSnapshot();
                     showModal(
-                        "Face Detecttion",
+                        // "Please confirm",
                         arrName[result._label],
                         result._label,
                         "Yes",
@@ -199,25 +199,25 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                     isCheck: true,
                     label: result._label,
                     distance: result._distance,
-                    // 'action': Math.floor(Math.random() * 4)
-                    action: 3,
+                    action: Math.floor(Math.random() * 4)
+                    // action: 3,
                 };
 
                 switch (faceAntiSpoofing.action) {
                     case 0:
-                        alertAction("Vui long quay mat sang phai");
+                        alertAction("Turn your face to the Right");
                         faceAntiSpoofing.actionName = "rotateRight";
                         break;
                     case 1:
-                        alertAction("Vui long quay mat sang trai");
+                        alertAction("Turn your face to the Left");
                         faceAntiSpoofing.actionName = "rotateLeft";
                         break;
                     case 2:
-                        alertAction("Vui long  cuoi");
+                        alertAction("Make a Smile");
                         faceAntiSpoofing.actionName = "happy";
                         break;
                     case 3:
-                        alertAction("Vui long ha mieng");
+                        alertAction("Open your Mouth");
                         faceAntiSpoofing.actionName = "surprised";
                         break;
                     default:
@@ -244,7 +244,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
             }
         }
         else {
-            alertError("Không xác nhận được người dùng");
+            alertError("Unable to confirm employee");
         }
     }
 }
@@ -252,8 +252,8 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
 function removeFaceAntiSpoofing(faceMatcher, canvas, displaySize, isSuccess) {
     clearTimeout(faceAntiSpoofing.idTimeout);
 
-    if (isSuccess) alertSuccess("Xac nhan thanh cong");
-    else alertError("Xac nhan khong thanh cong");
+    if (isSuccess) alertSuccess("Right action");
+    else alertError("Wrong action");
 
     faceAntiSpoofing = {
         isCheck: false,
@@ -406,7 +406,7 @@ function submitForm(id, image, identity) {
 }
 
 function alertAction(message) {
-    document.getElementById("alert-message").style.backgroundColor = "none";
+    document.getElementById("alert-message").style.backgroundColor = "blue";
     document.getElementById("alert-message").style.textAlign = "center";
     document.getElementById("alert-message").textContent = message;
 }

@@ -97,9 +97,9 @@ class AttendanceController extends Controller
         $id_attendance = $attendance->saveAttendance($data);
 
         if ($request->identity == 'true') {
-            $message = 'ID:' . $employee[0]->id . '| ' . $employee[0]->last_name . ' ' . $employee[0]->first_name . ' diem danh thanh cong!!!';
+            $message = 'ID:' . $employee[0]->id . '| ' . $employee[0]->last_name . ' ' . $employee[0]->first_name . ' have successfully attended!';
         } else {
-            $message = 'ID:' . $employee[0]->id . '| ' . $employee[0]->last_name . ' ' . $employee[0]->first_name . ' da gui yeu cau diem danh.';
+            $message = 'ID:' . $employee[0]->id . '| ' . $employee[0]->last_name . ' ' . $employee[0]->first_name . ' have submitted a attendance request';
         }
         $data = [
             'success' => true,
