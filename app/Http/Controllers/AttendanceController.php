@@ -40,7 +40,7 @@ class AttendanceController extends Controller
         $now = Carbon::now();
         $data = [
             'employee_id' => $request->id,
-            'from' => $now->subMinute(5)->toDateTimeString(),
+            'from' => $now->subMinute(1)->toDateTimeString(),
             'status' => 1
         ];
         $count = $timesheet->getCountAttendanceToCheck($data);

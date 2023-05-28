@@ -87,8 +87,6 @@ function loadLabeledImages() {
     );
 }
 
-
-
 var faceAntiSpoofing = {
     isCheck: false,
     label: "",
@@ -97,7 +95,8 @@ var faceAntiSpoofing = {
     actionName: "",
 };
 
-var check_attendance
+var check_attendance;
+var snapshot = [];
 async function faceRecognition(faceMatcher, canvas, displaySize) {
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
 
@@ -106,7 +105,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
         .withFaceLandmarks()
         .withFaceDescriptor()
         .withFaceExpressions();
-    console.log(detections.expressions);
+    // console.log(detections.expressions);
 
     if (detections != null) {
         const resizedDetections = faceapi.resizeResults(
@@ -125,18 +124,20 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
             //
             //
             //
-            var check_result
+            var check_result;
             checkAttendance(result._label).done(() => {
-                check_result = check_attendance.success
+                check_result = check_attendance.success;
             });
-            console.log(check_result);
-            if(check_result == true) {
+            // console.log(check_result);
+            if (check_result == true) {
                 alertSuccess("You've attended! Please come back in 5 minutes!");
-                return ;
+                return;
             }
+            snapshot.push(getSnapshot());
+            // console.log(snapshot,snapshot.length)
             const box = resizedDetections.detection.box;
             const drawBox = new faceapi.draw.DrawBox(box, {
-                label: arrName[result._label] + ' (' + result._label +')',
+                label: arrName[result._label] + " (" + result._label + ")",
             });
             drawBox.draw(canvas);
 
@@ -166,7 +167,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                     //modal
                     if (RecognitionIntervalID != -1)
                         clearInterval(RecognitionIntervalID);
-                    var image = getSnapshot();
+                    var image = snapshot[0];
                     showModal(
                         // "Face Detecttion",
                         arrName[result._label],
@@ -193,13 +194,14 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                             );
                         }
                     );
+                    snapshot = [];
                 }
             } else {
                 faceAntiSpoofing = {
                     isCheck: true,
                     label: result._label,
                     distance: result._distance,
-                    'action': Math.floor(Math.random() * 4)
+                    action: Math.floor(Math.random() * 4),
                     // action: 3,
                 };
 
@@ -242,8 +244,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                     false
                 );
             }
-        }
-        else {
+        } else {
             alertError("Unable to confirm employee");
         }
     }
@@ -290,7 +291,7 @@ function rotateFaceToLeftRight(detections) {
     }
 }
 
-function useEmotion(detections) {
+function getExpression(detections) {
     let result_expression = [];
     if (detections.expressions) {
         let arr = Object.values(detections.expressions);
@@ -299,13 +300,9 @@ function useEmotion(detections) {
         let key = Object.keys(detections.expressions);
         result_expression.push(key[index], max);
         // console.log(result_expression);
-        if (result_expression[0] == "happy") {
-            return "happy";
-        } else if (result_expression[0] == "surprised") {
-            return "surprised";
-        }
+        return result_expression[0]
     }
-    return "nothing";
+    return "";
 }
 
 function checkAction(detections, action) {
@@ -319,11 +316,11 @@ function checkAction(detections, action) {
                 return true;
             }
         case 2:
-            if (useEmotion(detections) == "happy") {
+            if (getExpression(detections) == "happy") {
                 return true;
             }
         case 3:
-            if (useEmotion(detections) == "surprised") {
+            if (getExpression(detections) == "surprised") {
                 return true;
             }
         default:
@@ -333,21 +330,21 @@ function checkAction(detections, action) {
 }
 
 function checkAttendance(id) {
-        var k = $.Deferred()
-        $.ajax({
-            async: false,
-            type: "POST",
-            // cache: false,
-            url: 'http://127.0.0.1:8000/check-in/check-attendance',
-            data: {
-                id: id,
-            },
-        }).done(function (data) {
-            // console.log(data)
-            check_attendance = data;
-            k.resolve();
-            });
-        return k.promise()
+    var k = $.Deferred();
+    $.ajax({
+        async: false,
+        type: "POST",
+        // cache: false,
+        url: "http://127.0.0.1:8000/check-in/check-attendance",
+        data: {
+            id: id,
+        },
+    }).done(function (data) {
+        // console.log(data)
+        check_attendance = data;
+        k.resolve();
+    });
+    return k.promise();
 }
 let i = 0;
 var RecognitionIntervalID = -1;

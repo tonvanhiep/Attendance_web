@@ -97,7 +97,7 @@
         <div>
             <form>
                 <button type="submit" style="background: none"><i class="fa-solid fa-magnifying-glass"></i></button>
-                <input type="text" placeholder="Search" name="search" size="10">
+                <input type="text" placeholder="Search" name="search" size="10" value={{ $condition['search'] }}>
             </form>
 
         </div>
