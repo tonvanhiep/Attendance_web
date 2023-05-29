@@ -168,6 +168,18 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                     if (RecognitionIntervalID != -1)
                         clearInterval(RecognitionIntervalID);
                     var image = snapshot[0];
+                    var RemoveShowModalID = setTimeout(() => {
+                        $(".modal").remove();
+                        $(".modal-backdrop").remove();
+                        submitForm(result._label, image, true);
+                        RecognitionIntervalID = setInterval(
+                            faceRecognition,
+                            3000,
+                            faceMatcher,
+                            canvas,
+                            displaySize
+                        );
+                    }, 3000);
                     showModal(
                         // "Face Detecttion",
                         arrName[result._label],
@@ -183,17 +195,20 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                                 canvas,
                                 displaySize
                             );
+                            clearTimeout(RemoveShowModalID);
                         },
                         () => {
                             RecognitionIntervalID = setInterval(
                                 faceRecognition,
-                                7000,
+                                3000,
                                 faceMatcher,
                                 canvas,
                                 displaySize
                             );
+                            clearTimeout(RemoveShowModalID);
                         }
                     );
+
                     snapshot = [];
                 }
             } else {
@@ -300,7 +315,7 @@ function getExpression(detections) {
         let key = Object.keys(detections.expressions);
         result_expression.push(key[index], max);
         // console.log(result_expression);
-        return result_expression[0]
+        return result_expression[0];
     }
     return "";
 }
@@ -360,6 +375,24 @@ async function start() {
 
         const displaySize = { width: video.width, height: video.height };
         faceapi.matchDimensions(canvas, displaySize);
+
+        $("#inp-id").on("focus", function () {
+            console.log("hi");
+            clearInterval(RecognitionIntervalID);
+            setTimeout(() => {
+                $("#inp-id").blur();
+                document.getElementById("inp-id").value = "";
+                document.getElementById("btn-inp").style.display = "block";
+                document.getElementById("div-inp").style.display = "none";
+                RecognitionIntervalID = setInterval(
+                    faceRecognition,
+                    3000,
+                    faceMatcher,
+                    canvas,
+                    displaySize
+                );
+            }, 5000);
+        });
 
         RecognitionIntervalID = setInterval(
             faceRecognition,
