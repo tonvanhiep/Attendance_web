@@ -136,8 +136,8 @@
         @csrf
         <h4>Add New Staff</h4>
         <div class="input-container">
-            <div class="container-top">
-                <div class="board-left">
+            <div class="container-top" style="display: flex; flex-wrap: wrap;">
+                <div class="board-left" style="max-width: 800px">
                     <div class="long form">
                         <label for="first_name">First Name</label>
                         <input type="text" name="first_name">
@@ -280,7 +280,7 @@
                 </div>
             </div>
             <h5 style="margin-bottom: 15px">About Contract</h5>
-            <div class="container-top">
+            <div class="container-top" style="display: flex; flex-wrap: wrap;">
                 <div class="board-left">
                     <div class="row">
                         <div class="form">
@@ -314,7 +314,7 @@
                     <div id="div-face-upload" style="display: flex; flex-wrap:wrap"></div>
                 </div>
             </div> --}}
-            <div style="margin-bottom:10px; display: flex; justify-content: space-between;">
+            <div style="margin-bottom:10px; display: flex; justify-content: space-between; flex-wrap: wrap;">
                 <h5 style="margin-bottom: 15px; display:inline">Face Recognition</h5>
                 <div class="dropdown">
                         <button style="background-color: #323FAE" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">

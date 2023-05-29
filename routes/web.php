@@ -15,6 +15,7 @@ use App\Http\Controllers\user\UserReportController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\user\UserAttendanceController;
 use App\Http\Controllers\AttendanceController as ControllersAttendanceController;
+use App\Http\Controllers\user\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -149,5 +150,9 @@ Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' =>
         Route::put('update/{id}', [UserReportController::class, 'update'])->name('update');
 
         Route::get('delete/{id}', [UserReportController::class, 'delete'])->name('delete');
+    });
+
+    Route::group(['prefix' => 'chat', 'as' => 'chat.'], function () {
+        Route::get('/', [ChatController::class, 'index'])->name('index');
     });
 });

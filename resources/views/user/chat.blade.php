@@ -1,24 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('user.layout')
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="UXpSusK0J09FLOrbpQLFpRngrv3ebg2Li3HARdVr">
-    <title>User - Attendance</title>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+@section('title')
+    Chat
+@endsection
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:8000/assets/bootstrap-5.3.0-alpha2-dist/css/bootstrap.min.css">
-    <link rel="shortcut icon" type="image/x-icon" href="http://127.0.0.1:8000/assets/img/logo.png">
-    <link rel="stylesheet" href="http://127.0.0.1:8000/assets/css/user/style.css">
-
-
-</head>
-
-<body>
-
+@push('css')
+    <link rel="stylesheet" href="{{ asset('assets/css/user/style.css') }}">
     <style>
         #chat3 .form-control {
             border-color: transparent;
@@ -37,7 +24,9 @@
             margin-top: -.75rem;
         }
     </style>
+@endpush
 
+@section('content')
 <section style="background-color: #CDC4F9;">
     <div class="container py-5">
         <div class="row">
@@ -309,5 +298,4 @@
         </div>
     </div>
 </section>
-</body>
-</html>
+@endsection

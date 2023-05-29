@@ -308,7 +308,7 @@
                 </div>
             </div>
 
-            <div style="margin-bottom:10px; display: flex; justify-content: space-between;">
+            <div style="margin-bottom:10px; display: flex; justify-content: space-between; flex-wrap: wrap;">
                 <h5 style="margin-bottom: 15px; display:inline">Face Recognition</h5>
                 <div class="dropdown">
                         <button style="background-color: #323FAE" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
