@@ -216,26 +216,26 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                     isCheck: true,
                     label: result._label,
                     distance: result._distance,
-                    action: Math.floor(Math.random() * 4),
-                    // action: 3,
+                    action: Math.floor(Math.random() * 2),
+                    // action: 2,
                 };
 
                 switch (faceAntiSpoofing.action) {
                     case 0:
-                        alertAction("Turn your face to the Right");
-                        faceAntiSpoofing.actionName = "rotateRight";
-                        break;
-                    case 1:
-                        alertAction("Turn your face to the Left");
-                        faceAntiSpoofing.actionName = "rotateLeft";
-                        break;
-                    case 2:
                         alertAction("Make a Smile");
                         faceAntiSpoofing.actionName = "happy";
                         break;
-                    case 3:
+                    case 1:
                         alertAction("Open your Mouth");
                         faceAntiSpoofing.actionName = "surprised";
+                        break;
+                    case 2:
+                        alertAction("Turn your face to the Right");
+                        faceAntiSpoofing.actionName = "rotateRight";
+                        break;
+                    case 3:
+                        alertAction("Turn your face to the Left");
+                        faceAntiSpoofing.actionName = "rotateLeft";
                         break;
                     default:
                         faceAntiSpoofing.actionName = "";

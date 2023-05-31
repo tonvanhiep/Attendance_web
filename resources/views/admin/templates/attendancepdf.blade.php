@@ -449,7 +449,7 @@
                             <p>{{ $item->office_name }}</p>
                         </td>
                         <td class="timekeeper">
-                            <p>{{ $item->timekeeper_id }}</p>
+                            <p>{{ $item->timekeeper_name }}</p>
                         </td>
                         <td class="date">
                             <p>{{ $dt->format('d/m/Y') }}</p>
