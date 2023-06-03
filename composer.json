@@ -8,6 +8,7 @@
         "php": "^8.0.2",
         "ext-gd": "*",
         "ext-zip": "*",
+        "barryvdh/laravel-debugbar": "^3.8",
         "barryvdh/laravel-dompdf": "^2.0",
         "doctrine/dbal": "^3.5",
         "guzzlehttp/guzzle": "^7.2",

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/logo.png') }}">
 
     <title>Face Detection</title>
     <script>
@@ -57,7 +58,7 @@
         </div>
 
         <div id="webcam">
-            <video id="video" width="720" height="560" autoplay muted></video>
+            <video id="video" width="720" height="560" autoplay muted playsinline ></video>
             <h2 id="text-loading">Loading...</h2>
         </div>
 

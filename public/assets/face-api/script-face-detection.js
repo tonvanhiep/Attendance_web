@@ -48,13 +48,94 @@ Promise.all([
     faceapi.nets.faceExpressionNet.loadFromUri(urlModel),
 ]).then(start);
 
+async function getConnectedDevices(type) {
+    if (!navigator.mediaDevices?.enumerateDevices) {
+        alert("enumerateDevices() not supported.");
+    } else {
+        // List cameras and microphones.
+        navigator.mediaDevices
+        .enumerateDevices()
+        .then((devices) => {
+            devices.forEach((device) => {
+            alert(`${device.kind}: ${device.label} id = ${device.deviceId}`);
+            });
+        })
+        .catch((err) => {
+            alert(`${err.name}: ${err.message}`);
+        });
+      }
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    return devices.filter(device => device.kind === type)
+}
+
+// Open camera with at least minWidth and minHeight capabilities
+async function openCamera(cameraId, minWidth, minHeight) {
+    const constraints = {
+        'audio': {'echoCancellation': true},
+        'video': {
+            'deviceId': cameraId,
+            'width': {'min': minWidth},
+            'height': {'min': minHeight}
+            }
+        }
+
+    return await navigator.mediaDevices.getUserMedia(constraints);
+}
+
+const cameras = getConnectedDevices('videoinput');
+if (cameras && cameras.length > 0) {
+    // Open first available video camera with a resolution of 1280x720 pixels
+    const stream = openCamera(cameras[0].deviceId, 1280, 720);
+}
+
+
 function startVideo() {
     document.getElementById("text-loading").style.display = "none";
-    navigator.getUserMedia(
-        { video: {} },
-        (stream) => (video.srcObject = stream),
-        (err) => console.error(err)
-    );
+    // navigator.getUserMedia(
+    //     { video: {} },
+    //     (stream) => (video.srcObject = stream),
+    //     (err) => console.error(err)
+    // );
+    if (navigator.userAgent.match(/iPhone|iPad|Android/)) { ///iPhone|Android.+Mobile/
+        alert("Mobile")
+        const cameras = getConnectedDevices('videoinput');
+        if (cameras && cameras.length > 0) {
+            // Open first available video camera with a resolution of 1280x720 pixels
+            const stream = openCamera(cameras[0].deviceId, 1280, 720);
+            try {
+                video.srcObject = stream;
+            } catch(error) {
+                console.error('Error opening video camera.', error);
+                alert('Error opening video camera.' + error);
+            }
+        }
+        else
+            alert("Don't have camera")
+
+        // video.width = 400; //1080;
+
+        // navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        // .then(localMediaStream => {
+        //     if ('srcObject' in video) {
+        //         video.srcObject = localMediaStream;
+        //     } else {
+        //         video.src = window.URL.createObjectURL(localMediaStream);
+        //     }
+        //     video.play();
+        // })
+        // .catch(err => {
+        //     console.error(`Not available!!!!`, err);
+        //     alert(`Not available!!!!` + err);
+        // });
+    }
+    else {
+        alert("PC");
+        navigator.getUserMedia(
+            { video: {} },
+            stream => video.srcObject = stream,
+            err => console.error(err)
+        )
+    }
 }
 
 function loadLabeledImages() {
@@ -349,26 +430,26 @@ function checkAttendance(id) {
 let i = 0;
 var RecognitionIntervalID = -1;
 async function start() {
-    const labeledFaceDescriptors = await loadLabeledImages();
-    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
+    // const labeledFaceDescriptors = await loadLabeledImages();
+    // const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
 
     startVideo();
 
-    video.addEventListener("playing", () => {
-        const canvas = faceapi.createCanvasFromMedia(video);
-        document.getElementById("webcam").append(canvas);
+    // video.addEventListener("playing", () => {
+    //     const canvas = faceapi.createCanvasFromMedia(video);
+    //     document.getElementById("webcam").append(canvas);
 
-        const displaySize = { width: video.width, height: video.height };
-        faceapi.matchDimensions(canvas, displaySize);
+    //     const displaySize = { width: video.width, height: video.height };
+    //     faceapi.matchDimensions(canvas, displaySize);
 
-        RecognitionIntervalID = setInterval(
-            faceRecognition,
-            3000,
-            faceMatcher,
-            canvas,
-            displaySize
-        );
-    });
+    //     RecognitionIntervalID = setInterval(
+    //         faceRecognition,
+    //         3000,
+    //         faceMatcher,
+    //         canvas,
+    //         displaySize
+    //     );
+    // });
 
     video.currentTime = 1;
 }
