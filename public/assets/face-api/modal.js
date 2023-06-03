@@ -68,6 +68,8 @@ export const showModal = (
         };
     });
 
+
+
     document.body.append(modalWrap);
 
     var modal = new bootstrap.Modal(modalWrap.querySelector(".modal"));

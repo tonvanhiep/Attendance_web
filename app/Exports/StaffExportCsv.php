@@ -41,7 +41,7 @@ class StaffExportCsv implements FromCollection, WithHeadings
                 'birth_day',
                 DB::raw('CASE gender WHEN 0 THEN "Female" WHEN 1 THEN "Male" ELSE "Error" END AS gender'),
                 $this->table.'.address',
-                $this->table.'.numerphone',
+                $this->table.'.phone_number',
                 'department',
                 'position',
                 'start_time',
