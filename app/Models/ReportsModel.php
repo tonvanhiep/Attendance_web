@@ -33,9 +33,9 @@ class ReportsModel extends Model
                 'employees.id',
                 'employees.first_name',
                 'employees.last_name',
-                $this->table.'.comment',
-                $this->table.'.created_at',
-                $this->table.'.updated_at',
+                $this->table . '.comment',
+                $this->table . '.created_at',
+                $this->table . '.updated_at',
                 // DB::raw('date(created_at) as date'),
             )
             ->where('employee_id', '=', Auth::user()->employee_id)
@@ -43,7 +43,8 @@ class ReportsModel extends Model
         return $result;
     }
 
-    public function getReportbyEmployeeId($condition = null) {
+    public function getReportbyEmployeeId($condition = null)
+    {
         $report = $this->selectReportbyEmployeeId($condition);
         if (isset($condition['id'])) {
             if (is_array($condition['id'])) {
@@ -56,14 +57,15 @@ class ReportsModel extends Model
         }
 
         if (isset($condition['from'])) {
-            $report = $report->where($this->table.'.created_at', '>=', $condition['from']);
+            $report = $report->where($this->table . '.created_at', '>=', $condition['from']);
         }
         if (isset($condition['to'])) {
-            $report = $report->where($this->table.'.created_at', '<=', $condition['to'] . ' 23:59:59');
+            $report = $report->where($this->table . '.created_at', '<=', $condition['to'] . ' 23:59:59');
         }
         if (isset($condition['status'])) {
             $report = $report->where($this->table . '.status', $condition['status']);
         }
+        $report = $report->orderByDesc($this->table . '.created_at');
         return $report == [] ? [] : $report->get();
     }
 
@@ -78,13 +80,13 @@ class ReportsModel extends Model
                 'employees.last_name',
                 'employees.department',
                 'offices.office_name',
-                $this->table.'.comment',
-                $this->table.'.status',
-                $this->table.'.created_at',
+                $this->table . '.comment',
+                $this->table . '.status',
+                $this->table . '.created_at',
                 DB::raw('date(reports.created_at) as date'),
             )
             // ->orderByDesc($this->table . '.employee_id')
-            ->orderByDesc($this->table.'.created_at');
+            ->orderByDesc($this->table . '.created_at');
 
         if (isset($condition['id'])) {
             if (is_array($condition['id'])) {
@@ -97,10 +99,10 @@ class ReportsModel extends Model
         }
 
         if (isset($condition['from'])) {
-            $result = $result->where($this->table.'.created_at', '>=', $condition['from']);
+            $result = $result->where($this->table . '.created_at', '>=', $condition['from']);
         }
         if (isset($condition['to'])) {
-            $result = $result->where($this->table.'.created_at', '<=', $condition['to'] . ' 23:59:59');
+            $result = $result->where($this->table . '.created_at', '<=', $condition['to'] . ' 23:59:59');
         }
         if (isset($condition['status'])) {
             $result = $result->where($this->table . '.status', $condition['status']);

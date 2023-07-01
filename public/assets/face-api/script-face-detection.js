@@ -91,51 +91,11 @@ if (cameras && cameras.length > 0) {
 
 function startVideo() {
     document.getElementById("text-loading").style.display = "none";
-    // navigator.getUserMedia(
-    //     { video: {} },
-    //     (stream) => (video.srcObject = stream),
-    //     (err) => console.error(err)
-    // );
-    if (navigator.userAgent.match(/iPhone|iPad|Android/)) { ///iPhone|Android.+Mobile/
-        alert("Mobile")
-        const cameras = getConnectedDevices('videoinput');
-        if (cameras && cameras.length > 0) {
-            // Open first available video camera with a resolution of 1280x720 pixels
-            const stream = openCamera(cameras[0].deviceId, 1280, 720);
-            try {
-                video.srcObject = stream;
-            } catch(error) {
-                console.error('Error opening video camera.', error);
-                alert('Error opening video camera.' + error);
-            }
-        }
-        else
-            alert("Don't have camera")
-
-        // video.width = 400; //1080;
-
-        // navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-        // .then(localMediaStream => {
-        //     if ('srcObject' in video) {
-        //         video.srcObject = localMediaStream;
-        //     } else {
-        //         video.src = window.URL.createObjectURL(localMediaStream);
-        //     }
-        //     video.play();
-        // })
-        // .catch(err => {
-        //     console.error(`Not available!!!!`, err);
-        //     alert(`Not available!!!!` + err);
-        // });
-    }
-    else {
-        alert("PC");
-        navigator.getUserMedia(
-            { video: {} },
-            stream => video.srcObject = stream,
-            err => console.error(err)
-        )
-    }
+    navigator.getUserMedia(
+        { video: {} },
+        (stream) => (video.srcObject = stream),
+        (err) => console.error(err)
+    );
 }
 
 function loadLabeledImages() {
@@ -186,7 +146,6 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
         .withFaceLandmarks()
         .withFaceDescriptor()
         .withFaceExpressions();
-    // console.log(detections.expressions);
 
     if (detections != null) {
         const resizedDetections = faceapi.resizeResults(
@@ -201,21 +160,15 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
         if (
             result._distance < (faceAntiSpoofing.isCheck == true ? 0.55 : 0.4)
         ) {
-            //kiem tra da cham cong
-            //
-            //
-            //
             var check_result;
             checkAttendance(result._label).done(() => {
                 check_result = check_attendance.success;
             });
-            // console.log(check_result);
             if (check_result == true) {
                 alertSuccess("You've attended! Please come back in 5 minutes!");
                 return;
             }
             snapshot.push(getSnapshot());
-            // console.log(snapshot,snapshot.length)
             const box = resizedDetections.detection.box;
             const drawBox = new faceapi.draw.DrawBox(box, {
                 label: arrName[result._label] + " (" + result._label + ")",
@@ -245,7 +198,6 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                         displaySize,
                         true
                     );
-                    //modal
                     if (RecognitionIntervalID != -1)
                         clearInterval(RecognitionIntervalID);
                     var image = snapshot[0];
@@ -262,7 +214,6 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                         );
                     }, 3000);
                     showModal(
-                        // "Face Detecttion",
                         arrName[result._label],
                         result._label,
                         "Yes",
@@ -297,8 +248,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
                     isCheck: true,
                     label: result._label,
                     distance: result._distance,
-                    action: Math.floor(Math.random() * 2),
-                    // action: 2,
+                    action: Math.floor(Math.random() * 4),
                 };
 
                 switch (faceAntiSpoofing.action) {
@@ -349,8 +299,7 @@ async function faceRecognition(faceMatcher, canvas, displaySize) {
 function removeFaceAntiSpoofing(faceMatcher, canvas, displaySize, isSuccess) {
     clearTimeout(faceAntiSpoofing.idTimeout);
 
-    if (isSuccess) alertSuccess("Right action");
-    else alertError("Wrong action");
+    if (!isSuccess) alertError("Right action");
 
     faceAntiSpoofing = {
         isCheck: false,
@@ -395,7 +344,6 @@ function getExpression(detections) {
         let index = arr.indexOf(max);
         let key = Object.keys(detections.expressions);
         result_expression.push(key[index], max);
-        // console.log(result_expression);
         return result_expression[0];
     }
     return "";
@@ -422,7 +370,6 @@ function checkAction(detections, action) {
         default:
             return false;
     }
-    return false;
 }
 
 function checkAttendance(id) {
@@ -430,13 +377,11 @@ function checkAttendance(id) {
     $.ajax({
         async: false,
         type: "POST",
-        // cache: false,
-        url: "http://127.0.0.1:8000/check-in/check-attendance",
+        url: window.location.toString() + "/check-attendance",
         data: {
             id: id,
         },
     }).done(function (data) {
-        // console.log(data)
         check_attendance = data;
         k.resolve();
     });
@@ -445,20 +390,19 @@ function checkAttendance(id) {
 let i = 0;
 var RecognitionIntervalID = -1;
 async function start() {
-    // const labeledFaceDescriptors = await loadLabeledImages();
-    // const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
+    const labeledFaceDescriptors = await loadLabeledImages();
+    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
 
     startVideo();
 
-    // video.addEventListener("playing", () => {
-    //     const canvas = faceapi.createCanvasFromMedia(video);
-    //     document.getElementById("webcam").append(canvas);
+    video.addEventListener("playing", () => {
+        const canvas = faceapi.createCanvasFromMedia(video);
+        document.getElementById("webcam").append(canvas);
 
-    //     const displaySize = { width: video.width, height: video.height };
-    //     faceapi.matchDimensions(canvas, displaySize);
+        const displaySize = { width: video.width, height: video.height };
+        faceapi.matchDimensions(canvas, displaySize);
 
         $("#inp-id").on("focus", function () {
-            console.log("hi");
             clearInterval(RecognitionIntervalID);
             setTimeout(() => {
                 $("#inp-id").blur();

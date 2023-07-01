@@ -66,7 +66,6 @@ class UserReportController extends Controller
 
     public function edit()
     {
-
     }
 
     public function delete()

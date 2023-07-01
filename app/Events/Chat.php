@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\ReportsModel;
+use App\Models\GroupMemberModels;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,41 +11,42 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class Report implements ShouldBroadcast
+class Chat implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $message;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public $id_report;
-
-    public function __construct($id)
+    public function __construct($message)
     {
-        //
-        $this->id_report = $id;
+        $this->message = $message;
     }
 
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return \Illuminate\Broadcasting\Channel|array
+     * @return \Illuminate\Broadcasting\PrivateChannel|array
      */
     public function broadcastOn()
     {
-        return new Channel('report');
+        $groupMemberModel = new GroupMemberModels();
+        $member = $groupMemberModel->getGroupMember(['status' => 1, 'id_group' => $this->message->id_receiver]);
+        $arr = [];
+        foreach ($member as $item) {
+            if ($item->id_employee == $this->message->id_sender) continue;
+            array_push($arr, new PrivateChannel('user.' . $item->id_employee));
+        }
+        return $arr;
     }
 
     public function broadcastWith()
     {
-        // $report = new ReportsModel();
-        // $waitConfirm = $report->getCountAttendanceWithStatus(['status' => 2]);
-        // $comments = $report->getAllReports(['id' => $this->id_report]);
         return [
-            'test' => 2,
-            //'comments' => $comments,
+            'message' => $this->message,
         ];
     }
 }

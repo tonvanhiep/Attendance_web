@@ -85,7 +85,6 @@
         <ul class="print">
             <li><a href="{{ route('admin.staff.exportcsv') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">CSV</a></li>
             <li><a href="{{ route('admin.staff.exportpdf') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">PDF</a></li>
-            <li><a href="#">PRINT</a></li>
         </ul>
         <div class="btn-add">
             <i class="fa-solid fa-plus"></i>

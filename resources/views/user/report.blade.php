@@ -57,8 +57,8 @@
                         <p class="user-comment mb-1">{{ $item->comment }}</p>
                     </div>
                     <div>
-                        <a href="" class="btn btn-primary btn-sm me-2">Edit</a>
-                        <a href="" class="btn btn-danger btn-sm me-2">Delete</a>
+                        {{-- <a href="" class="btn btn-primary btn-sm me-2">Edit</a>
+                        <a href="" class="btn btn-danger btn-sm me-2">Delete</a> --}}
                     </div>
                 </div>
             @empty
@@ -67,3 +67,8 @@
         </div>
     </div>
 @endsection
+
+@push('js')
+    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+@endpush

@@ -69,9 +69,10 @@
                     <th id="total-true">0</th>
                     <th id="total-false">0</th>
                 </tr>
+
                 <tr>
                     <th colspan="2"></th>
-                    <th colspan="2" id="phan-tram">0%</th>
+                    <th colspan="2" id="arrcuracy-metric">0%</th>
                 </tr>
             </tfoot>
         </table>

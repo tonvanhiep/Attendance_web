@@ -16,7 +16,9 @@
                     role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fas fa-user me-2"></i>{{ $user->first_name . ' ' . $user->last_name }}
                 </a>
+                <p hidden id="id-user">{{ $user->id }}</p>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li hidden><img class="my-avatar" src="{{ asset($user->avatar) }}"></li>
                     <li><a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a></li>
                     <li><a class="dropdown-item" href="#">Settings</a></li>
                     <li><a class="dropdown-item" href="{{ route('user.logout') }}">Logout</a></li>

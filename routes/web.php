@@ -117,7 +117,9 @@ Route::group(['middleware' => 'timekeeperloginmiddleware'], function () {
 Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' => 'user.'], function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/', [UserAttendanceController::class, 'index'])->name('index');
+    Route::get('/', function () {
+        return redirect()->route('user.chat.index');
+    })->name('index');
 
     Route::group(['prefix' => 'attendance', 'as' => 'attendance.'], function () {
         Route::get('/', [UserAttendanceController::class, 'index'])->name('list');
@@ -153,6 +155,11 @@ Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' =>
     });
 
     Route::group(['prefix' => 'chat', 'as' => 'chat.'], function () {
-        Route::get('/', [ChatController::class, 'index'])->name('index');
+        Route::get('/{id?}', [ChatController::class, 'index'])->name('index');
+        Route::get('/u/{id?}', [ChatController::class, 'private'])->name('private');
+        Route::post('/send', [ChatController::class, 'storeMessage'])->name('store-message');
+        Route::post('/load', [ChatController::class, 'loadMessage'])->name('load-message');
+        Route::post('/search', [ChatController::class, 'searchName'])->name('search-name');
+        Route::post('/markreaded', [ChatController::class, 'markReaded'])->name('mark-readed');
     });
 });

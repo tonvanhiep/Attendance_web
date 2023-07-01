@@ -111,6 +111,8 @@ async function startTest(faceMatcher) {
                 arrResult[i + 'count'] != null ? arrResult[i + 'count'] = parseInt(arrResult[i + 'count']) + 1 : arrResult[i + 'count'] = 1;
             }
 
+            arrResult[i + 'true'] = 0;
+            arrResult[i + 'false'] = 0;
             if(arr['label'] == arr['recognition']) {
                 arr['result'] = 'True';
                 arr['recognition'] = arr['recognition'] + ' - ' + arr['distance']
@@ -144,9 +146,9 @@ async function startTest(faceMatcher) {
         arrResult[i + 'true'] == null ? _true += 0 : _true += arrResult[i + 'true'];
         arrResult[i + 'false'] == null ? _false += 0 : _false += arrResult[i + 'false'];
     }
-    var dochinhxac = parseInt(_true) / parseInt(count);
+    var accuracy = parseInt(_true) / parseInt(count);
     document.getElementById('total-count').textContent = count;
     document.getElementById('total-true').textContent = _true;
     document.getElementById('total-false').textContent = _false;
-    document.getElementById('phan-tram').textContent = dochinhxac * 100 + '%' ;
+    document.getElementById('accuracy-metric').textContent = accuracy * 100 + '%' ;
 }
