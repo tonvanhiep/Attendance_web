@@ -23,7 +23,7 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard')->with('success', 'Login successfully');
             }
             if (Auth::user()->fl_admin == 0) {
-                return redirect()->route('user.home')->with('success', 'Login successfully');
+                return redirect()->route('user.index')->with('success', 'Login successfully');
             }
         }
         return redirect()->route('admin.auth.login')->with('error', 'Login failed');
@@ -54,7 +54,7 @@ class AuthController extends Controller
                 'last_name' => $info[0]->last_name
             ]);
         }
-        return response()->json(['message' => 'Login fail', 'code' => 501]);
+        return response()->json(['message' => 'Login fail', 'code' => 401]);
     }
 
     public function ApiLogout(Request $request)

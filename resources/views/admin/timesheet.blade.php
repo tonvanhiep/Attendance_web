@@ -15,28 +15,29 @@
     <h3 class="i-name">Timesheet</h3>
 
     <form class="filter">
-
-        <div class="filter-depart">
+        <div class="filter-depart" style="display: flex; flex-wrap: wrap;">
             <label for="office">Office</label>
             <div class="filter-input">
-                <input type="text" list="office" name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
-                <!-- <i class="fa-solid fa-chevron-down"></i> -->
+                <select name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
+                    <option value="">All</option>
+                    @foreach ($office as $item)
+                        <option value="{{ $item->id }}" @if ($condition['office'] == $item->id) selected @endif>{{ $item->office_name }}</option>
+                    @endforeach
+                </select>
             </div>
-            <datalist id="office">
-                @foreach ($office as $item)
-                    <option value="{{ $item->office_name }}"></option>
-                @endforeach
-            </datalist>
 
             <label for="depart" style="margin-left: 30px">Department</label>
             <div class="filter-input">
-                <input type="text" list="departs" name="department" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
-                <!-- <i class="fa-solid fa-chevron-down"></i> -->
+                <select name="depart" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
+                    <option value="">All</option>
+                    {{-- @foreach ($office as $item)
+                        <option value="{{ $item->office_name }}"></option>
+                    @endforeach --}}
+                </select>
             </div>
-            <datalist id="departs"></datalist>
         </div>
 
-        <div class="filter-date">
+        <div class="filter-date" style="display: flex; flex-wrap: wrap;">
             <label for="start-date">From date</label>
             <div class="filter-input">
                 <input type="date" name="from" value="{{ $condition['from'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
@@ -52,7 +53,7 @@
         </div>
     </form>
 
-    <div class="tool-board">
+    <div class="tool-board" style="display: flex; flex-wrap: wrap;">
         <form id="show-form" class="show" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}">
             <label for="show-text">Show</label>
             <div class="show-input">
@@ -69,7 +70,6 @@
         <ul class="print">
             <li><a href="{{ route('admin.attendance.exportcsv') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">CSV</a></li>
             <li><a href="{{ route('admin.attendance.exportpdf') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">PDF</a></li>
-            <li><a href="#">PRINT</a></li>
         </ul>
     </div>
 
@@ -78,3 +78,13 @@
         @include('admin.pagination.timesheet')
     </div>
 @endsection
+
+@push('js')
+    <script>
+        jQuery(document).ready(function($) {
+            $(".clickable-row").click(function() {
+                window.location = $(this).data("href");
+            });
+        });
+    </script>
+@endpush

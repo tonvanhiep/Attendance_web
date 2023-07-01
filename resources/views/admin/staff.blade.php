@@ -17,7 +17,7 @@
 
     <form class="filter">
 
-        <div class="filter-depart">
+        <div class="filter-depart" style="display: flex; flex-wrap: wrap;">
             <label for="office">Office</label>
             <div class="filter-input">
                 <select name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px; min-width:150px;">
@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <div class="filter-date">
+        <div class="filter-date" style="display: flex; flex-wrap: wrap;">
             <label for="status">Status</label>
             <div class="status">
                 <select name="status" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
@@ -67,7 +67,7 @@
         </div>
     </form>
 
-    <div class="tool-board">
+    <div class="tool-board" style="display: flex; flex-wrap: wrap;">
         <form id="show-form" class="show" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}">
             <label for="show-text">Show</label>
             <div class="show-input">
@@ -85,7 +85,6 @@
         <ul class="print">
             <li><a href="{{ route('admin.staff.exportcsv') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">CSV</a></li>
             <li><a href="{{ route('admin.staff.exportpdf') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">PDF</a></li>
-            <li><a href="#">PRINT</a></li>
         </ul>
         <div class="btn-add">
             <i class="fa-solid fa-plus"></i>
@@ -97,7 +96,7 @@
         <div>
             <form>
                 <button type="submit" style="background: none"><i class="fa-solid fa-magnifying-glass"></i></button>
-                <input type="text" placeholder="Search" name="search" size="10">
+                <input type="text" placeholder="Search" name="search" size="10" value={{ $condition['search'] }}>
             </form>
 
         </div>

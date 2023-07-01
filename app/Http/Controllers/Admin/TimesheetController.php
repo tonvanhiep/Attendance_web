@@ -31,8 +31,8 @@ class TimesheetController extends Controller
         $condition = [
             'status' => 1,
             'sort' => 1,
-            'from' => $request->input('from') == null ? date('Y-m-01') : $request->input('from'),
-            'to' => $request->input('to') == null ? date('Y-m-d') : $request->input('to'),
+            'from' => $request->get('from') != null && $request->get('from') <= date('Y-m-d') ? $request->input('from') : date('Y-m-01'),
+            'to' => $request->get('to') != null && $request->get('to') <= date('Y-m-d') ? $request->input('to') : date('Y-m-d'),
             'today' => date('Y-m-d'),
             'office' => $request->input('office'),
             'depart' => $request->input('depart'),
@@ -43,50 +43,48 @@ class TimesheetController extends Controller
         $totalWeekDay = [0, 0, 0, 0, 0, 0, 0];
         $from = Carbon::createFromFormat('Y-m-d', $condition['from']);
         $to = Carbon::createFromFormat('Y-m-d', $condition['to']);
+        $isToday = 0;
         while (1) {
             if (!($from <= $to)) {
                 break;
             }
             $totalWeekDay[$from->dayOfWeek]++;
+            if($from->toDateString() == $condition['today']) $isToday = 1;
             $from = $from->addDays(1);
         }
 
         foreach ($employeesList as $item) {
-            // dd(gettype($item));
             $timesheetList = $timesheet->getTimesheetsByEmployeeId(['id' => $item->id, 'from' => $condition['from'], 'to' => $condition['to']]);
-            // dd($timesheetList);
             $lateList = 0;
             $earlyList = 0;
             $presentList = 0;
-            $offList = 0;
             $total = 0;
-            $daylist = explode('|', $item->working_day);
+            $workDayList = explode('|', $item->working_day);
 
-            foreach ($daylist as $day) {
+            foreach ($workDayList as $day) {
                 if ((int)$day >= 1 && (int)$day <= 7) {
                     $total += $totalWeekDay[(int)$day - 1];
                 }
                 foreach ($timesheetList as $timesheetItem) {
                     if (Carbon::parse($timesheetItem->timekeeping_at)->dayOfWeek == ((int)$day - 1)) {
-                        $presentList++;
-                        if ($timesheetItem->check_in > $timesheetItem->start_time) {
-                            $lateList++;
+                        $start_time = new Carbon($timesheetItem->start_time);
+                        $end_time = new Carbon($timesheetItem->end_time);
+                        if ($timesheetItem->check_in < $timesheetItem->start_time  && $timesheetItem->check_out > $timesheetItem->end_time) {
+                            $presentList++;
                         }
-                        if ($timesheetItem->check_out < $timesheetItem->end_time) {
-                            $earlyList++;
+                        else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $start_time->addMinute(120)->toTimeString()) {
+                            if ($timesheetItem->check_out > $timesheetItem->end_time) {
+                                $lateList++;
+                            }
+                        }
+                        else if ($timesheetItem->check_out > $end_time->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
+                            if ($timesheetItem->check_in < $timesheetItem->start_time) {
+                                $earlyList++;
+                            }
                         }
                     }
                 }
             }
-
-            // foreach ($timesheetList as $item) {
-            //     if ($item->check_in > $item->start_time) {
-            //         $lateList++;
-            //     }
-            //     if ($item->check_out < $item->end_time) {
-            //         $earlyList++;
-            //     }
-            // }
 
             $arr_ = [
                 'present' => $presentList,
@@ -99,7 +97,7 @@ class TimesheetController extends Controller
                 'department' => $item->department,
                 'working_day' => $item->working_day,
                 'total' => $total,
-                'off' => $total - count($timesheetList),
+                'off' => $total - $presentList - $lateList - $earlyList - $isToday,
             ];
             array_push($list, $arr_);
         }
@@ -113,9 +111,12 @@ class TimesheetController extends Controller
 
         $notification = $notification->getNotifications([]);
         $office = $office->getOffices([]);
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+
         // $notification = [];
         $page = 'timesheet';
-        return view('admin.timesheet', compact('notification', 'page', 'office', 'employeesList', 'page', 'pagination', 'condition', 'list'));
+        return view('admin.timesheet', compact('notification', 'profile', 'page', 'office', 'employeesList', 'page', 'pagination', 'condition', 'list','waitConfirm'));
     }
 
     public function exportCsv(Request $request)
@@ -141,21 +142,117 @@ class TimesheetController extends Controller
         return $pdf->download('stafflist' . date("Ymd-His") . '.pdf');
     }
 
-    public function detail(Request $request)
+    public function detail(Request $request, $id)
     {
-        $office = new OfficesModel();
-        $office = $office->getOffices([]);
+        $employees = new EmployeesModel();
+        $timesheet = new TimesheetsModel();
 
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+        $info = $employees->getEmployees(['id' => $id]);
+
+        $condition = [
+            'from' => $request->get('from') != null && $request->get('from') <= date('Y-m-d') ? $request->input('from') : date('Y-m-01'),
+            'to' => $request->get('to') != null && $request->get('to') <= date('Y-m-d') ? $request->input('to') : date('Y-m-d'),
+            'today' => date('Y-m-d'),
+        ];
+        $WEEKDAY = ['Sunday', 'Monday', 'Tuesday', 'Wesnesday', 'Thursday', 'Friday', 'Saturday'];
+        $totalWeekDay = [0, 0, 0, 0, 0, 0, 0];
+        $from = Carbon::createFromFormat('Y-m-d', $condition['from']);
+        $to = Carbon::createFromFormat('Y-m-d', $condition['to']);
+        $timesheetList = $timesheet->getTimesheetsByEmployeeId(['id' => $info[0]->id, 'from' => $condition['from'], 'to' => $condition['to']]);
+
+        $arrTimesheetDetail = [];
+        $isToday = 0;
+        while (1) {
+            if ($from > $to) {
+                break;
+            }
+            $totalWeekDay[$from->dayOfWeek]++;
+            $arrTimesheetDetail[$from->toDateString()] = [
+                'weekday' => $WEEKDAY[$from->dayOfWeek],
+                'check_in' => '-',
+                'check_out' => '-',
+                'status' => $from->toDateString() == $condition['today'] ? 'Updating...' : 'Off',
+                'day_off' => !str_contains($info[0]->working_day, ($from->dayOfWeek + 1))
+            ];
+            if($from->toDateString() == $condition['today']) $isToday = 1;
+            $from = $from->addDays(1);
+        }
+        $lateList = 0;
+        $earlyList = 0;
+        $presentList = 0;
+        $total = 0;
+        $workDayList = explode('|', $info[0]->working_day);
+
+        foreach ($workDayList as $day) {
+            if ((int)$day >= 1 && (int)$day <= 7) {
+                $total += $totalWeekDay[(int)$day - 1];
+            }
+            foreach ($timesheetList as $timesheetItem) {
+                if (Carbon::parse($timesheetItem->timekeeping_at)->dayOfWeek == ((int)$day - 1)) {
+                    $start_time = new Carbon($timesheetItem->start_time);
+                    $end_time = new Carbon($timesheetItem->end_time);
+                    if ($timesheetItem->check_in < $timesheetItem->start_time  && $timesheetItem->check_out > $timesheetItem->end_time) {
+                        $arrTimesheetDetail[$timesheetItem->date]['status'] = 'OK';
+                        $presentList++;
+                    }
+                    else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $start_time->addMinute(120)->toTimeString()) {
+                        if ($timesheetItem->check_out > $timesheetItem->end_time) {
+                            $lateList++;
+                            $arrTimesheetDetail[$timesheetItem->date]['status'] = 'Late';
+                        }
+                    }
+                    else if ($timesheetItem->check_out > $end_time->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
+                        if ($timesheetItem->check_in < $timesheetItem->start_time) {
+                            $earlyList++;
+                            $arrTimesheetDetail[$timesheetItem->date]['status'] = 'Early';
+                        }
+                    }
+                }
+
+                $arrTimesheetDetail[$timesheetItem->date]['check_in'] = $timesheetItem->check_in;
+                $arrTimesheetDetail[$timesheetItem->date]['check_out'] = $timesheetItem->check_out;
+            }
+        }
+
+        $overview = [
+            'present' => $presentList,
+            'late' => $lateList,
+            'early' => $earlyList,
+            'first_name' => $info[0]->first_name,
+            'last_name' => $info[0]->last_name,
+            'id' => $info[0]->id,
+            'office_name' => $info[0]->office_name,
+            'department' => $info[0]->department,
+            'working_day' => $info[0]->working_day,
+            'total' => $total,
+            'off' => $total - $presentList - $lateList - $earlyList - $isToday,
+        ];
+        // dd($timesheetList);
         $notification = [];
         $page = 'timesheet';
-        return view('admin.detail', compact('notification', 'page', 'office'));
+        return view('admin.detail-timesheet', compact('notification', 'waitConfirm', 'condition', 'arrTimesheetDetail', 'overview', 'profile', 'page'));
     }
 
-    public function attendance(Request $request)
+    public function attendance(Request $request, $id)
     {
+        $employees = new EmployeesModel();
+        $timesheet = new TimesheetsModel();
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+
+        $condition = [
+            'employee_id' => $id,
+            'from' => $request->get('date') == null || $request->get('date') > date('Y-m-d') ? date('Y:m:d') : $request->get('date'),
+            'to' => $request->get('date') == null || $request->get('date') > date('Y-m-d') ? date('Y:m:d') : $request->get('date'),
+            'today' => date('Y-m-d')
+        ];
         $notification = [];
+        $attendanceList = $timesheet->getAttendances($condition);
+        // dd($attendanceList);
         $page = 'timesheet';
-        return view('admin.attendance-detail', compact('notification', 'page'));
+        return view('admin.timesheet-detail-attendance', compact('notification', 'condition', 'waitConfirm', 'profile', 'attendanceList', 'page'));
     }
 
     public function pagination(Request $request)
@@ -176,8 +273,9 @@ class TimesheetController extends Controller
             'search' => $search,
             'office' => $request->input('office'),
             'depart' => $request->input('depart'),
-            'from' => $request->input('from') == null ? date('Y-m-d') : $request->input('from'),
-            'to' => $request->input('to') == null ? date('Y-m-d') : $request->input('to'),
+            'from' => $request->get('from') != null && $request->get('from') <= date('Y-m-d') ? $request->input('from') : date('Y-m-01'),
+            'to' => $request->get('to') != null && $request->get('to') <= date('Y-m-d') ? $request->input('to') : date('Y-m-d'),
+            'today' => date('Y-m-d'),
         ];
         // dd($list,$condition);
         $employeesList = $employees->pagination($condition, $request->page, $perPage);
@@ -186,11 +284,13 @@ class TimesheetController extends Controller
         $totalWeekDay = [0, 0, 0, 0, 0, 0, 0];
         $from = Carbon::createFromFormat('Y-m-d', $condition['from']);
         $to = Carbon::createFromFormat('Y-m-d', $condition['to']);
+        $isToday = 0;
         while (1) {
             if (!($from <= $to)) {
                 break;
             }
             $totalWeekDay[$from->dayOfWeek]++;
+            if($from->toDateString() == $condition['today']) $isToday = 1;
             $from = $from->addDays(1);
         }
 
@@ -200,22 +300,29 @@ class TimesheetController extends Controller
             $lateList = 0;
             $earlyList = 0;
             $presentList = 0;
-            $offList = 0;
             $total = 0;
-            $daylist = explode('|', $item->working_day);
+            $workDayList = explode('|', $item->working_day);
 
-            foreach ($daylist as $day) {
+            foreach ($workDayList as $day) {
                 if ((int)$day >= 1 && (int)$day <= 7) {
                     $total += $totalWeekDay[(int)$day - 1];
                 }
                 foreach ($timesheetList as $timesheetItem) {
                     if (Carbon::parse($timesheetItem->timekeeping_at)->dayOfWeek == ((int)$day - 1)) {
-                        $presentList++;
-                        if ($timesheetItem->check_in > $timesheetItem->start_time) {
-                            $lateList++;
+                        $start_time = new Carbon($timesheetItem->start_time);
+                        $end_time = new Carbon($timesheetItem->end_time);
+                        if ($timesheetItem->check_in < $timesheetItem->start_time  && $timesheetItem->check_out > $timesheetItem->end_time) {
+                            $presentList++;
                         }
-                        if ($timesheetItem->check_out < $timesheetItem->end_time) {
-                            $earlyList++;
+                        else if ($timesheetItem->check_in >= $timesheetItem->start_time && $timesheetItem->check_in < $start_time->addMinute(120)->toTimeString()) {
+                            if ($timesheetItem->check_out > $timesheetItem->end_time) {
+                                $lateList++;
+                            }
+                        }
+                        else if ($timesheetItem->check_out > $end_time->subMinute(120)->toTimeString() && $timesheetItem->check_out <= $timesheetItem->end_time) {
+                            if ($timesheetItem->check_in < $timesheetItem->start_time) {
+                                $earlyList++;
+                            }
                         }
                     }
                 }
@@ -232,7 +339,7 @@ class TimesheetController extends Controller
                 'department' => $item->department,
                 'working_day' => $item->working_day,
                 'total' => $total,
-                'off' => $total - count($timesheetList),
+                'off' => $total - $presentList - $lateList - $earlyList - $isToday,
             ];
             array_push($list, $arr_);
         }
@@ -248,7 +355,12 @@ class TimesheetController extends Controller
         $office = $office->getOffices([]);
         // $notification = [];
         $page = 'timesheet';
-        $returnHTML = view('admin.pagination.timesheet', compact('list', 'pagination', 'notification', 'page', 'office', 'employeesList', 'page', 'condition',))->render();
+        $returnHTML = view('admin.pagination.timesheet', compact('list', 'pagination', 'notification', 'page', 'office', 'employeesList', 'condition',))->render();
         return response()->json($returnHTML);
+    }
+
+    public function timeSheet($list) {
+
+        return 0;//$arr;
     }
 }

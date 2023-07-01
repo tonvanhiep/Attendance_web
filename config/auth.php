@@ -45,6 +45,11 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
+
+        'timekeeper' => [
+            'driver' => 'session',
+            'provider' => 'timekeepers'
+        ]
     ],
 
     /*
@@ -70,6 +75,10 @@ return [
             'model' => App\Models\AccountsModel::class,
         ],
 
+        'timekeepers' => [
+            'driver' => 'eloquent',
+            'model' => \App\Models\TimekeepersModel::class
+        ]
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

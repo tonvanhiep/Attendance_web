@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EmployeesModel;
-use App\Models\FaceEmployeeImagesModel;
-use App\Models\TimesheetsModel;
+use Carbon\Carbon;
+use App\Events\Attendance;
 use Illuminate\Http\Request;
+use App\Models\EmployeesModel;
+use App\Models\TimesheetsModel;
 use Illuminate\Support\Facades\Auth;
+use App\Models\FaceEmployeeImagesModel;
 use Illuminate\Support\Facades\Response;
 
 class AttendanceController extends Controller
@@ -14,39 +16,58 @@ class AttendanceController extends Controller
     public function index()
     {
         $image = new FaceEmployeeImagesModel;
-        $image = $image->getImages([]);
+        $image = $image->getImages(['status' => 1, 'office' => Auth::guard('timekeeper')->user()->office_id]);
         //dd($image->toArray());
         $arr = [];
+        $arrName = [];
         foreach ($image as $key => $value) {
-            $name = $value->id;
-            if (isset($arr[$name])) {
-                array_push($arr[$name], $value->image_url);
-            }
-            else {
-                $arr[$name] = [];
-                array_push($arr[$name], $value->image_url);
+            $id = $value->id;
+            if (isset($arr[$id])) {
+                array_push($arr[$id], $value->image_url);
+            } else {
+                $arr[$id] = [];
+                $arrName[$id] = $value->last_name . ' ' . $value->first_name;
+                array_push($arr[$id], $value->image_url);
             }
         }
-        return view('attendance.check-in', compact('arr'));
+        return view('attendance.check-in', compact('arr', 'arrName'));
+    }
+
+    public function checkAttendance(Request $request)
+    {
+        //xu ly
+        $timesheet = new TimesheetsModel();
+        $now = Carbon::now();
+        $data = [
+            'employee_id' => $request->id,
+            'from' => $now->subMinute(1)->toDateTimeString(),
+            'status' => 1
+        ];
+        $count = $timesheet->getCountAttendanceToCheck($data);
+        $result = [
+            'success' => $count == 0 ? false : true,
+        ];
+        return response()->json($result);
     }
 
     public function recognition()
     {
         $image = new FaceEmployeeImagesModel;
-        $image = $image->getImages([]);
+        $image = $image->getImages(['status' => 1, 'office' => Auth::guard('timekeeper')->user()->office_id]);
         //dd($image->toArray());
         $arr = [];
+        $arrName = [];
         foreach ($image as $key => $value) {
-            $name = $value->id;
-            if (isset($arr[$name])) {
-                array_push($arr[$name], $value->image_url);
-            }
-            else {
-                $arr[$name] = [];
-                array_push($arr[$name], $value->image_url);
+            $id = $value->id;
+            if (isset($arr[$id])) {
+                array_push($arr[$id], $value->image_url);
+            } else {
+                $arr[$id] = [];
+                $arrName[$id] = $value->last_name . ' ' . $value->first_name;
+                array_push($arr[$id], $value->image_url);
             }
         }
-        return view('attendance.face-recognition', compact('arr'));
+        return view('attendance.face-recognition', compact('arr', 'arrName'));
     }
 
     public function attendance(Request $request)
@@ -65,30 +86,71 @@ class AttendanceController extends Controller
         $image_type = $image_type_aux[1];
         $image_base64 = base64_decode($image_parts[1]);
 
-        $file_name = $employee[0]->last_name . $employee[0]->first_name . time(). rand(0,10000) . '.' . $image_type;
+        $file_name = $employee[0]->last_name . $employee[0]->first_name . time() . rand(0, 10000) . '.' . $image_type;
 
         file_put_contents($folderPath . $file_name, $image_base64);
         $data = [
             'employee_id' => $employee[0]->id,
             'face_image' => $file_name,
             'status' => $request->identity == 'true' ? 1 : 2,
-            'timekeeper_id' => 4 //$request->timekeeper_id
+            'timekeeper_id' => Auth::guard('timekeeper')->user()->id
         ];
-        $attendance->saveAttendance($data);
+        $id_attendance = $attendance->saveAttendance($data);
 
         if ($request->identity == 'true') {
-            $message = 'ID:' . $employee[0]->id . '| ' . $employee[0]->last_name . ' ' . $employee[0]->first_name . ' diem danh thanh cong!!!';
+            $message = 'ID:' . $employee[0]->id . '| ' . $employee[0]->last_name . ' ' . $employee[0]->first_name . ' have successfully attended!';
         } else {
-            $message = 'ID:' . $employee[0]->id . '| ' . $employee[0]->last_name . ' ' . $employee[0]->first_name . ' da gui yeu cau diem danh.';
+            $message = 'ID:' . $employee[0]->id . '| ' . $employee[0]->last_name . ' ' . $employee[0]->first_name . ' have submitted a attendance request';
         }
         $data = [
             'success' => true,
             'message'   =>  $message
         ];
 
+        broadcast(new Attendance($id_attendance))->toOthers();
         return response()->json($data);
     }
 
+    public function login()
+    {
+        return view('attendance.login');
+    }
+
+    public function actionLogin(Request $request)
+    {
+        if (Auth::guard('timekeeper')->attempt(['account' => $request->name, 'password' => $request->password])) {
+            if (Auth::guard('timekeeper')->user()->status == 1) {
+                return redirect()->route('check-in');
+            }
+        }
+        return redirect()->route('check-in.login')->with('error', 'Login failed');
+    }
+
+    public function logout()
+    {
+        Auth::guard('timekeeper')->logout();
+        return redirect()->route('check-in.login');
+    }
+
+    public function test()
+    {
+        $image = new FaceEmployeeImagesModel;
+        $image = $image->getImages(['status' => 1, 'office' => Auth::guard('timekeeper')->user()->office_id]);
+        //dd($image->toArray());
+        $arr = [];
+        $arrName = [];
+        foreach ($image as $key => $value) {
+            $id = $value->id;
+            if (isset($arr[$id])) {
+                array_push($arr[$id], $value->image_url);
+            } else {
+                $arr[$id] = [];
+                $arrName[$id] = $value->last_name . ' ' . $value->first_name;
+                array_push($arr[$id], $value->image_url);
+            }
+        }
+        return view('attendance.test', compact('arr', 'arrName'));
+    }
     //API
     public function ApiGetAttendance(Request $request)
     {
@@ -108,7 +170,7 @@ class AttendanceController extends Controller
         ]);
         $timesheets = $timesheets->getTimesheetsByEmployeeId([
             'id' => Auth::user()->employee_id,
-            'from' => date('Y-m').'-1',
+            'from' => date('Y-m') . '-1',
             'to' => date('Y-m-d'),
             'status' => 1
         ]);

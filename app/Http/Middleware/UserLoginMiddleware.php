@@ -18,10 +18,9 @@ class UserLoginMiddleware
     public function handle(Request $request, Closure $next)
     {
         if (Auth::check()) {
-            if (Auth::user()->fl_admin == 0) {
+            if (Auth::user()->fl_admin == 0 || Auth::user()->fl_admin == 1) {
                 return $next($request);
             }
-            return redirect()->route('admin.auth.login')->with('error', 'Check your Role!');
         }
         return redirect()->route('admin.auth.login')->with('error', 'Check your pass');
     }

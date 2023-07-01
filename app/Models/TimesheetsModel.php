@@ -37,10 +37,11 @@ class TimesheetsModel extends Model
 
     public function selectAttendances($condition = null)
     {
-        if ($condition == null) return [];
+        // dd($condition);
+        if ($condition === null) return [];
         $result = DB::table($this->table)->join('timekeepers', 'timekeepers.id', '=', $this->table . '.timekeeper_id')
-            ->join('offices', 'offices.id', '=', 'timekeepers.office_id')
             ->join('employees', 'employees.id', '=', $this->table . '.employee_id')
+            ->join('offices', 'offices.id', '=', 'employees.office_id')
             ->select(
                 'employees.id',
                 $this->table . '.status',
@@ -49,13 +50,20 @@ class TimesheetsModel extends Model
                 $this->table . '.id as attendance_id',
                 'office_name',
                 'timekeepers.timekeeper_name',
-                'timekeeping_at'
+                'timekeeping_at',
+                'face_image'
             )
             ->orderByDesc($this->table . '.timekeeping_at')
             ->orderByDesc($this->table . '.id');
 
-        if (isset($condition['office']) || $condition['office'] != 0) {
+        if (isset($condition['office']) && $condition['office'] != 0) {
             $result = $result->where('offices.id', $condition['office']);
+        }
+        if (isset($condition['employee_id']) && $condition['employee_id'] != 0) {
+            $result = $result->where('employees.id', $condition['employee_id']);
+        }
+        if (isset($condition['id']) && $condition['id'] != 0) {
+            $result = $result->where($this->table . '.id', $condition['id']);
         }
         if (isset($condition['from'])) {
             $result = $result->where('timekeeping_at', '>=', $condition['from']);
@@ -73,7 +81,7 @@ class TimesheetsModel extends Model
     public function getAttendances($condition = null)
     {
         $timesheet = $this->selectAttendances($condition);
-        return $timesheet == [] ? [] : $timesheet->get();
+        return $timesheet === [] ? [] : $timesheet->get();
     }
 
 
@@ -141,6 +149,11 @@ class TimesheetsModel extends Model
     public function paginationAttenndance($condition = [], $page = 1, $perPage = 50)
     {
         return $this->selectAttendances($condition)->paginate($perPage, '*', 'page', $page);
+    }
+
+    public function getCountAttendanceToCheck($condition = null) {
+        $timesheet = $this->selectAttendances($condition);
+        return $timesheet == [] ? [] : $timesheet->count();
     }
     //user
     public function selectTimesheetsforUser($condition = null)
@@ -250,9 +263,9 @@ class TimesheetsModel extends Model
         return $result;
     }
 
-    public function getCountAttendanceWaitingForConfirm($condition = null)
+    public function getCountAttendanceWithStatus($condition = null)
     {
-        $result = DB::table($this->table)->select('id')->where('status', 2);
+        $result = DB::table($this->table)->select('id')->where('status', $condition['status']);
         return $result->count();
     }
 

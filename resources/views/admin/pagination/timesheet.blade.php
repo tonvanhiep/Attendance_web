@@ -1,5 +1,5 @@
-<div class="board">
-    <table width="100%">
+<div class="board" style="overflow-x:auto;">
+    <table width="100%" class="table table-hover" style="margin-bottom: 0px">
         <thead>
             <tr>
                 <td>Name</td>
@@ -15,9 +15,9 @@
         </thead>
         <tbody>
             @foreach ($list as $item)
-                <tr onclick="window.location='http://127.0.0.1:9000/admin/timesheet/detail/2'">
+                <tr class='clickable-row' data-href='{{ route('admin.timesheet.detail', ['id' => $item['id']]) . "?from=" . $condition['from'] . "&to=" . $condition['to'] }}'>
                     <td class="name">
-                        <h5>{{ $item['last_name'] . ' ' . $item['first_name'] }}</h5>
+                        <p class="fw-bold">{{ $item['last_name'] . ' ' . $item['first_name'] }}</p>
                     </td>
                     <td class="id">
                         <p>{{ $item['id'] }}</p>

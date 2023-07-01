@@ -2,18 +2,22 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\EmployeesModel;
 use App\Models\NoticesModel;
 use Illuminate\Http\Request;
+use App\Models\EmployeesModel;
+use App\Models\TimesheetsModel;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     //
     public function index(Request $request)
     {
+        // dd(Auth::user()->employee_id);
         $employees = new EmployeesModel();
         $notification = new NoticesModel();
+        $timesheet = new TimesheetsModel();
 
         $list = $employees->pagination([
             'status' => [1, 2],
@@ -43,20 +47,21 @@ class DashboardController extends Controller
             'active' => $employees->getCountEmployees(['status' => 1]),
         ];
 
-        // dd($info);
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
         $page = 'dashboard';
-        return view('admin.dashboard', compact('list', 'notification', 'info', 'page', 'pagination','request'));
+        return view('admin.dashboard', compact('list', 'notification', 'info', 'page', 'pagination','request','waitConfirm', 'profile'));
     }
 
     public function pagination (Request $request)
     {
         $employees = new EmployeesModel();
-        $perPage = $request->show == null ? 10 : $request->show;
+        $perPage = $request->show == null ? 50 : $request->show;
 
         $list = $employees->pagination([
             'status' => [1, 2],
             'sort' => 1,
-        ], $request->page);
+        ], $request->page, $perPage);
 
         $pagination = [
             'perPage' => $list->perPage(),

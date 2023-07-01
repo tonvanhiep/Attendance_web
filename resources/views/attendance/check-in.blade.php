@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/logo.png') }}">
 
     <title>Face Detection</title>
     <script>
         var faceRegination = {!! json_encode($arr) !!};
+        var arrName = {!! json_encode($arrName) !!};
     </script>
 
     <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
@@ -56,21 +58,11 @@
         </div>
 
         <div id="webcam">
-            <video id="video" width="720" height="560" autoplay muted></video>
+            <video id="video" width="720" height="560" autoplay muted playsinline ></video>
             <h2 id="text-loading">Loading...</h2>
         </div>
 
         <div id="id-input">
-            {{-- <button id="btn-shot" style="background: none;
-                color: white;
-                font-size: 18px;
-                border: 2px solid;
-                height: 45px;
-                width: 300px;
-                border-radius: 5px;
-                font-weight: 500;
-                margin-bottom:30px">Screenshot
-            </button> --}}
             <button id="btn-inp"
                 style="background: none;
                 color: white;
@@ -89,6 +81,8 @@
             </div>
         </div>
     </div>
+    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
     <script src="{{ asset('assets/bootstrap-5.3.0-alpha2-dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/modal.js') }}"></script>
     <script>

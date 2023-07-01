@@ -15,6 +15,7 @@ use App\Http\Controllers\user\UserReportController;
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\user\UserAttendanceController;
 use App\Http\Controllers\AttendanceController as ControllersAttendanceController;
+use App\Http\Controllers\user\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,41 +29,21 @@ use App\Http\Controllers\AttendanceController as ControllersAttendanceController
 */
 
 Route::get('/test', function () {
-    dd(Auth::check());
+    return response()->json(['name' => 'hiep']);
+    dd(Auth::guard('timekeeper')->check());
 });
 Route::get('/', function () {
-    return view('admin.login.home-login');
+    return redirect()->route('admin.auth.login');
 });
 
-// Route::group(['prefix' => 'login', 'middleware' => 'loginmiddleware', 'as'=> 'login.'], function ()
-// {
-//     Route::get('/', [LoginController::class, 'index'])->name('home');
-
-//     Route::get('/user', [LoginController::class, 'user'])->name('user');
-//     Route::post('/user', [LoginController::class, 'userLogin'])->name('p_user');
-
-//     Route::get('/admin', [LoginController::class, 'admin'])->name('admin');
-//     Route::post('/admin', [LoginController::class, 'adminLogin'])->name('p_admin');
-
-//     Route::get('/attendance', [LoginController::class, 'attendance'])->name('attendance');
-//     Route::post('/attendance', [LoginController::class, 'attendanceLogin'])->name('p_attendance');
-// });
 
 Route::group(['middleware' => 'existedloginmiddleware', 'as' => 'admin.'], function () {
     Route::group(['as' => 'auth.'], function () {
         Route::get('login', [AuthController::class, 'login'])->name('login');
         Route::post('login', [AuthController::class, 'checkLogin'])->name('check-login');
-        // Route::get('login', [AuthController::class, 'userLogin'])->name('userlogin');
-        // Route::post('login', [AuthController::class, 'userCheckLogin'])->name('usercheck-login');
     });
 });
 
-// Route::group(['middleware' => 'existedloginmiddleware', 'as' => 'user.'], function () {
-//     Route::group(['as' => 'auth.'], function () {
-//         Route::get('login', [AuthController::class, 'userLogin'])->name('userlogin');
-//         Route::post('login', [AuthController::class, 'userCheckLogin'])->name('usercheck-login');
-//     });
-// });
 
 Route::group(['prefix' => 'admin', 'middleware' => 'loginmiddleware', 'as' => 'admin.'], function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
@@ -108,35 +89,43 @@ Route::group(['prefix' => 'admin', 'middleware' => 'loginmiddleware', 'as' => 'a
         Route::post('/', [TimesheetController::class, 'pagination'])->name('pagination');
 
         Route::get('/detail/{id}/attendance', [TimesheetController::class, 'attendance'])->name('attendance');
-        Route::get('/detail/{id}/', [TimesheetController::class, 'detail'])->name('detail');
+        Route::get('/detail/{id?}/', [TimesheetController::class, 'detail'])->name('detail');
     });
 
     Route::group(['prefix' => 'report', 'as' => 'report.'], function () {
         Route::get('/', [ReportController::class, 'index'])->name('list');
+        Route::post('/', [ReportController::class, 'pagination'])->name('pagination');
 
         Route::get('/exportcsv', [ReportController::class, 'exportCsv'])->name('exportcsv');
         Route::get('/exportpdf', [ReportController::class, 'exportPdf'])->name('exportpdf');
     });
 });
 
-Route::get('/check-in', [ControllersAttendanceController::class, 'index'])->name('check-in');
-Route::get('/check-in/recoginition', [ControllersAttendanceController::class, 'recognition'])->name('recoginition');
-Route::post('/attendance', [ControllersAttendanceController::class, 'attendance'])->name('attendance');
+
+Route::get('/check-in/login', [ControllersAttendanceController::class, 'login'])->middleware('timekeeperloginexistedmiddleware')->name('check-in.login');
+Route::post('/check-in/login', [ControllersAttendanceController::class, 'actionLogin'])->middleware('timekeeperloginexistedmiddleware')->name('check-in.plogin');
+Route::group(['middleware' => 'timekeeperloginmiddleware'], function () {
+    Route::get('/check-in/logout', [ControllersAttendanceController::class, 'logout'])->name('check-in.logout');
+    Route::get('/check-in', [ControllersAttendanceController::class, 'index'])->name('check-in');
+    Route::get('/check-in/recoginition', [ControllersAttendanceController::class, 'recognition'])->name('recoginition');
+    Route::get('/recoginition/test', [ControllersAttendanceController::class, 'test'])->name('test');
+    Route::post('/attendance', [ControllersAttendanceController::class, 'attendance'])->name('attendance');
+    Route::post('/check-in/check-attendance', [ControllersAttendanceController::class, 'checkAttendance'])->name('check-attendance');
+});
 
 
 Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' => 'user.'], function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-
-    Route::group(['prefix' => 'home', 'as' => 'home.'], function () {
-        Route::get('/', [HomeController::class, 'index'])->name('list');
-        Route::post('/', [HomeController::class, 'pagination'])->name('pagination');
-    });
+    Route::get('/', function () {
+        return redirect()->route('user.chat.index');
+    })->name('index');
 
     Route::group(['prefix' => 'attendance', 'as' => 'attendance.'], function () {
         Route::get('/', [UserAttendanceController::class, 'index'])->name('list');
         Route::post('/', [UserAttendanceController::class, 'pagination'])->name('pagination');
+
+        Route::get('/detail', [UserAttendanceController::class, 'detail'])->name('detail');
 
         Route::post('search', [UserAttendanceController::class, 'search'])->name('search');
 
@@ -145,13 +134,14 @@ Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' =>
     });
 
     Route::get('profile', [ProfileController::class, 'index'])->name('profile');
+    Route::post('profile/reset-pass', [ProfileController::class, 'resetPass'])->name('reset-pass');
 
     // Route::group(['prefix' => 'profile', 'as' => 'profile.'], function () {
     //     Route::get('/', [ProfileController::class, 'index'])->name('');
     //     Route::post('/', [ProfileController::class, 'pagination'])->name('pagination');
     // });
 
-    Route::group(['prefix' =>'report', 'as' => 'report.'], function () {
+    Route::group(['prefix' => 'report', 'as' => 'report.'], function () {
         Route::get('/', [UserReportController::class, 'index'])->name('list');
         Route::post('/', [UserReportController::class, 'pagination'])->name('pagination');
 
@@ -162,5 +152,14 @@ Route::group(['prefix' => 'user', 'middleware' => 'userloginmiddleware', 'as' =>
         Route::put('update/{id}', [UserReportController::class, 'update'])->name('update');
 
         Route::get('delete/{id}', [UserReportController::class, 'delete'])->name('delete');
+    });
+
+    Route::group(['prefix' => 'chat', 'as' => 'chat.'], function () {
+        Route::get('/{id?}', [ChatController::class, 'index'])->name('index');
+        Route::get('/u/{id?}', [ChatController::class, 'private'])->name('private');
+        Route::post('/send', [ChatController::class, 'storeMessage'])->name('store-message');
+        Route::post('/load', [ChatController::class, 'loadMessage'])->name('load-message');
+        Route::post('/search', [ChatController::class, 'searchName'])->name('search-name');
+        Route::post('/markreaded', [ChatController::class, 'markReaded'])->name('mark-readed');
     });
 });

@@ -16,13 +16,16 @@
     </style>
 @endpush
 
+@push('js')
+    {{-- <script src="{{ asset('assets/js/attendance-realtime.js') }}"></script> --}}
+@endpush
 
 @section('content')
     <h3 class="i-name">Real-time Attendance</h3>
 
     <form class="filter">
 
-        <div class="filter-depart">
+        <div class="filter-depart" style="display: flex; flex-wrap: wrap;">
             <label for="depart">Office</label>
             <div class="filter-input">
                 <select name="office" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
@@ -46,7 +49,7 @@
         </div>
 
 
-        <div class="filter-date">
+        <div class="filter-date" style="display: flex; flex-wrap: wrap;">
             <label for="start-date">From date</label>
             <div class="filter-input">
                 <input type="date" name="from" value="{{ $condition['from'] }}" max="{{ $condition['today'] }}" style="font-style: 14px; padding: 5px 10px; border-radius:5px">
@@ -62,7 +65,7 @@
         </div>
     </form>
 
-    <div class="tool-board">
+    <div class="tool-board" style="display: flex; flex-wrap: wrap;">
         <form id="show-form" class="show" method="POST" action="{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}">
             <label for="show-text">Show</label>
             <div class="show-input">
@@ -79,7 +82,6 @@
         <ul class="print">
             <li><a href="{{ route('admin.attendance.exportcsv') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">CSV</a></li>
             <li><a href="{{ route('admin.attendance.exportpdf') . (isset($_SERVER['QUERY_STRING']) == true ? ('?' . $_SERVER['QUERY_STRING']) : '') }}">PDF</a></li>
-            <li><a href="#">PRINT</a></li>
         </ul>
     </div>
     <p id="url-pagination" hidden>{{ 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']}}</p>
@@ -90,8 +92,6 @@
 @endsection
 
 @push('js')
-    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
-    <script src="{{asset('assets/js/attendance-realtime.js');}}"></script>
     <script>
         jQuery(document).ready(function($) {
             $(".clickable-row").click(function() {

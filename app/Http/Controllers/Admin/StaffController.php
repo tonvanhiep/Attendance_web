@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\StaffExportCsv;
-use App\Http\Controllers\Controller;
-use App\Models\AccountsModel;
-use App\Models\EmployeesModel;
-use App\Models\FaceEmployeeImagesModel;
+use Illuminate\Support\Str;
 use App\Models\NoticesModel;
 use App\Models\OfficesModel;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Models\AccountsModel;
+use App\Models\EmployeesModel;
+use App\Exports\StaffExportCsv;
+use App\Models\TimesheetsModel;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\FaceEmployeeImagesModel;
+use Illuminate\Support\Facades\Auth;
 
 class StaffController extends Controller
 {
@@ -21,6 +23,7 @@ class StaffController extends Controller
         $employees = new EmployeesModel();
         $notification = new NoticesModel();
         $office = new OfficesModel();
+        $timesheet = new TimesheetsModel();
 
         $perPage = $request->show == null ? 50 : $request->show;
 
@@ -41,14 +44,16 @@ class StaffController extends Controller
 
         $notification = $notification->getNotifications([]);
         $office = $office->getOffices([]);
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
         $page = 'staff';
-        return view('admin.staff', compact('notification', 'list', 'page', 'pagination', 'office', 'condition'));
+        return view('admin.staff', compact('notification', 'profile', 'list', 'page', 'pagination', 'office', 'condition', 'waitConfirm'));
     }
 
     public function exportCsv(Request $request)
     {
         $csv = new StaffExportCsv($request);
-        return Excel::download($csv, 'stafflist'.date("Ymd-His").'.csv');
+        return Excel::download($csv, 'stafflist' . date("Ymd-His") . '.csv');
     }
 
     public function exportPdf(Request $request)
@@ -65,10 +70,10 @@ class StaffController extends Controller
         $list = $employees->getEmployees($condition);
 
         $pdf = PDF::loadView('admin.templates.staffpdf',  compact('list'))->setPaper('a4', 'landscape');
-    	return $pdf->download('stafflist'.date("Ymd-His").'.pdf');
+        return $pdf->download('stafflist' . date("Ymd-His") . '.pdf');
     }
 
-    public function pagination (Request $request)
+    public function pagination(Request $request)
     {
         $employees = new EmployeesModel();
 
@@ -93,48 +98,35 @@ class StaffController extends Controller
         return response()->json($returnHTML);
     }
 
-    public function create() {
+    public function create()
+    {
         $notification = new NoticesModel();
+        $employees = new EmployeesModel();
+        $timesheet = new TimesheetsModel();
+        $office = new OfficesModel();
         $notification = $notification->getNotifications([]);
         $page = 'staff';
-        return view('admin.staff.add', compact('notification', 'page'));
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+        $office = $office->getOffices([]);
+
+        return view('admin.staff.add', compact('profile', 'office', 'waitConfirm', 'notification', 'page'));
     }
 
-    public function store(Request $request) {
-        // dd($request);
-        // $this->validate($request, [
-        //     'name' => 'required|unique:accounts',
-        //     'fl_admin' => 'required',
-        //     'email' => 'required|unique:accounts|email',
-        //     'password' => 'required|min:5|max:32',
-        //     'confirm' => 'same:password',
-        //     'first_name' => 'required',
-        //     'last_name' => 'required',
-        //     'birth_day' => 'required',
-        //     'gender' => 'required',
-        //     'address' => 'required',
-        //     'numberphone' => 'required|unique:employees',
-        //     'department' => 'required',
-        //     'position' => 'required',
-        //     'salary' => 'required',
-        //     'office_id' => 'required',
-        //     'join_day' => 'required',
-        //     'left_day' => 'required',
-        //     'image_url'=>'required',
-        // ]);
-
+    public function store(Request $request)
+    {
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
 
             $name_file = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
 
-            if(strcasecmp($extension, 'png') === 0 || strcasecmp($extension, 'jpg') === 0 || strcasecmp($extension, 'jpeg') === 0) {
-                $image = Str::random(length: 5)."_".$name_file;  //tránh lưu trùng tên file
-                while(file_exists("storage/avatar/".$image)) {
-                    $image = Str::random(length: 5)."_".$name_file;
+            if (strcasecmp($extension, 'png') === 0 || strcasecmp($extension, 'jpg') === 0 || strcasecmp($extension, 'jpeg') === 0) {
+                $image = Str::random(length: 5) . "_" . $name_file;  //tránh lưu trùng tên file
+                while (file_exists("storage/avatar/" . $image)) {
+                    $image = Str::random(length: 5) . "_" . $name_file;
                 }
-                $file->move('storage/avatar/',$image);
+                $file->move('storage/avatar/', $image);
             }
         }
 
@@ -143,40 +135,37 @@ class StaffController extends Controller
             'last_name' => $request->last_name,
             'birth_day' => $request->birth_day,
             'gender' => $request->gender,
-            'fl_admin' => $request->fl_admin,
             'address' => $request->address,
             'numberphone' => $request->numberphone,
             'department' => $request->department,
             'position' => $request->position,
-            'avatar' => 'storage/avatar/' . $image,
-            'working_day' => $request->working_day,
-            'status' => $request->status,
+            'avatar' =>  isset($image) ? 'storage/avatar/' . $image : randomAvatarUrl(rand(1, 20)),
+            'working_day' => implode('|', $request->working_day),
+            'status' => 1,
             'salary' => $request->salary,
             'office_id' => $request->office_id,
             'join_day' => $request->join_day,
-            'left_day' => $request->left_day,
         ]);
 
         AccountsModel::create([
-            'name' => $request->name,
+            'user_name' => $request->name,
             'fl_admin' => $request->fl_admin,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'employee_id' => $staff->id,
         ]);
 
-        if($request->hasFile('image_url')) {
-            $facesFile = $request->file('image_url');
-            // dd($facesFile);
-            foreach($facesFile as $faceFile) {
+        if ($request->hasFile('face')) {
+            $facesFile = $request->file('face');
+            foreach ($facesFile as $faceFile) {
                 $name_face_file = $faceFile->getClientOriginalName();
                 $extension_face_file = $faceFile->getClientOriginalExtension();
-                if(strcasecmp($extension_face_file, 'png') === 0 || strcasecmp($extension_face_file, 'jpg') === 0 || strcasecmp($extension_face_file, 'jpeg') === 0) {
-                    $image_face = Str::random(length: 5)."_".$name_face_file;  //tránh lưu trùng tên file
-                    while(file_exists("storage/face-recognition/".$image_face)) {
-                        $image_face = Str::random(length: 5)."_".$name_face_file;
+                if (strcasecmp($extension_face_file, 'png') === 0 || strcasecmp($extension_face_file, 'jpg') === 0 || strcasecmp($extension_face_file, 'jpeg') === 0) {
+                    $image_face = Str::random(length: 5) . "_" . $name_face_file;  //tránh lưu trùng tên file
+                    while (file_exists("storage/face-recognition/" . $image_face)) {
+                        $image_face = Str::random(length: 5) . "_" . $name_face_file;
                     }
-                    $faceFile->move('storage/face-recognition/',$image_face);
+                    $faceFile->move('storage/face-recognition/', $image_face);
                     // dd($image_face);
                     FaceEmployeeImagesModel::create([
                         'employee_id' => $staff->id,
@@ -190,21 +179,29 @@ class StaffController extends Controller
         return redirect()->route('admin.staff.list')->with('success', 'Create successfully');
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $notification = new NoticesModel();
         $notification = $notification->getNotifications([]);
-
+        $employees = new EmployeesModel();
+        $timesheet = new TimesheetsModel();
+        $office = new OfficesModel();
+        $face = new FaceEmployeeImagesModel();
         $staff = EmployeesModel::find($id);
 
         $employee_id = $staff->id;
         $account =  AccountsModel::where('employee_id', $employee_id)->first();
+        $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
+        $waitConfirm = $timesheet->getCountAttendanceWithStatus(['status' => 2]);
+        $office = $office->getOffices([]);
+        $list = $face->getImages(['id' => $employee_id]);
         $page = 'staff';
-        // dd($staff,$account);
 
-        return view('admin.staff.edit', compact('staff', 'notification', 'account', 'page'));
+        return view('admin.staff.edit', compact('staff', 'list', 'office', 'profile', 'notification', 'account', 'page', 'waitConfirm'));
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id)
+    {
         // dd($request);
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
@@ -212,18 +209,18 @@ class StaffController extends Controller
             $name_file = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
 
-            if(strcasecmp($extension, 'png') === 0 || strcasecmp($extension, 'jpg') === 0 || strcasecmp($extension, 'jpeg') === 0) {
-                $image = Str::random(length: 5)."_".$name_file;  //tránh lưu trùng tên file
-                while(file_exists("storage/avatar/".$image)) {
-                    $name = Str::random(length: 5)."_".$name_file;
+            if (strcasecmp($extension, 'png') === 0 || strcasecmp($extension, 'jpg') === 0 || strcasecmp($extension, 'jpeg') === 0) {
+                $image = Str::random(length: 5) . "_" . $name_file;  //tránh lưu trùng tên file
+                while (file_exists("storage/avatar/" . $image)) {
+                    $name = Str::random(length: 5) . "_" . $name_file;
                 }
-                $file->move('storage/avatar/',$image);
+                $file->move('storage/avatar/', $image);
             }
         }
 
         $staff = EmployeesModel::find($id);
         $employee_id = $staff->id;
-        $account =  AccountsModel::where('employee_id', $employee_id);
+        $account =  AccountsModel::where('employee_id', $employee_id)->first();
         // dd($account);
 
         $staff->update([
@@ -240,12 +237,12 @@ class StaffController extends Controller
             'office_id' => $request->office_id,
             'join_day' => $request->join_day,
             'left_day' => $request->left_day,
-            'working_day' => $request->working_day,
+            'working_day' => implode('|', $request->working_day),
             'status' => $request->status,
         ]);
 
         $data = [
-            'name' => $request->name,
+            'user_name' => $request->name,
             'fl_admin' => $request->fl_admin,
             'email' => $request->email,
         ];
@@ -257,12 +254,40 @@ class StaffController extends Controller
             ]);
             $data['password'] = bcrypt($request->password);
         };
-        $account->update($data);
+        if ($account == null) {
+            $data['employee_id'] = $employee_id;
+            AccountsModel::create($data);
+        } else {
+            $account =  AccountsModel::where('employee_id', $employee_id);
+            $account->update($data);
+        }
 
-        return redirect()->route('admin.staff.list')->with('success', 'Update successfully');
+        if ($request->hasFile('face')) {
+            $facesFile = $request->file('face');
+            foreach ($facesFile as $faceFile) {
+                $name_face_file = $faceFile->getClientOriginalName();
+                $extension_face_file = $faceFile->getClientOriginalExtension();
+                if (strcasecmp($extension_face_file, 'png') === 0 || strcasecmp($extension_face_file, 'jpg') === 0 || strcasecmp($extension_face_file, 'jpeg') === 0) {
+                    $image_face = Str::random(length: 5) . "_" . $name_face_file;  //tránh lưu trùng tên file
+                    while (file_exists("storage/face-recognition/" . $image_face)) {
+                        $image_face = Str::random(length: 5) . "_" . $name_face_file;
+                    }
+                    $faceFile->move('storage/face-recognition/', $image_face);
+                    // dd($image_face);
+                    FaceEmployeeImagesModel::create([
+                        'employee_id' => $employee_id,
+                        'image_url' => 'storage/face-recognition/' . $image_face,
+                        'status' => 1
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('admin.staff.edit', ['id' => $id])->with('success', 'Update successfully');
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $notification = new NoticesModel();
         $notification = $notification->getNotifications([]);
 

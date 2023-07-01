@@ -9,8 +9,13 @@
     <div class="n2">
         <div class="notification" onclick="toggleNotifi()">
             <div class="notification-icon">
-                <i class="fa-solid fa-bell"></i>
-                <span>{{ count($notification) }}</span>
+                <i class="fa-solid fa-bell">
+                    @if (count($notification) > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+                    @endif
+                </i>
             </div>
             <div class="notification-box" id="list-notifi">
                 <h3>Notifications <span>{{ count($notification) }}</span></h3>
@@ -29,14 +34,14 @@
 
         <div class="account" onclick="toggleAcc()">
             <div class="account-avatar">
-                <img src="{{asset('assets/img/quinhon.jpg');}}" alt="">
+                <img src="{{asset($profile->avatar);}}" alt="">
             </div>
             <div class="account-box" id="list-acc">
                 <div class="profile">
-                    <img src="{{asset('assets/img/quinhon.jpg');}}" alt="">
+                    <img src="{{asset($profile->avatar);}}" alt="">
                     <div class="info">
-                        <h3>Viet Cuong</h3>
-                        <p>@webdev</p>
+                        <h3>{{ $profile->first_name . ' ' . $profile->last_name }}</h3>
+                        <p>{{ '@' . $profile->position }}</p>
                     </div>
                 </div>
                 {{-- <a href="#" class="btn">

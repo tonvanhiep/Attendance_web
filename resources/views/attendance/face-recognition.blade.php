@@ -6,10 +6,12 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <script>
             var faceRegination = {!! json_encode($arr) !!};
+            var arrName = {!! json_encode($arrName) !!};
         </script>
 
         <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
         <script defer src="{{ asset('assets/face-api/script-face-recognition.js') }}"></script>
+        {{-- <script src="https://docs.opencv.org/master/opencv.js" async></script> --}}
 
         <title>Face Recognition</title>
         <style>

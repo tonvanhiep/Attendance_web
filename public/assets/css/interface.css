@@ -1,0 +1,225 @@
+#interface {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+    position: relative;
+  }
+  #interface .navigation {
+    position: fixed;
+    width: calc(100% - 250px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 15px 30px;
+    border-bottom: 3px solid #594ef7;
+  }
+  #interface .navigation .n1 .search {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px 14px;
+    border: 1px solid #d7dbe6;
+    border-radius: 4px;
+  }
+  #interface .navigation .n1 .search input {
+    font-size: 14px;
+  }
+  #interface .navigation .n1 .search i {
+    margin-right: 14px;
+  }
+  #interface .navigation .n2 {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  #interface .navigation .n2 .notification {
+    position: relative;
+  }
+  #interface .navigation .n2 .notification-icon {
+    cursor: pointer;
+    margin-right: 20px;
+    position: relative;
+  }
+  #interface .navigation .n2 .notification-icon i {
+    font-size: 19px;
+    font-weight: 400;
+  }
+  #interface .navigation .n2 .notification-icon span {
+    position: absolute;
+    font-size: 13px;
+    background-color: #f00;
+    color: #fff;
+    padding: 2px;
+    left: 10px;
+    top: -10px;
+    border-radius: 50%;
+  }
+  #interface .navigation .n2 .notification-icon:hover i {
+    font-weight: 700;
+    transition: 0.3s ease;
+  }
+  #interface .navigation .n2 .notification-box {
+    opacity: 0;
+    transition: 1s opacity, 250ms height;
+    visibility: hidden;
+    position: absolute;
+    width: 310px;
+    padding: 30px;
+    background-color: #222553;
+    border-radius: 10px;
+    top: 35px;
+    right: 10px;
+    transition: all 0.3s;
+  }
+  #interface .navigation .n2 .notification-box::before {
+    position: absolute;
+    content: "";
+    width: 16px;
+    height: 16px;
+    background-color: #222553;
+    border-top-left-radius: 30px;
+    top: -11px;
+    right: 19px;
+  }
+  #interface .navigation .n2 .notification-box h3 {
+    color: #dadada;
+    font-size: 18px;
+    margin-bottom: 4px;
+    font-weight: 500;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: #828987;
+  }
+  #interface .navigation .n2 .notification-box h3 span {
+    color: #f00;
+  }
+  #interface .navigation .n2 .notification-box .noti-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 15px 5px;
+    margin-bottom: 15px;
+    cursor: pointer;
+  }
+  #interface .navigation .n2 .notification-box .noti-item:last-child {
+    margin: 0;
+  }
+  #interface .navigation .n2 .notification-box .noti-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 15px;
+  }
+  #interface .navigation .n2 .notification-box .noti-item .noti-text h5 {
+    color: #dadada;
+  }
+  #interface .navigation .n2 .notification-box .noti-item .noti-text p {
+    color: #7d8193;
+  }
+  #interface .navigation .n2 .account {
+    position: relative;
+  }
+  #interface .navigation .n2 .account-avatar img {
+    display: block;
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  #interface .navigation .n2 .account-avatar img:hover {
+    opacity: 0.7;
+    cursor: pointer;
+  }
+  #interface .navigation .n2 .account-box {
+    opacity: 0;
+    transition: 1s opacity, 250ms height;
+    visibility: hidden;
+    position: absolute;
+    width: 310px;
+    padding: 30px;
+    background-color: #222553;
+    border-radius: 10px;
+    top: 40px;
+    right: 0;
+    transition: all 0.3s;
+  }
+  #interface .navigation .n2 .account-box::before {
+    position: absolute;
+    content: "";
+    width: 16px;
+    height: 16px;
+    background-color: #222553;
+    border-top-left-radius: 30px;
+    top: -10px;
+    right: 19px;
+  }
+  #interface .navigation .n2 .account-box .profile {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  #interface .navigation .n2 .account-box .profile img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    user-select: none;
+  }
+  #interface .navigation .n2 .account-box .profile .info {
+    margin-left: 15px;
+  }
+  #interface .navigation .n2 .account-box .profile .info h3 {
+    color: #dadada;
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  #interface .navigation .n2 .account-box .profile .info p {
+    color: #7d8193;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  #interface .navigation .n2 .account-box .btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 53px;
+    color: #e5e5e5;
+    background-color: #1a1c29;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    transition: all 0.3s;
+  }
+  #interface .navigation .n2 .account-box .btn i {
+    margin-right: 5px;
+  }
+  #interface .navigation .n2 .account-box .btn:hover {
+    background-color: #515677;
+  }
+  #interface .navigation .n2 .account-box .function li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  #interface .navigation .n2 .account-box .function li:last-child {
+    margin: 0;
+  }
+  #interface .navigation .n2 .account-box .function li a {
+    color: #e5e5e5;
+    font-weight: 500;
+    font-size: 16px;
+  }
+  #interface .navigation .n2 .account-box .function li i {
+    color: #e5e5e5;
+    margin-right: 10px;
+  }
+  #interface .i-name {
+    margin-top: 70px;
+    color: #444a53;
+    padding: 30px 30px 0 30px;
+    font-size: 24px;
+    font-weight: 700;
+  }

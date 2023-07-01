@@ -67,5 +67,7 @@ class Kernel extends HttpKernel
         'loginmiddleware' => \App\Http\Middleware\LoginMiddleware::class,
         'existedloginmiddleware' => \App\Http\Middleware\ExistedLoginMiddleWare::class,
         'userloginmiddleware' => \App\Http\Middleware\UserLoginMiddleware::class,
+        'timekeeperloginmiddleware' => \App\Http\Middleware\TimekeeperLoginMiddleware::class,
+        'timekeeperloginexistedmiddleware' => \App\Http\Middleware\TimekeeperLoginExistedMiddleware::class,
     ];
 }
