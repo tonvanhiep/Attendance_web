@@ -15,7 +15,6 @@ if (!function_exists('randomAvatarUrl')) {
             'https://allimages.sgp1.digitaloceanspaces.com/tipeduvn/2022/01/Top-Anh-Avatar-dep-doc-ngau-lam-hinh-dai-dien-Facebook-Zalo.jpg',
             'https://www.dungplus.com/wp-content/uploads/2019/10/anh-avatar-dep-nhat.jpg',
             'https://i.9mobi.vn/cf/Images/tt/2021/8/20/anh-avatar-dep-56.jpg',
-            'https://thpt-phamhongthai.edu.vn/wp-content/uploads/2022/08/anh-avatar-viet-nam-cute-ngau-tuyet-dep-10.jpg',
             'https://trinhvantuyen.com/wp-content/uploads/2022/03/hinh-anh-avatar-cho-con-gai-1-600x600.jpg',
             'https://chungcuhatecolaroma.net.vn/wp-content/uploads/2022/10/anh-avatar-dep-cho-con-gai-2.jpg',
             'https://toigingiuvedep.vn/wp-content/uploads/2021/05/hinh-anh-avatar-de-thuong.jpg',
@@ -41,8 +40,7 @@ if (!function_exists('randomAvatarUrl')) {
         ];
         if (is_int($i) && $i >= 0 && $i < count($arr)) {
             return $arr[$i];
-        }
-        else return $arr[0];
+        } else return $arr[0];
     }
 }
 
@@ -59,7 +57,6 @@ if (!function_exists('statusEmployeeMean')) {
 
         if (is_int($i) && $i >= 0 && $i < count($arr)) {
             return $arr[$i];
-        }
-        else return $arr[0];
+        } else return $arr[0];
     }
 }

@@ -106,11 +106,6 @@
             {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        {{-- <div class="alert alert-success alert-dismissible" style="margin: 30px;">
-            <a href="#" class="close" data-bs-dismiss="alert" aria-label="close">
-                <i class="fa-solid fa-x"></i>
-            </a>
-        </div> --}}
     @endif
 
     @if (count($errors) > 0)
@@ -132,43 +127,43 @@
                 <div class="board-left" style="max-width: 800px">
                     <div class="long form" >
                         <label for="first_name">First Name</label>
-                        <input type="text" name="first_name" value="{{ $staff->first_name }}">
+                        <input type="text" name="first_name" value="{{ $staff->first_name }}" required>
                     </div>
                     <div class="long form" >
                         <label for="last_name">Last Name</label>
-                        <input type="text" name="last_name" value="{{ $staff->last_name }}">
+                        <input type="text" name="last_name" value="{{ $staff->last_name }}" required>
                     </div>
 
                     <div  class="long form" >
                         <label for="numberphone">Phone</label>
-                        <input type="text" name="numberphone" value="{{ $staff->numberphone }}">
+                        <input type="text" name="numberphone" value="{{ $staff->phone_number }}" required>
                     </div>
                     <div  class="long form" >
                         <label for="address">Address</label>
-                        <input type="text" name="address" value="{{ $staff->address }}">
+                        <input type="text" name="address" value="{{ $staff->address }}" required>
                     </div>
                     <div class="long form" >
                         <label for="birth_day">Date of birth</label>
-                        <input type="date" name="birth_day" value="{{ $staff->birth_day }}">
+                        <input type="date" name="birth_day" value="{{ $staff->birth_day }}" required>
                     </div>
                     <div class="form">
                         <label>Gender</label>
                         <div>
                             <label for="male">Male</label>
-                            <input type="radio" name="gender" id="male" value="1" {{ $staff->gender == '1' ? 'checked' : '' }}>
+                            <input type="radio" name="gender" id="male" value="1" {{ $staff->gender == '1' ? 'checked' : '' }} required>
                         </div>
                         <div>
                             <label for="female">Female</label>
-                            <input type="radio" name="gender" id="female" value="0" {{ $staff->gender == '0' ? 'checked' : '' }}>
+                            <input type="radio" name="gender" id="female" value="0" {{ $staff->gender == '0' ? 'checked' : '' }} required>
                         </div>
                     </div>
                     <div class="long form" >
                         <label for="department">Department</label>
-                        <input type="text" name="department" value="{{ $staff->department }}">
+                        <input type="text" name="department" value="{{ $staff->department }}" required>
                     </div>
                     <div class="long form" >
                         <label for="position">Position</label>
-                        <input type="text" name="position" value="{{ $staff->position }}">
+                        <input type="text" name="position" value="{{ $staff->position }}" required>
                     </div>
                     {{-- <div class="long form" >
                         <label for="avatar">Avatar</label>
@@ -182,7 +177,7 @@
                             padding: 5px 10px;
                             border-radius: 5px;
                             border: 1px solid #6F6F6F;
-                        ">
+                        " required>
                             @foreach ($office as $item)
                                 <option value="{{ $item->id }}" @if ($staff->office_id == $item->id) selected @endif>{{ $item->office_name }}</option>
                             @endforeach
@@ -197,22 +192,30 @@
                             padding: 5px 10px;
                             border-radius: 5px;
                             border: 1px solid #6F6F6F;
-                        ">
+                        " required>
                             <option value="1" @if ($staff->status == 1) selected @endif>Active</option>
                             <option value="2" @if ($staff->status == 2) selected @endif>Maternity Leave</option>
                             <option value="0" @if ($staff->status == 0) selected @endif>Quit job</option>
                         </select>
                     </div>
                     <div class="long form" style="display: flex; flex-wrap: wrap;">
-                        <label for="working_day">Working_day</label>
+                        <label for="working_day">Working day</label>
                         {{-- <input type="text" name="working_day" value="{{ $staff->working_day}}"> --}}
-                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '2') !== false) checked @endif value="2">Mon
-                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '3') !== false) checked @endif value="3">Tue
-                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '4') !== false) checked @endif value="4">Wed
-                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '5') !== false) checked @endif value="5">Thu
-                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '6') !== false) checked @endif value="6">Fri
-                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '7') !== false) checked @endif value="7">Sat
-                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '1') !== false) checked @endif value="1">Sun
+                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '2') !== false) checked @endif value="2" >Mon
+                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '3') !== false) checked @endif value="3" >Tue
+                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '4') !== false) checked @endif value="4" >Wed
+                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '5') !== false) checked @endif value="5" >Thu
+                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '6') !== false) checked @endif value="6" >Fri
+                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '7') !== false) checked @endif value="7" >Sat
+                        <input type="checkbox" name="working_day[]" @if (strpos($staff->working_day, '1') !== false) checked @endif value="1" >Sun
+                    </div>
+                    <div class="long form" >
+                        <label for="start-time">Start time</label>
+                        <input type="time" name="start_time" required value="{{ $staff->start_time}}">
+                    </div>
+                    <div class="long form" >
+                        <label for="end-time">End time</label>
+                        <input type="time" name="end_time" required value="{{ $staff->end_time}}">
                     </div>
                 </div>
                 <div class="board-right">
@@ -260,16 +263,16 @@
                         <label>Role</label>
                         <div>
                             <label for="admin">Admin</label>
-                            <input type="radio" name="fl_admin" id="admin" value="1" {{ $account != null ? ($account->fl_admin == '1' ? 'checked' : '') : '' }}>
+                            <input type="radio" name="fl_admin" id="admin" value="1" {{ $account != null ? ($account->fl_admin == '1' ? 'checked' : '') : '' }} required>
                         </div>
                         <div>
                             <label for="user">User</label>
-                            <input type="radio" name="fl_admin" id="user" value="0" {{ $account != null ? ($account->fl_admin == '0' ? 'checked' : '') : '' }}>
+                            <input type="radio" name="fl_admin" id="user" value="0" {{ $account != null ? ($account->fl_admin == '0' ? 'checked' : '') : '' }} required>
                         </div>
                     </div>
                     <div class="short form" >
                         <label for="email">Email</label>
-                        <input type="email" name="email" value="{{ $account != null ? $account->email : '' }}">
+                        <input type="email" name="email" value="{{ $account != null ? $account->email : '' }}" required>
                     </div>
                     <div class="short form">
                         <label for="password">Password</label>
@@ -311,14 +314,15 @@
             <div style="margin-bottom:10px; display: flex; justify-content: space-between; flex-wrap: wrap;">
                 <h5 style="margin-bottom: 15px; display:inline">Face Recognition</h5>
                 <div class="dropdown">
-                        <button style="background-color: #323FAE" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fa-solid fa-plus" style="padding-right: 10px"></i>Add Image
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#myModal">Upload image</button></li>
-                            <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#myModal2">Face scan</button></li>
-                        </ul>
+                    <button style="background-color: #323FAE" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="fa-solid fa-plus" style="padding-right: 10px"></i>Add Image
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#myModal">Upload image</button></li>
+                        <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#myModal2">Face scan</button></li>
+                    </ul>
                 </div>
+                <div hidden id="arr-detection"></div>
             </div>
             <div class="container-top" style="display: block">
                 <div style="display: flex; flex-wrap:wrap">
@@ -332,17 +336,13 @@
         </div>
 
         <div class="d-grid gap-2">
-            <button style="margin:auto; min-width: 50%; background-color:#323FAE" type="submit" class="btn btn-primary">
+            <button style="margin:auto; min-width: 50%; background-color:#323FAE" type="button" id="btn-submit" class="btn btn-primary">
                 <i class="fa-solid fa-floppy-disk" style="padding-right: 10px"></i>
                 <span>Save</span>
             </button>
         </div>
     </form>
 @endsection
-
-{{-- @section('scripts')
-
-@endsection --}}
 
 @push('js')
     <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
@@ -358,5 +358,4 @@
             }
         }
     </script>
-    {{-- <script src="{{ asset('assets/face-api/edit-staff.js')}}"></script> --}}
 @endpush

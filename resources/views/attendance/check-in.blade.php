@@ -14,6 +14,8 @@
         var arrName = {!! json_encode($arrName) !!};
     </script>
 
+    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
     <script defer src="{{ asset('assets/face-api/face-api.min.js') }}"></script>
     <script defer type="module" src="{{ asset('assets/face-api/script-face-detection.js') }}"></script>
 
@@ -50,11 +52,12 @@
 
     <p id="url-face-api" hidden>{{ asset('assets/face-api') }}</p>
     <p id="url-image" hidden>{{ asset('') }}</p>
+    <p id="id-office" hidden>{{ $office_id }}</p>
 
     {{-- <video id="video" width="720" height="560" autoplay muted></video> --}}
     <div id="container">
-        <div id="alert-div" style="width: 730px;height: 45px;margin-bottom:5vh;">
-            <p id="alert-message" style="border-radius: 5px;line-height: 45px;padding-left: 30px;color: white;"></p>
+        <div id="alert-div" style="width: 730px ;margin-bottom:5vh;">
+            <p id="alert-message" style="height: 45px; border-radius: 5px;line-height: 45px;padding-left: 30px;color: white;"></p>
         </div>
 
         <div id="webcam">
@@ -81,8 +84,7 @@
             </div>
         </div>
     </div>
-    <script src="http://localhost:6001/socket.io/socket.io.js"></script>
-    <script src="{{ asset('assets/js/app.js') }}"></script>
+
     <script src="{{ asset('assets/bootstrap-5.3.0-alpha2-dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/modal.js') }}"></script>
     <script>
@@ -90,14 +92,3 @@
 </body>
 
 </html>
-
-{{-- <div id="alert-div" style="width: 730px;height: 45px;margin-bottom:5vh;background-color: green;border-radius: 5px;">
-    <p id="alert-message" style="border-radius: 5px;line-height: 45px;padding-left: 30px;color: white;display: inline-block;width: 90%;"></p>
-    <button style="
-        display: inline-block;
-        height: 45px;
-        width: 60px;
-        background: none;
-        color: red;
-    ">CANCEL</button>
-</div> --}}

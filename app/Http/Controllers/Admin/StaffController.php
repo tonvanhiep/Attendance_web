@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\UpdateImageRecognition;
 use Illuminate\Support\Str;
 use App\Models\NoticesModel;
 use App\Models\OfficesModel;
@@ -15,9 +16,34 @@ use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\FaceEmployeeImagesModel;
 use Illuminate\Support\Facades\Auth;
+use Spatie\LaravelIgnition\Http\Requests\UpdateConfigRequest;
 
 class StaffController extends Controller
 {
+
+    public function updatedescription()
+    {
+        $face = new FaceEmployeeImagesModel();
+        $list = $face->getImages();
+        // dd($list);
+        return view('admin.staff.update', compact('list'));
+    }
+
+    public function pupdatedescription(Request $request)
+    {
+        $data = $request->data;
+
+        foreach ($data as $key => $value) {
+            $face = FaceEmployeeImagesModel::find($value['id']);
+            $face->update([
+                'description' => $value['descrip'],
+                "updated_at" => now(),
+                "updated_user" => Auth::user()->employee_id
+            ]);
+        }
+        return response()->json(['message' => 'Update successfull']);
+    }
+
     public function index(Request $request)
     {
         $employees = new EmployeesModel();
@@ -115,20 +141,7 @@ class StaffController extends Controller
 
     public function store(Request $request)
     {
-        if ($request->hasFile('avatar')) {
-            $file = $request->file('avatar');
-
-            $name_file = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-
-            if (strcasecmp($extension, 'png') === 0 || strcasecmp($extension, 'jpg') === 0 || strcasecmp($extension, 'jpeg') === 0) {
-                $image = Str::random(length: 5) . "_" . $name_file;  //tránh lưu trùng tên file
-                while (file_exists("storage/avatar/" . $image)) {
-                    $image = Str::random(length: 5) . "_" . $name_file;
-                }
-                $file->move('storage/avatar/', $image);
-            }
-        }
+        $this->saveAvatar($request);
 
         $staff =  EmployeesModel::create([
             'first_name' => $request->first_name,
@@ -145,6 +158,8 @@ class StaffController extends Controller
             'salary' => $request->salary,
             'office_id' => $request->office_id,
             'join_day' => $request->join_day,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time
         ]);
 
         AccountsModel::create([
@@ -155,26 +170,7 @@ class StaffController extends Controller
             'employee_id' => $staff->id,
         ]);
 
-        if ($request->hasFile('face')) {
-            $facesFile = $request->file('face');
-            foreach ($facesFile as $faceFile) {
-                $name_face_file = $faceFile->getClientOriginalName();
-                $extension_face_file = $faceFile->getClientOriginalExtension();
-                if (strcasecmp($extension_face_file, 'png') === 0 || strcasecmp($extension_face_file, 'jpg') === 0 || strcasecmp($extension_face_file, 'jpeg') === 0) {
-                    $image_face = Str::random(length: 5) . "_" . $name_face_file;  //tránh lưu trùng tên file
-                    while (file_exists("storage/face-recognition/" . $image_face)) {
-                        $image_face = Str::random(length: 5) . "_" . $name_face_file;
-                    }
-                    $faceFile->move('storage/face-recognition/', $image_face);
-                    // dd($image_face);
-                    FaceEmployeeImagesModel::create([
-                        'employee_id' => $staff->id,
-                        'image_url' => 'storage/face-recognition/' . $image_face,
-                        'status' => 1
-                    ]);
-                }
-            }
-        }
+        $this->saveImageRecognition($request, $staff->id);
 
         return redirect()->route('admin.staff.list')->with('success', 'Create successfully');
     }
@@ -189,6 +185,7 @@ class StaffController extends Controller
         $face = new FaceEmployeeImagesModel();
         $staff = EmployeesModel::find($id);
 
+        if ($staff == null) return redirect()->route('admin.staff.list');
         $employee_id = $staff->id;
         $account =  AccountsModel::where('employee_id', $employee_id)->first();
         $profile = $employees->getEmployees(['id' => Auth::user()->employee_id])[0];
@@ -202,26 +199,13 @@ class StaffController extends Controller
 
     public function update(Request $request, $id)
     {
-        // dd($request);
-        if ($request->hasFile('avatar')) {
-            $file = $request->file('avatar');
+        //dd($request, $request->has('arr_detections'), $request->arr_detections[0]);
 
-            $name_file = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-
-            if (strcasecmp($extension, 'png') === 0 || strcasecmp($extension, 'jpg') === 0 || strcasecmp($extension, 'jpeg') === 0) {
-                $image = Str::random(length: 5) . "_" . $name_file;  //tránh lưu trùng tên file
-                while (file_exists("storage/avatar/" . $image)) {
-                    $name = Str::random(length: 5) . "_" . $name_file;
-                }
-                $file->move('storage/avatar/', $image);
-            }
-        }
+        $this->saveAvatar($request);
 
         $staff = EmployeesModel::find($id);
         $employee_id = $staff->id;
         $account =  AccountsModel::where('employee_id', $employee_id)->first();
-        // dd($account);
 
         $staff->update([
             'first_name' => $request->first_name,
@@ -229,7 +213,7 @@ class StaffController extends Controller
             'birth_day' => $request->birth_day,
             'gender' => $request->gender,
             'address' => $request->address,
-            'numberphone' => $request->numberphone,
+            'phone_number' => $request->numberphone,
             'department' => $request->department,
             'position' => $request->position,
             'avatar' => isset($image) ? 'storage/avatar/' . $image : $staff->avatar,
@@ -239,12 +223,18 @@ class StaffController extends Controller
             'left_day' => $request->left_day,
             'working_day' => implode('|', $request->working_day),
             'status' => $request->status,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'updated_at' => now(),
+            'updated_user' => Auth::user()->employee_id,
         ]);
 
         $data = [
             'user_name' => $request->name,
             'fl_admin' => $request->fl_admin,
             'email' => $request->email,
+            'updated_at' => now(),
+            'updated_user' => Auth::user()->employee_id,
         ];
 
         if ($request->password) {
@@ -254,34 +244,18 @@ class StaffController extends Controller
             ]);
             $data['password'] = bcrypt($request->password);
         };
+
         if ($account == null) {
             $data['employee_id'] = $employee_id;
+            $data['created_at'] = now();
+            $data['created_user'] = Auth::user()->employee_id;
             AccountsModel::create($data);
         } else {
             $account =  AccountsModel::where('employee_id', $employee_id);
             $account->update($data);
         }
 
-        if ($request->hasFile('face')) {
-            $facesFile = $request->file('face');
-            foreach ($facesFile as $faceFile) {
-                $name_face_file = $faceFile->getClientOriginalName();
-                $extension_face_file = $faceFile->getClientOriginalExtension();
-                if (strcasecmp($extension_face_file, 'png') === 0 || strcasecmp($extension_face_file, 'jpg') === 0 || strcasecmp($extension_face_file, 'jpeg') === 0) {
-                    $image_face = Str::random(length: 5) . "_" . $name_face_file;  //tránh lưu trùng tên file
-                    while (file_exists("storage/face-recognition/" . $image_face)) {
-                        $image_face = Str::random(length: 5) . "_" . $name_face_file;
-                    }
-                    $faceFile->move('storage/face-recognition/', $image_face);
-                    // dd($image_face);
-                    FaceEmployeeImagesModel::create([
-                        'employee_id' => $employee_id,
-                        'image_url' => 'storage/face-recognition/' . $image_face,
-                        'status' => 1
-                    ]);
-                }
-            }
-        }
+        $this->saveImageRecognition($request, $employee_id);
 
         return redirect()->route('admin.staff.edit', ['id' => $id])->with('success', 'Update successfully');
     }
@@ -296,5 +270,50 @@ class StaffController extends Controller
         $staff->delete();
 
         return redirect()->route('admin.staff.list', compact('staff', 'notification',))->with('success', 'Delete sucessfully');
+    }
+
+    public function saveImageRecognition($request, $employee_id)
+    {
+        // dd($request->file('face'));
+        if (!$request->hasFile('face') || !$request->has('arr_detections')) return;
+
+        $facesFile = $request->file('face');
+        foreach ($facesFile as $key => $faceFile) {
+            $name_face_file = $faceFile->getClientOriginalName();
+            $extension_face_file = $faceFile->getClientOriginalExtension();
+            if (strcasecmp($extension_face_file, 'png') === 0 || strcasecmp($extension_face_file, 'jpg') === 0 || strcasecmp($extension_face_file, 'jpeg') === 0) {
+                $image_face = Str::random(length: 5) . "_" . $name_face_file;  //tránh lưu trùng tên file
+                while (file_exists("storage/face-recognition/" . $image_face)) {
+                    $image_face = Str::random(length: 5) . "_" . $name_face_file;
+                }
+                $faceFile->move('storage/face-recognition/', $image_face);
+                FaceEmployeeImagesModel::create([
+                    'employee_id' => $employee_id,
+                    'image_url' => 'storage/face-recognition/' . $image_face,
+                    'description' => $request->arr_detections[$key],
+                    'status' => 1
+                ]);
+            }
+        }
+
+        broadcast(new UpdateImageRecognition($employee_id))->toOthers();
+    }
+
+    public function saveAvatar($request)
+    {
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+
+            $name_file = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+
+            if (strcasecmp($extension, 'png') === 0 || strcasecmp($extension, 'jpg') === 0 || strcasecmp($extension, 'jpeg') === 0) {
+                $image = Str::random(length: 5) . "_" . $name_file;  //tránh lưu trùng tên file
+                while (file_exists("storage/avatar/" . $image)) {
+                    $image = Str::random(length: 5) . "_" . $name_file;
+                }
+                $file->move('storage/avatar/', $image);
+            }
+        }
     }
 }

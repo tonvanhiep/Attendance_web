@@ -2,9 +2,6 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\user\HomeController;
-use App\Http\Controllers\user\InfoController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\ReportController;
@@ -65,6 +62,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'loginmiddleware', 'as' => 'a
 
         Route::get('/add', [StaffController::class, 'add'])->name('add');
         Route::post('/add', [StaffController::class, 'actionAdd'])->name('p_add');
+
+        Route::get('/updatedescription', [StaffController::class, 'updatedescription'])->name('updatedescription');
+        Route::post('/updatedescription', [StaffController::class, 'pupdatedescription'])->name('p_updatedescription');
 
         Route::get('/add', [StaffController::class, 'add'])->name('add');
         Route::post('/add', [StaffController::class, 'actionAdd'])->name('p_add');

@@ -56,8 +56,10 @@
                 <tr>
                     <th scope="col">Label</th>
                     <th scope="col">Count</th>
-                    <th scope="col">True</th>
-                    <th scope="col">False</th>
+                    <th scope="col">True Predict</th>
+                    <th scope="col">False Predict</th>
+                    <th scope="col">Unknown Predict</th>
+                    <th scope="col">Cannot Detection</th>
                 </tr>
             </thead>
             <tbody id="tbl-result">
@@ -68,11 +70,13 @@
                     <th id="total-count">0</th>
                     <th id="total-true">0</th>
                     <th id="total-false">0</th>
+                    <th id="total-unknown">0</th>
+                    <th id="total-none">0</th>
                 </tr>
 
                 <tr>
                     <th colspan="2"></th>
-                    <th colspan="2" id="arrcuracy-metric">0%</th>
+                    <th colspan="2" id="accuracy-metric">0%</th>
                 </tr>
             </tfoot>
         </table>

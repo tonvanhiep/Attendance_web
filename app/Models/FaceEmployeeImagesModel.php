@@ -16,6 +16,7 @@ class FaceEmployeeImagesModel extends Model
         'id',
         'employee_id',
         'image_url',
+        'description',
         'status',
         'note',
         'created_at',
@@ -27,16 +28,19 @@ class FaceEmployeeImagesModel extends Model
     public function selectImages($condition = null)
     {
         $images = DB::table($this->table)
-        ->join('employees', $this->table.'.employee_id', 'employees.id')
-        ->select('employees.last_name', 'employees.first_name', 'employees.id', $this->table.'.image_url', $this->table.'.status');
+            ->join('employees', $this->table . '.employee_id', 'employees.id')
+            ->select('employees.last_name', 'employees.first_name', 'employees.id', $this->table . '.image_url', $this->table . '.status', $this->table . '.description', $this->table . '.id as id_image');
         if (isset($condition['id'])) {
-            $images = $images->where($this->table.'.employee_id', $condition['id']);
+            $images = $images->where($this->table . '.employee_id', $condition['id']);
         }
         if (isset($condition['status'])) {
             $images = $images->where($this->table . '.status', $condition['status']);
         }
         if (isset($condition['office'])) {
             $images = $images->where('employees.office_id', $condition['office']);
+        }
+        if (isset($condition['employee_id'])) {
+            $images = $images->where('employees.id', $condition['employee_id']);
         }
         return $images;
     }
@@ -46,27 +50,8 @@ class FaceEmployeeImagesModel extends Model
         return $this->selectImages($condition)->get();
     }
 
-    // public function selectImcages($condition = null)
-    // {
-    //     $images = DB::table($this->table)
-    //         ->select($this->table.'.image_url', 'status')
-    //         ->orderByDesc($this->table . '.timekeeping_at');
-
-    //     if (isset($condition['id'])) {
-    //         $images = $images->where($this->table . '.id', $condition['id']);
-    //     }
-
-    //     if (isset($condition['status'])) {
-    //         $images = $images->where($this->table . '.id', $condition['status']);
-    //     }
-
-    //     return $images;
-    // }
-
     public function saveAttendance($data = null)
     {
         if ($data == null) return;
-
-
     }
 }

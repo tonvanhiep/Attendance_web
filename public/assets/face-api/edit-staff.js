@@ -3,6 +3,7 @@ const image = document.getElementById('img-preview');
 const video = document.getElementById("video");
 const url = document.getElementById("url-face-api").textContent;
 const urlModel = url + "/models";
+var arrDetections = []
 
 Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri(urlModel),
@@ -31,12 +32,18 @@ $('#myModal2').on('hide.bs.modal', function (e) {
 })
 
 var btnStart = document.getElementById('btn-start')
-btnStart.onclick = function () {
+btnStart.onclick = async function () {
+    displayActionName('Loading...');
     btnStart.disabled = true
     btnStart.textContent = "Scanning..."
     faceScan.innerHTML = ""
     action = 0
-    faceScanning()
+    var imgSample = await faceapi.fetchImage('http://127.0.0.1:8000/storage/face-recognition/CppvA_Screenshot%202023-05-11%20145821.png')
+    const detecSample = await faceapi.detectSingleFace(imgSample).withFaceLandmarks().withFaceDescriptor()
+
+    if (detecSample != null) {
+        faceScanning()
+    };
 }
 
 var action = 0;
@@ -86,14 +93,9 @@ video.addEventListener("playing", async () => {
     const displaySize = { width: video.width, height: video.height };
     faceapi.matchDimensions(canvas, displaySize);
 
-    await faceapi
-        .detectSingleFace(video)
-        .withFaceLandmarks()
-        .withFaceExpressions();
-
     idSetIntervalDetection = setInterval(
         faceDetection,
-        1000,
+        1500,
         canvas,
         displaySize
     );
@@ -131,6 +133,7 @@ async function faceDetection(canvas, displaySize) {
     const detections = await faceapi
         .detectSingleFace(video)
         .withFaceLandmarks()
+        .withFaceDescriptor()
         .withFaceExpressions();
 
     if (detections == null) return
@@ -144,24 +147,35 @@ async function faceDetection(canvas, displaySize) {
 
     switch (action) {
         case 0:
-            if(getExpression(detections) == "neutral" && Math.abs(rotateFaceToLeftRight(detections) - 1) <= 0.5  ) getSnapshotAndAddToFileList()
+            if(getExpression(detections) == "neutral" && Math.abs(rotateFaceToLeftRight(detections) - 1) <= 0.5  ) getSnapshotAndAddToFileList(detections)
             break;
         case 1:
-            if(getExpression(detections) == "happy") getSnapshotAndAddToFileList()
+            if(getExpression(detections) == "happy") getSnapshotAndAddToFileList(detections)
             break;
         case 2:
-            if(getExpression(detections) == "surprised") getSnapshotAndAddToFileList()
+            if (checkOpenMouth(detections)) getSnapshotAndAddToFileList(detections)
             break;
         case 3:
-            if(rotateFaceToLeftRight(detections) >= 4) getSnapshotAndAddToFileList()
+            if(rotateFaceToLeftRight(detections) >= 4) getSnapshotAndAddToFileList(detections)
             break;
         case 4:
-            if(rotateFaceToLeftRight(detections) <= 1/4) getSnapshotAndAddToFileList()
+            if(rotateFaceToLeftRight(detections) <= 1/4) getSnapshotAndAddToFileList(detections)
             break;
         default:
             return
     }
+}
 
+function checkOpenMouth(detections) {
+    const pointTop = detections.landmarks.positions[63];
+    const pointBottom = detections.landmarks.positions[67];
+    const pointLeft = detections.landmarks.positions[61];
+    const pointRight = detections.landmarks.positions[65];
+
+    const y = Math.abs(pointTop.y - pointBottom.y);
+    const x = Math.abs(pointLeft.x - pointRight.x);
+    if (x / y < 0.55) return true;
+    return false;
 }
 
 function getExpression(detections) {
@@ -200,7 +214,7 @@ const faceUpload = document.getElementById('div-face-upload')
 const faceScan = document.getElementById('div-face-scan')
 
 
-function getSnapshotAndAddToFileList() {
+function getSnapshotAndAddToFileList(detections) {
     displayActionName('OK');
 
     let canvas = document.createElement("canvas");
@@ -213,6 +227,7 @@ function getSnapshotAndAddToFileList() {
     image = canvas.toDataURL("image/jpeg");
 
     addFileFromFileList(dataURLtoFile(image, arrAction[action].message + '.jpeg'))
+    arrDetections.push(detections.descriptor.toString())
 
     faceScan.insertAdjacentHTML(
         'beforeend',
@@ -244,6 +259,7 @@ ipnFileElement.addEventListener('change', async function(e) {
     let image;
     var errorAlert = document.getElementById('div-alert-error')
     var deleted = 0;
+    arrDetections = [];
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i]
@@ -262,10 +278,10 @@ ipnFileElement.addEventListener('change', async function(e) {
             deleted++;
             continue;
         }
+        arrDetections.push(detections.descriptor.toString())
 
         const fileReader = new FileReader()
         fileReader.readAsDataURL(file)
-
         fileReader.onload = function() {
             const url = fileReader.result
             faceUpload.insertAdjacentHTML(
@@ -303,4 +319,12 @@ function addFileFromFileList(item) {
     dt.items.add(item)
 
     input.files = dt.files // Assign the updates list
+}
+
+document.getElementById('btn-submit').onclick = function () {
+    var divArray = document.getElementById('arr-detection')
+    for (let index = 0; index < arrDetections.length; index++) {
+        divArray.innerHTML += '<input type="hidden" name="arr_detections[]" value="' + arrDetections[index] + '">'
+    }
+    document.getElementById('form-user-info').submit()
 }

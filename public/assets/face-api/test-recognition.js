@@ -2,28 +2,29 @@ const url = document.getElementById('url-face-api').textContent
 const urlModel = url + '/models'
 const urlImage = document.getElementById('url-image').textContent
 
-const folderName = 'assets/img_test/'; // co '/' cuoi thu muc
+const folderName = 'storage/img-test/'; // co '/' cuoi thu muc
 const arrLabel = [
-    {'label': 53, 'sl': 9},
-    {'label': 54, 'sl': 13},
-    {'label': 55, 'sl': 11},
-    {'label': 56, 'sl': 11},
-    {'label': 57, 'sl': 12},
-    {'label': 60, 'sl': 8},
-    {'label': 61, 'sl': 12},
-    {'label': 78, 'sl': 9},
-    {'label': 80, 'sl': 7},
-    {'label': 81, 'sl': 10},
-    {'label': 82, 'sl': 10},
-    {'label': 83, 'sl': 10},
-    {'label': 85, 'sl': 7},
-    {'label': 86, 'sl': 9},
-    {'label': 87, 'sl': 9},
-    {'label': 88, 'sl': 9},
-    {'label': 89, 'sl': 9},
-    {'label': 90, 'sl': 8},
-    {'label': 91, 'sl': 10},
-    {'label': 92, 'sl': 12},
+    {'label': 1, 'sl': 10},
+    {'label': 25, 'sl': 10},
+    {'label': 30, 'sl': 10},
+    {'label': 31, 'sl': 10},
+    {'label': 33, 'sl': 10},
+    {'label': 34, 'sl': 10},
+    {'label': 35, 'sl': 10},
+    {'label': 36, 'sl': 10},
+    {'label': 37, 'sl': 10},
+    {'label': 38, 'sl': 10},
+    {'label': 39, 'sl': 10},
+    {'label': 40, 'sl': 10},
+    {'label': 42, 'sl': 10},
+    {'label': 43, 'sl': 10},
+    {'label': 44, 'sl': 10},
+    {'label': 45, 'sl': 10},
+    {'label': 46, 'sl': 10},
+    {'label': 47, 'sl': 10},
+    {'label': 48, 'sl': 10},
+    {'label': 49, 'sl': 10},
+    {'label': 50, 'sl': 10},
     {'label': 'unknown', 'sl': 30},
 ];
 
@@ -40,36 +41,38 @@ Promise.all([
 ]).then(start);
 
 function loadLabeledImages() {
-    const labels = Object.keys(faceRegination)
+    const labels = Object.keys(faceRegination);
+    var len_labels = labels.length;
+    var success = 0;
     return Promise.all(
-        labels.map(async label => {
-            const descriptions = [];
-            for (let i = 0; i < faceRegination[label].length; i++) {
-                var image = faceRegination[label][i]
-                if (image.search('https') == -1) {
-                    image = urlImage + image
-                }
-                const img = await faceapi.fetchImage(image);
-                const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
-                try {
-                    descriptions.push(detections.descriptor);
-                    console.log(image)
-                    console.log(detections.descriptor)
-                } catch(err) {
-                    console.log(image + ': error')
-                    continue
-                }
-            }
-            return new faceapi.LabeledFaceDescriptors(label, descriptions);
+        labels.map(async (label) => {
+            return loadDescriptions(label, faceRegination[label])
         })
-    )
+    );
+}
+
+
+async function loadDescriptions(label, arrDescrip) {
+    const descriptions = [];
+
+    for (let i = 0; i < arrDescrip.length; i++) {
+        try {
+            var arr32 = new Float32Array(arrDescrip[i].split(',').map(parseFloat))
+            descriptions.push(arr32);
+        } catch (err) {
+            console.log(image + ": error");
+            continue;
+        }
+    }
+    var result = new faceapi.LabeledFaceDescriptors(label.toString(), descriptions)
+    return result;
 }
 
 async function start() {
     console.log("Training data...")
     const labeledFaceDescriptors = await loadLabeledImages();
     console.log("Completed training.")
-    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.4);
+    const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
 
     document.getElementById('btn-start').onclick = startTest(faceMatcher);
 }
@@ -81,49 +84,43 @@ async function startTest(faceMatcher) {
     var count = 0;
     var _true = 0;
     var _false = 0;
+    var _unknown = 0;
+    var _none = 0;
     for (let i = 0; i < arrLabel.length; i++) {
-        for (let j = 1; j <= arrLabel[i].sl; j++) {
+        arrResult[i + 'true'] = 0;
+        arrResult[i + 'false'] = 0;
+        arrResult[i + 'none'] = 0;
+        arrResult[i + 'unknown'] = 0;
+        for (let j = 0; j < arrLabel[i].sl; j++) {
             var arr = {
                 'stt' : stt++,
-                'image' : urlImage + folderName + arrLabel[i]['label'] + '/' + j + '.jpg',
+                'image' : urlImage + folderName + arrLabel[i]['label'] + '/' + j + '.png',
                 'label' : arrLabel[i]['label'],
                 'recognition' : '',
-                'distance' : 0,
-                'result': ''
+                'result': 'None'
             };
-            var image;
-            try {
-                image = await faceapi.fetchImage(arr['image']);
-            } catch(err) {
-                continue
-            }
-            image = await faceapi.fetchImage(arr['image']);
-            const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors();
+            var image = await faceapi.fetchImage(arr['image']);
+            const detections = await faceapi.detectSingleFace(image).withFaceLandmarks().withFaceDescriptor();
 
-            if(!(detections == null || detections.length == 0)) {
-                const displaySize = { width: image.width, height: image.height };
-                const resizedDetections = faceapi.resizeResults(detections, displaySize);
-                const results = resizedDetections.map(d => faceMatcher.findBestMatch(d.descriptor));
-                results.forEach((result, i) => {
-                    arr['recognition'] = result._label;
-                    arr['distance'] = result._distance;
-                })
-                arrResult[i + 'count'] != null ? arrResult[i + 'count'] = parseInt(arrResult[i + 'count']) + 1 : arrResult[i + 'count'] = 1;
-            }
+            if(detections != null) {
+                const result = faceMatcher.findBestMatch(detections.descriptor);
+                arr['recognition'] = result._label.toString() + ' - ' + result._distance.toString()
 
-            arrResult[i + 'true'] = 0;
-            arrResult[i + 'false'] = 0;
-            if(arr['label'] == arr['recognition']) {
-                arr['result'] = 'True';
-                arr['recognition'] = arr['recognition'] + ' - ' + arr['distance']
-                arrResult[i + 'true'] != null ? arrResult[i + 'true'] = parseInt(arrResult[i + 'true']) + 1 : arrResult[i + 'true'] = 1;
+                if(arr['label'] == result._label) {
+                    arr['result'] = 'True';
+                    arrResult[i + 'true']++
+                }
+                else if(result._label == 'unknown') {
+                    arr['result'] = 'Unknown';
+                    arrResult[i + 'unknown']++
+                }
+                else {
+                    arr['result'] = 'False';
+                    arrResult[i + 'false']++
+                }
+            } else {
+                arrResult[i + 'none']++
             }
-            else if (arr['recognition'] == '') arr['result'] = 'None';
-            else {
-                arr['result'] = 'False';
-                arr['recognition'] = arr['recognition'] + ' - ' + arr['distance']
-                arrResult[i + 'false'] != null ? arrResult[i + 'false'] = parseInt(arrResult[i + 'false']) + 1 : arrResult[i + 'false'] = 1;
-            };
 
             document.getElementById('tbl-detail').innerHTML +=
             '<tr>' +
@@ -138,17 +135,24 @@ async function startTest(faceMatcher) {
         document.getElementById('tbl-result').innerHTML +=
             '<tr>' +
                 '<td>' + arr['label'] + '</td>' +
-                '<td>' + arrResult[i + 'count'] + '</td>' +
+                '<td>' + arrLabel[i].sl + '</td>' +
                 '<td>' + arrResult[i + 'true'] + '</td>' +
                 '<td>' + arrResult[i + 'false'] + '</td>' +
+                '<td>' + arrResult[i + 'unknown'] + '</td>' +
+                '<td>' + arrResult[i + 'none'] + '</td>' +
             '</tr>';
-        arrResult[i + 'count'] == null ? count += 0 : count += arrResult[i + 'count'];
+        count += arrLabel[i].sl
         arrResult[i + 'true'] == null ? _true += 0 : _true += arrResult[i + 'true'];
         arrResult[i + 'false'] == null ? _false += 0 : _false += arrResult[i + 'false'];
+        arrResult[i + 'unknown'] == null ? _unknown += 0 : _unknown += arrResult[i + 'unknown'];
+        arrResult[i + 'none'] == null ? _none += 0 : _none += arrResult[i + 'none'];
     }
+
     var accuracy = parseInt(_true) / parseInt(count);
     document.getElementById('total-count').textContent = count;
     document.getElementById('total-true').textContent = _true;
     document.getElementById('total-false').textContent = _false;
+    document.getElementById('total-unknown').textContent = _unknown;
+    document.getElementById('total-none').textContent = _none;
     document.getElementById('accuracy-metric').textContent = accuracy * 100 + '%' ;
 }

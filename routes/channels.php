@@ -21,3 +21,8 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('user.{id}', function ($user, $id) {
     return (int) Auth::user()->employee_id === (int) $id;
 });
+
+Broadcast::channel('office.{id}', function ($user, $id) {
+    if (!Auth::guard('timekeeper')->check()) return false;
+    return (int) Auth::guard('timekeeper')->user()->office_id === (int) $id;
+});

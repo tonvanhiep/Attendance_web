@@ -50,12 +50,10 @@ export const showModal = (
         occurence.onclick = () => {
             switch (id) {
                 case "yesBtn": {
-                    console.log("click yes");
                     callback_Yes();
                     break;
                 }
                 case "noBtn": {
-                    console.log("click no");
                     callback_No();
                     break;
                 }

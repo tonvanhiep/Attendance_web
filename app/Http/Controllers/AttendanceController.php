@@ -16,21 +16,22 @@ class AttendanceController extends Controller
     public function index()
     {
         $image = new FaceEmployeeImagesModel;
-        $image = $image->getImages(['status' => 1, 'office' => Auth::guard('timekeeper')->user()->office_id]);
+        $office_id = Auth::guard('timekeeper')->user()->office_id;
+        $image = $image->getImages(['status' => 1, 'office' => $office_id]);
         //dd($image->toArray());
         $arr = [];
         $arrName = [];
         foreach ($image as $key => $value) {
             $id = $value->id;
             if (isset($arr[$id])) {
-                array_push($arr[$id], $value->image_url);
+                array_push($arr[$id], $value->description);
             } else {
                 $arr[$id] = [];
                 $arrName[$id] = $value->last_name . ' ' . $value->first_name;
-                array_push($arr[$id], $value->image_url);
+                array_push($arr[$id], $value->description);
             }
         }
-        return view('attendance.check-in', compact('arr', 'arrName'));
+        return view('attendance.check-in', compact('arr', 'arrName', 'office_id'));
     }
 
     public function checkAttendance(Request $request)
@@ -76,9 +77,9 @@ class AttendanceController extends Controller
         $attendance = new TimesheetsModel();
 
         $employee = $employee->getEmployees(['id' => $request->id, 'status' => 1]);
-        if (count($employee) == 0) return response()->json([
+        if (count($employee) == 0 || !$request->has('image')) return response()->json([
             'success' => false,
-            'message'   =>  'Nguoi dung khong hop le.'
+            'message'   =>  'Unable to confirm employee.'
         ]);
         $folderPath = public_path('storage\image-checkin\\');
         $image_parts = explode(";base64,", $request->image);
@@ -142,11 +143,11 @@ class AttendanceController extends Controller
         foreach ($image as $key => $value) {
             $id = $value->id;
             if (isset($arr[$id])) {
-                array_push($arr[$id], $value->image_url);
+                array_push($arr[$id], $value->description);
             } else {
                 $arr[$id] = [];
                 $arrName[$id] = $value->last_name . ' ' . $value->first_name;
-                array_push($arr[$id], $value->image_url);
+                array_push($arr[$id], $value->description);
             }
         }
         return view('attendance.test', compact('arr', 'arrName'));

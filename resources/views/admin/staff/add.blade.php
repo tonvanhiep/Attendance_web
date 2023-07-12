@@ -140,24 +140,24 @@
                 <div class="board-left" style="max-width: 800px">
                     <div class="long form">
                         <label for="first_name">First Name</label>
-                        <input type="text" name="first_name">
+                        <input type="text" name="first_name" required>
                     </div>
                     <div class="long form">
                         <label for="last_name">Last Name</label>
-                        <input type="text" name="last_name">
+                        <input type="text" name="last_name" required>
                     </div>
 
                     <div class="long form">
                         <label for="numberphone">Phone</label>
-                        <input type="text" name="numberphone">
+                        <input type="text" name="numberphone" required>
                     </div>
                     <div class="long form">
                         <label for="address">Address</label>
-                        <input type="text" name="address">
+                        <input type="text" name="address" required>
                     </div>
                     <div class="long form">
                         <label for="birth_day">Date of birth</label>
-                        <input type="date" name="birth_day">
+                        <input type="date" name="birth_day" required>
                     </div>
                     <div class="form">
                         <label>Gender</label>
@@ -174,11 +174,11 @@
                     </div>
                     <div class="long form">
                         <label for="department">Department</label>
-                        <input type="text" name="department">
+                        <input type="text" name="department" required>
                     </div>
                     <div class="long form">
                         <label for="position">Position</label>
-                        <input type="text" name="position">
+                        <input type="text" name="position" required>
                     </div>
                     <div class="long form">
                         <label for="office_id">Office</label>
@@ -197,7 +197,7 @@
                         </select>
                     </div>
                     <div class="long form">
-                        <label for="working_day">Working_day</label>
+                        <label for="working_day">Working day</label>
                         <input type="checkbox" name="working_day[]" value="2">Mon
                         <input type="checkbox" name="working_day[]" value="3">Tue
                         <input type="checkbox" name="working_day[]" value="4">Wed
@@ -206,10 +206,14 @@
                         <input type="checkbox" name="working_day[]" value="7">Sat
                         <input type="checkbox" name="working_day[]" value="1">Sun
                     </div>
-                    {{-- <div class="long form" >
-                        <label for="note">Content</label>
-                        <textarea id="editor" name="note" rows="10"></textarea>
-                    </div> --}}
+                    <div class="long form" >
+                        <label for="start-time">Start time</label>
+                        <input type="time" name="start_time" required>
+                    </div>
+                    <div class="long form" >
+                        <label for="end-time">End time</label>
+                        <input type="time" name="end_time" required>
+                    </div>
                 </div>
                 <div class="board-right">
                     @push('css')
@@ -267,15 +271,15 @@
                     </div>
                     <div class="short form">
                         <label for="email">Email</label>
-                        <input type="email" name="email">
+                        <input type="email" name="email" required>
                     </div>
                     <div class="short form">
                         <label for="password">Password</label>
-                        <input type="password" name="password">
+                        <input type="password" name="password" required>
                     </div>
                     <div class="short form">
                         <label for="confirm">Confirm Password</label>
-                        <input type="password" name="confirm">
+                        <input type="password" name="confirm" required>
                     </div>
                 </div>
             </div>
@@ -285,35 +289,18 @@
                     <div class="row">
                         <div class="form">
                             <label for="join_day">Join day</label>
-                            <input type="date" name="join_day">
+                            <input type="date" name="join_day" required>
                         </div>
                     </div>
                 </div>
                 <div class="board-right">
                     <div class="short form">
                         <label for="salary">Salary</label>
-                        <input type="number" name="salary">
+                        <input type="number" name="salary" required>
                     </div>
                 </div>
             </div>
 
-            {{-- <h5 style="margin-bottom: 15px">Face Recognition</h5>
-            <div class="container-top" style="display: block">
-                <div class="input-group" style="margin-bottom: 15px">
-                    <input type="file" id="inp-face" name="image_url[]" accept="img/*" class="form-control"
-                        id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" multiple aria-label="Upload">
-                </div>
-
-                <style>
-                    .img-preview {
-                        max-width: 200px;
-                        margin: 5px;
-                    }
-                </style>
-                <div style="display: flex; flex-wrap:wrap">
-                    <div id="div-face-upload" style="display: flex; flex-wrap:wrap"></div>
-                </div>
-            </div> --}}
             <div style="margin-bottom:10px; display: flex; justify-content: space-between; flex-wrap: wrap;">
                 <h5 style="margin-bottom: 15px; display:inline">Face Recognition</h5>
                 <div class="dropdown">
@@ -325,6 +312,7 @@
                             <li><button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#myModal2">Face scan</button></li>
                         </ul>
                 </div>
+                <div hidden id="arr-detection"></div>
             </div>
             <div class="container-top" style="display: block">
                 <div style="display: flex; flex-wrap:wrap">
@@ -337,7 +325,7 @@
             </div>
         </div>
         <div class="d-grid gap-2">
-            <button style="margin:auto; min-width: 50%; background-color:#323FAE" type="submit" class="btn btn-primary">
+            <button style="margin:auto; min-width: 50%; background-color:#323FAE" type="button" id="btn-submit" class="btn btn-primary">
                 <i class="fa-solid fa-floppy-disk" style="padding-right: 10px"></i>
                 <span>Save</span>
             </button>
